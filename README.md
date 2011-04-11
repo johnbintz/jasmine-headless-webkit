@@ -10,7 +10,7 @@ success or 1 for failure.
 
 ## Usage
 
-`jasmine-headless-webkit` [path to jasmine.yml, defaults to spec/javascripts/support/jasmine.yml]
+`jasmine-headless-webkit [path to jasmine.yml, defaults to spec/javascripts/support/jasmine.yml]'
 
 *This gem is currently as rough as it gets.*
 
