@@ -10,6 +10,10 @@ success or 1 for failure.
 
 `console.log` works, too, so you can run your specs side-by-side in a browser if you're so inclined.
 
+## Installation
+
+`gem install jasmine-headless-webkit` or use Bundler.
+
 ## Usage
 
     jasmine-headless-webkit [path to jasmine.yml, defaults to spec/javascripts/support/jasmine.yml]
