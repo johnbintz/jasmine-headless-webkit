@@ -14,8 +14,6 @@ success or 1 for failure.
 
     jasmine-headless-webkit [path to jasmine.yml, defaults to spec/javascripts/support/jasmine.yml]
 
-*This gem is currently as rough as it gets.*
-
 Installation requires Qt 4.7. See [senchalabs/examples](https://github.com/senchalabs/examples) and [my fork
 of examples](https://github.com/johnbintz/examples) for more information on the QtWebKit runner.
 
