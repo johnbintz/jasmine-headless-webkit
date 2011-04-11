@@ -1,0 +1,2 @@
+system %{qmake}
+system %{make}
