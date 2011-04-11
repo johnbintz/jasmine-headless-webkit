@@ -14,11 +14,13 @@ files = [
 
 DEFAULTS = {
   'spec_files' => [ '**/*[sS]pec.js' ],
-  'helpers' => [ 'helpers/**/*.js' ]
+  'helpers' => [ 'helpers/**/*.js' ],
+  'spec_dir' => 'spec/javascripts'
 }
 
 files += [ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'helpers', 'spec_dir' ], [ 'spec_files', 'spec_dir' ] ].collect do |searches, root|
   data[searches] ||= DEFAULTS[searches]
+  data[root] ||= DEFAULTS[root]
 
   if data[searches]
     data[searches].collect do |search|

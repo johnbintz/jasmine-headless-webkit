@@ -22,6 +22,7 @@ of examples](https://github.com/johnbintz/examples) for more information on the 
 Tested in the following environments:
 
 * Mac OS X 10.6, with MacPorts Qt and Nokia Qt.mpkg
+* Kubuntu 10.10
 
 ## License
 
