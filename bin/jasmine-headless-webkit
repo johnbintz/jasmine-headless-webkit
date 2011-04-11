@@ -3,13 +3,13 @@
 require 'yaml'
 require 'fileutils'
 
-data = YAML.load_file('spec/javascripts/support/jasmine.yml')
+data = YAML.load_file(ARGV[0] || 'spec/javascripts/support/jasmine.yml')
 gem_dir = File.expand_path('../..', __FILE__)
 
 files = [
-  File.join(gem_dir, 'lib/jasmine/lib/jasmine.js'),
-  File.join(gem_dir, 'lib/jasmine/lib/jasmine-html.js'),
-  File.join(gem_dir, 'lib/jasmine/lib/jasmine.css')
+  'file://' + File.join(gem_dir, 'jasmine/lib/jasmine.js'),
+  'file://' + File.join(gem_dir, 'jasmine/lib/jasmine-html.js'),
+  'file://' + File.join(gem_dir, 'jasmine/lib/jasmine.css')
 ]
 
 files += [ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'helpers', 'spec_dir' ], [ 'spec_files', 'spec_dir' ] ].collect do |searches, root|
@@ -52,7 +52,7 @@ window.console = { log: function(data) { debug.log(JSON.stringify(data)); } };
 HTML
 
 File.open(target = "specrunner.#{$$}.html", 'w') { |fh| fh.print output }
-system %{#{File.join(gem_dir, 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner'} #{target}}
+system %{#{File.join(gem_dir, 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner')} #{target}}
 status = ($? == 0) ? 0 : 1
 FileUtils.rm_f target
 

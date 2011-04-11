@@ -1,5 +1,25 @@
+## Introduction
+
+This gem works with projects that have use the [Jasmine gem](https://github.com/pivotal/jasmine-gem) to 
+create a `jasmine.yml` file that defines what to test in their Jasmine project. The runner loads that
+`jasmine.yml` file and executes the
+tests in a Qt WebKit widget, displaying the results to the console and setting the exit code to 0 for
+success or 1 for failure.
+
+`console.log` works, too, so you can run your specs side-by-side in a browser if you're so inclined.
+
+## Usage
+
+`jasmine-headless-webkit` [path to jasmine.yml, defaults to spec/javascripts/support/jasmine.yml]
+
+*This gem is currently as rough as it gets.*
+
+Installation requires Qt 4.7. See [senchalabs/examples](https://github.com/senchalabs/examples) and [my fork
+of examples](https://github.com/johnbintz/examples) for more information on the QtWebKit runner.
+
 Copyright (c) 2010 Sencha Inc.
 Copyright (c) 2011 John Bintz
+Jasmine JavaScript library Copyright (c) 2008-2011 Pivotal Labs
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
