@@ -19,9 +19,9 @@ of examples](https://github.com/johnbintz/examples) for more information on the 
 
 ## License
 
-Copyright (c) 2010 Sencha Inc.
-Copyright (c) 2011 John Bintz
-Jasmine JavaScript library Copyright (c) 2008-2011 Pivotal Labs
+* Copyright (c) 2010 Sencha Inc.
+* Copyright (c) 2011 John Bintz
+* Jasmine JavaScript library Copyright (c) 2008-2011 Pivotal Labs
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
