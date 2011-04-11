@@ -17,6 +17,8 @@ success or 1 for failure.
 Installation requires Qt 4.7. See [senchalabs/examples](https://github.com/senchalabs/examples) and [my fork
 of examples](https://github.com/johnbintz/examples) for more information on the QtWebKit runner.
 
+## License
+
 Copyright (c) 2010 Sencha Inc.
 Copyright (c) 2011 John Bintz
 Jasmine JavaScript library Copyright (c) 2008-2011 Pivotal Labs
