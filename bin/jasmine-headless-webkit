@@ -1,0 +1,60 @@
+#!/usr/bin/env ruby
+
+require 'yaml'
+require 'fileutils'
+
+data = YAML.load_file('spec/javascripts/support/jasmine.yml')
+gem_dir = File.expand_path('../..', __FILE__)
+
+files = [
+  File.join(gem_dir, 'lib/jasmine/lib/jasmine.js'),
+  File.join(gem_dir, 'lib/jasmine/lib/jasmine-html.js'),
+  File.join(gem_dir, 'lib/jasmine/lib/jasmine.css')
+]
+
+files += [ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'helpers', 'spec_dir' ], [ 'spec_files', 'spec_dir' ] ].collect do |searches, root|
+  data[searches].collect do |search|
+    path = search
+    path = File.join(data[root], path) if data[root]
+    Dir[path]
+  end
+end
+
+files = files.flatten.collect { |file|
+  case File.extname(file)
+  when '.js'
+    %{<script type="text/javascript" src="#{file}"></script>}
+  when '.css'
+    %{<link rel="stylesheet" href="#{file}" type="text/css" />}
+  end
+}
+
+output = <<-HTML
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Jasmine Test Runner</title>
+  <script type="text/javascript">
+window.console = { log: function(data) { debug.log(JSON.stringify(data)); } };
+  </script>
+  #{files.join("\n")}
+</head>
+<body>
+
+<script type="text/javascript">
+  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+  jasmine.getEnv().execute();
+</script>
+
+</body>
+</html>
+HTML
+
+File.open(target = "specrunner.#{$$}.html", 'w') { |fh| fh.print output }
+system %{#{File.join(gem_dir, 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner'} #{target}}
+status = ($? == 0) ? 0 : 1
+FileUtils.rm_f target
+
+exit status
+
