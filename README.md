@@ -1,6 +1,6 @@
-## Introduction
-
 # Jasmine Headless WebKit runner
+
+## Introduction
 
 This gem works with projects that use the [Jasmine gem](https://github.com/pivotal/jasmine-gem) to 
 create a `jasmine.yml` file defining what to test. The runner loads that
