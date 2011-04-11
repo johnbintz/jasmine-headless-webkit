@@ -2,8 +2,8 @@
 
 ## Introduction
 
-This gem works with projects that use the [Jasmine gem](https://github.com/pivotal/jasmine-gem) to 
-create a `jasmine.yml` file defining what to test. The runner loads that
+This gem works with projects that have used the [Jasmine gem](https://github.com/pivotal/jasmine-gem) to 
+create a `jasmine.yml` file that defines what to test. The runner loads that
 `jasmine.yml` file and executes the
 tests in a Qt WebKit widget, displaying the results to the console and setting the exit code to 0 for
 success or 1 for failure.
