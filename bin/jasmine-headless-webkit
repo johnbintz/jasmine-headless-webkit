@@ -12,15 +12,24 @@ files = [
   'file://' + File.join(gem_dir, 'jasmine/lib/jasmine.css')
 ]
 
+DEFAULTS = {
+  'spec_files' => [ '**/*[sS]pec.js' ],
+  'helpers' => [ 'helpers/**/*.js' ]
+}
+
 files += [ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'helpers', 'spec_dir' ], [ 'spec_files', 'spec_dir' ] ].collect do |searches, root|
-  data[searches].collect do |search|
-    path = search
-    path = File.join(data[root], path) if data[root]
-    Dir[path]
+  data[searches] ||= DEFAULTS[searches]
+
+  if data[searches]
+    data[searches].collect do |search|
+      path = search
+      path = File.join(data[root], path) if data[root]
+      Dir[path]
+    end
   end
 end
 
-files = files.flatten.collect { |file|
+files = files.flatten.compact.collect { |file|
   case File.extname(file)
   when '.js'
     %{<script type="text/javascript" src="#{file}"></script>}
