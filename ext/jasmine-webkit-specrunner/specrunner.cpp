@@ -153,28 +153,30 @@ void HeadlessSpecRunner::timerEvent(QTimerEvent *event)
     if (hasErrors && m_runs > 2)
         QApplication::instance()->exit(1);
 
-    if (!hasElement(".jasmine_reporter") && !hasElement(".runner.running"))
-        return;
+    if (!hasErrors) {
+      if (!hasElement(".jasmine_reporter") && !hasElement(".runner.running"))
+          return;
 
-    if (hasElement(".runner.passed")) {
-        QWebElement desc = m_page.mainFrame()->findFirstElement(".description");
-        std::cout << "\033[0;32m" << "PASS: " << qPrintable(desc.toPlainText()) << "\033[m" << std::endl;
-        QApplication::instance()->exit(0);
-        return;
-    }
+      if (hasElement(".runner.passed")) {
+          QWebElement desc = m_page.mainFrame()->findFirstElement(".description");
+          std::cout << "\033[0;32m" << "PASS: " << qPrintable(desc.toPlainText()) << "\033[m" << std::endl;
+          QApplication::instance()->exit(0);
+          return;
+      }
 
-    if (hasElement(".runner.failed")) {
-        QWebElement desc = m_page.mainFrame()->findFirstElement(".description");
-        std::cout << "\033[0;31m" << "FAIL: " << qPrintable(desc.toPlainText()) << "\033[m" << std::endl;
-        m_page.mainFrame()->evaluateJavaScript(DUMP_MSG);
-//QDesktopServices::openUrl(m_page.mainFrame()->url());
-        QApplication::instance()->exit(1);
-        return;
-    }
+      if (hasElement(".runner.failed")) {
+          QWebElement desc = m_page.mainFrame()->findFirstElement(".description");
+          std::cout << "\033[0;31m" << "FAIL: " << qPrintable(desc.toPlainText()) << "\033[m" << std::endl;
+          m_page.mainFrame()->evaluateJavaScript(DUMP_MSG);
+  //QDesktopServices::openUrl(m_page.mainFrame()->url());
+          QApplication::instance()->exit(1);
+          return;
+      }
 
-    if (m_runs > 30) {
-        std::cout << "WARNING: too many runs and the test is still not finished!" << std::endl;
-        QApplication::instance()->exit(1);
+      if (m_runs > 30) {
+          std::cout << "WARNING: too many runs and the test is still not finished!" << std::endl;
+          QApplication::instance()->exit(1);
+      }
     }
 }
 
