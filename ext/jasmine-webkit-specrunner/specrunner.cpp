@@ -68,11 +68,11 @@ private:
 HeadlessSpecRunner::HeadlessSpecRunner()
     : QObject()
     , m_runs(0)
+    , hasErrors(false)
 {
     m_page.settings()->enablePersistentStorage();
     connect(&m_page, SIGNAL(loadFinished(bool)), this, SLOT(watch(bool)));
     connect(&m_page, SIGNAL(consoleLog(QString, int, QString)), this, SLOT(errorLog(QString, int, QString)));
-    hasErrors = false;
 }
 
 void HeadlessSpecRunner::load(const QString &spec)
@@ -104,7 +104,9 @@ void HeadlessSpecRunner::errorLog(const QString &msg, int lineNumber, const QStr
   std::cout << "\033[0;31m" << "[error] " << "\033[m;";
   std::cout << qPrintable(sourceID) << ":" << lineNumber << " : " << qPrintable(msg);
   std::cout << std::endl;
+
   hasErrors = true;
+  m_ticker.start(200, this);
 }
 
 void HeadlessSpecRunner::log(const QString &msg)
@@ -142,8 +144,13 @@ void HeadlessSpecRunner::specLog(int indent, const QString &msg, const QString &
 
 void HeadlessSpecRunner::timerEvent(QTimerEvent *event)
 {
+    ++m_runs;
+
     if (event->timerId() != m_ticker.timerId())
         return;
+
+    if (hasErrors && m_runs > 5)
+        QApplication::instance()->exit(1);
 
     if (!hasElement(".jasmine_reporter") && !hasElement(".runner.running"))
         return;
@@ -164,8 +171,7 @@ void HeadlessSpecRunner::timerEvent(QTimerEvent *event)
         return;
     }
 
-    ++m_runs;
-    if (m_runs > 20) {
+    if (m_runs > 30) {
         std::cout << "WARNING: too many runs and the test is still not finished!" << std::endl;
         QApplication::instance()->exit(1);
     }
