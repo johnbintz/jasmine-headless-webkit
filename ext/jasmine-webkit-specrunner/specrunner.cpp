@@ -106,6 +106,7 @@ void HeadlessSpecRunner::errorLog(const QString &msg, int lineNumber, const QStr
   std::cout << std::endl;
 
   hasErrors = true;
+  m_runs = 0;
   m_ticker.start(200, this);
 }
 
@@ -149,7 +150,7 @@ void HeadlessSpecRunner::timerEvent(QTimerEvent *event)
     if (event->timerId() != m_ticker.timerId())
         return;
 
-    if (hasErrors && m_runs > 5)
+    if (hasErrors && m_runs > 2)
         QApplication::instance()->exit(1);
 
     if (!hasElement(".jasmine_reporter") && !hasElement(".runner.running"))
