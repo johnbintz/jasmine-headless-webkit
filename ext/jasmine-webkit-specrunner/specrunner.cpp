@@ -29,6 +29,20 @@
 #error Use Qt 4.7 or later version
 #endif
 
+class HeadlessSpecRunnerPage: public QWebPage
+{
+  Q_OBJECT
+signals:
+  void consoleLog(const QString &msg, int lineNumber, const QString &sourceID);
+protected:
+  void javaScriptConsoleMessage(const QString & message, int lineNumber, const QString & sourceID);
+};
+
+void HeadlessSpecRunnerPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
+{
+  emit consoleLog(message, lineNumber, sourceID);
+}
+
 class HeadlessSpecRunner: public QObject
 {
     Q_OBJECT
@@ -40,13 +54,15 @@ public slots:
     void specLog(int indent, const QString &msg, const QString &clazz);
 private slots:
     void watch(bool ok);
+    void errorLog(const QString &msg, int lineNumber, const QString &sourceID);
 protected:
     bool hasElement(const char *select);
     void timerEvent(QTimerEvent *event);
 private:
-    QWebPage m_page;
+    HeadlessSpecRunnerPage m_page;
     QBasicTimer m_ticker;
     int m_runs;
+    bool hasErrors;
 };
 
 HeadlessSpecRunner::HeadlessSpecRunner()
@@ -55,6 +71,8 @@ HeadlessSpecRunner::HeadlessSpecRunner()
 {
     m_page.settings()->enablePersistentStorage();
     connect(&m_page, SIGNAL(loadFinished(bool)), this, SLOT(watch(bool)));
+    connect(&m_page, SIGNAL(consoleLog(QString, int, QString)), this, SLOT(errorLog(QString, int, QString)));
+    hasErrors = false;
 }
 
 void HeadlessSpecRunner::load(const QString &spec)
@@ -79,6 +97,14 @@ void HeadlessSpecRunner::watch(bool ok)
 bool HeadlessSpecRunner::hasElement(const char *select)
 {
     return !m_page.mainFrame()->findFirstElement(select).isNull();
+}
+
+void HeadlessSpecRunner::errorLog(const QString &msg, int lineNumber, const QString &sourceID)
+{
+  std::cout << "\033[0;31m" << "[error] " << "\033[m;";
+  std::cout << qPrintable(sourceID) << ":" << lineNumber << " : " << qPrintable(msg);
+  std::cout << std::endl;
+  hasErrors = true;
 }
 
 void HeadlessSpecRunner::log(const QString &msg)

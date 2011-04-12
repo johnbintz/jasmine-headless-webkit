@@ -2,3 +2,7 @@
 .bundle
 Gemfile.lock
 pkg/*
+Makefile
+specrunner.moc
+specrunner.o
+jasmine-webkit-specrunner
