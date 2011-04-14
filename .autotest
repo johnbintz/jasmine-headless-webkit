@@ -1,0 +1,9 @@
+Autotest.add_hook(:initialize) do |at|
+  at.add_mapping(%r{bin/.*}, true) do |filename|
+    at.files_matching(%r{spec/bin/.*})
+  end
+
+  at.add_mapping(%r{spec/jasmine/.*}, true) do |filename|
+    at.files_matching(%r{spec/bin/.*})
+  end
+end

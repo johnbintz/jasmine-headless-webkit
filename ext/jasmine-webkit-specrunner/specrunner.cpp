@@ -63,12 +63,14 @@ private:
     QBasicTimer m_ticker;
     int m_runs;
     bool hasErrors;
+    bool usedConsole;
 };
 
 HeadlessSpecRunner::HeadlessSpecRunner()
     : QObject()
     , m_runs(0)
     , hasErrors(false)
+    , usedConsole(false)
 {
     m_page.settings()->enablePersistentStorage();
     connect(&m_page, SIGNAL(loadFinished(bool)), this, SLOT(watch(bool)));
@@ -112,6 +114,7 @@ void HeadlessSpecRunner::errorLog(const QString &msg, int lineNumber, const QStr
 
 void HeadlessSpecRunner::log(const QString &msg)
 {
+  usedConsole = true;
   std::cout << "\033[0;32m" << "[console] " << "\033[m";
   std::cout << qPrintable(msg);
   std::cout << std::endl;
@@ -160,7 +163,7 @@ void HeadlessSpecRunner::timerEvent(QTimerEvent *event)
       if (hasElement(".runner.passed")) {
           QWebElement desc = m_page.mainFrame()->findFirstElement(".description");
           std::cout << "\033[0;32m" << "PASS: " << qPrintable(desc.toPlainText()) << "\033[m" << std::endl;
-          QApplication::instance()->exit(0);
+          QApplication::instance()->exit(usedConsole ? 2 : 0);
           return;
       }
 

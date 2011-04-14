@@ -1,0 +1,9 @@
+src_files:
+  - spec/jasmine/success/success.js
+
+spec_files:
+  - spec/jasmine/success/success_spec.js
+
+src_dir: .
+spec_dir: .
+

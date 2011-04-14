@@ -1,0 +1,9 @@
+src_files:
+  - spec/jasmine/failure/failure.js
+
+spec_files:
+  - spec/jasmine/failure/failure_spec.js
+
+src_dir: .
+spec_dir: .
+

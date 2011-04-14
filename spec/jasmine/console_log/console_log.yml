@@ -1,0 +1,10 @@
+
+src_files:
+  - spec/jasmine/console_log/console_log.js
+
+spec_files:
+  - spec/jasmine/console_log/console_log_spec.js
+
+src_dir: .
+spec_dir: .
+

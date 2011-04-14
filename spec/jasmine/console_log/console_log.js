@@ -1,0 +1,1 @@
+var success = 1;

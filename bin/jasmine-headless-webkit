@@ -64,7 +64,7 @@ HTML
 
 File.open(target = "specrunner.#{$$}.html", 'w') { |fh| fh.print output }
 system %{#{File.join(gem_dir, 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner')} #{target}}
-status = ($? == 0) ? 0 : 1
+status = $?.exitstatus
 FileUtils.rm_f target
 
 exit status

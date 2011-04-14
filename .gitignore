@@ -5,4 +5,4 @@ pkg/*
 Makefile
 specrunner.moc
 specrunner.o
-jasmine-webkit-specrunner
+ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner
