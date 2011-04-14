@@ -5,8 +5,12 @@
 This gem works with projects that have used the [Jasmine gem](https://github.com/pivotal/jasmine-gem) to 
 create a `jasmine.yml` file that defines what to test. The runner loads that
 `jasmine.yml` file and executes the
-tests in a Qt WebKit widget, displaying the results to the console and setting the exit code to 0 for
-success or 1 for failure.
+tests in a Qt WebKit widget, displaying the results to the console and setting the exit code to one
+of the following:
+
+* 0 for success
+* 1 for spec run failure
+* 2 for spec run success, but `console.log` was called during the run
 
 `console.log` works, too, so you can run your specs side-by-side in a browser if you're so inclined.
 
