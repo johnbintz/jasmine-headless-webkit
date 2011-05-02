@@ -19,6 +19,8 @@ end
 data = YAML.load_file(ARGV.shift || 'spec/javascripts/support/jasmine.yml')
 gem_dir = File.expand_path('../..', __FILE__)
 
+puts "Running Jasmine specs..."
+
 files = [
   'file://' + File.join(gem_dir, 'jasmine/lib/jasmine.js'),
   'file://' + File.join(gem_dir, 'jasmine/lib/jasmine-html.js'),
