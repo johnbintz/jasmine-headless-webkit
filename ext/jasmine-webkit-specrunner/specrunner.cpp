@@ -164,7 +164,7 @@ void HeadlessSpecRunner::specLog(int indent, const QString &msg, const QString &
     if ( clazz.endsWith("fail") ) {
         red();
     } else {
-        green();
+        yellow();
     }
     std::cout << qPrintable(msg);
     clear();
