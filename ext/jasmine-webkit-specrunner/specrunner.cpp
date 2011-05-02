@@ -49,6 +49,7 @@ class HeadlessSpecRunner: public QObject
 public:
     HeadlessSpecRunner();
     void load(const QString &spec);
+    void setColors(bool colors);
 public slots:
     void log(const QString &msg);
     void specLog(int indent, const QString &msg, const QString &clazz);
@@ -64,6 +65,12 @@ private:
     int m_runs;
     bool hasErrors;
     bool usedConsole;
+    bool showColors;
+    
+    void red();
+    void green();
+    void yellow();
+    void clear();
 };
 
 HeadlessSpecRunner::HeadlessSpecRunner()
@@ -71,6 +78,7 @@ HeadlessSpecRunner::HeadlessSpecRunner()
     , m_runs(0)
     , hasErrors(false)
     , usedConsole(false)
+    , showColors(false)
 {
     m_page.settings()->enablePersistentStorage();
     connect(&m_page, SIGNAL(loadFinished(bool)), this, SLOT(watch(bool)));
@@ -101,9 +109,36 @@ bool HeadlessSpecRunner::hasElement(const char *select)
     return !m_page.mainFrame()->findFirstElement(select).isNull();
 }
 
+void HeadlessSpecRunner::setColors(bool colors)
+{
+    showColors = colors;
+}
+
+void HeadlessSpecRunner::red()
+{
+  if (showColors) std::cout << "\033[0;31m";
+}
+
+void HeadlessSpecRunner::green()
+{
+  if (showColors) std::cout << "\033[0;32m";
+}
+
+void HeadlessSpecRunner::yellow()
+{
+  if (showColors) std::cout << "\033[0;33m";
+}
+
+void HeadlessSpecRunner::clear()
+{
+  if (showColors) std::cout << "\033[m";
+}
+
 void HeadlessSpecRunner::errorLog(const QString &msg, int lineNumber, const QString &sourceID)
 {
-  std::cout << "\033[0;31m" << "[error] " << "\033[m;";
+  red();
+  std::cout << "[error] ";
+  clear();
   std::cout << qPrintable(sourceID) << ":" << lineNumber << " : " << qPrintable(msg);
   std::cout << std::endl;
 
@@ -115,7 +150,9 @@ void HeadlessSpecRunner::errorLog(const QString &msg, int lineNumber, const QStr
 void HeadlessSpecRunner::log(const QString &msg)
 {
   usedConsole = true;
-  std::cout << "\033[0;32m" << "[console] " << "\033[m";
+  green();
+  std::cout << "[console] ";
+  clear();
   std::cout << qPrintable(msg);
   std::cout << std::endl;
 }
@@ -125,10 +162,12 @@ void HeadlessSpecRunner::specLog(int indent, const QString &msg, const QString &
     for (int i = 0; i < indent; ++i)
         std::cout << "  ";
     if ( clazz.endsWith("fail") ) {
-        std::cout << "\033[0;31m" << qPrintable(msg) << "\033[m";
+        red();
     } else {
-        std::cout << "\033[0;33m" << qPrintable(msg) << "\033[m";
+        green();
     }
+    std::cout << qPrintable(msg);
+    clear();
     std::cout << std::endl;
 }
 
@@ -162,16 +201,21 @@ void HeadlessSpecRunner::timerEvent(QTimerEvent *event)
 
       if (hasElement(".runner.passed")) {
           QWebElement desc = m_page.mainFrame()->findFirstElement(".description");
-          std::cout << "\033[0;32m" << "PASS: " << qPrintable(desc.toPlainText()) << "\033[m" << std::endl;
+          green();
+          std::cout << "PASS: " << qPrintable(desc.toPlainText());
+          clear();
+          std::cout << std::endl;
           QApplication::instance()->exit(usedConsole ? 2 : 0);
           return;
       }
 
       if (hasElement(".runner.failed")) {
           QWebElement desc = m_page.mainFrame()->findFirstElement(".description");
-          std::cout << "\033[0;31m" << "FAIL: " << qPrintable(desc.toPlainText()) << "\033[m" << std::endl;
+          red();
+          std::cout << "FAIL: " << qPrintable(desc.toPlainText());
+          clear();
+          std::cout << std::endl;
           m_page.mainFrame()->evaluateJavaScript(DUMP_MSG);
-  //QDesktopServices::openUrl(m_page.mainFrame()->url());
           QApplication::instance()->exit(1);
           return;
       }
@@ -187,16 +231,37 @@ void HeadlessSpecRunner::timerEvent(QTimerEvent *event)
 
 int main(int argc, char** argv)
 {
-    if (argc != 2) {
+    bool showColors = false;
+    char *filename = NULL;
+
+    int c, index;
+
+    while ((c = getopt(argc, argv, "c")) != -1) {
+      switch(c) {
+        case 'c':
+          showColors = true;
+          break;
+      }
+    }
+
+    bool filenameFound = false;
+
+    for (index = optind; index < argc; index++) {
+      filename = argv[index];
+      filenameFound = true;
+    }
+
+    if (!filenameFound) {
         std::cerr << "Run Jasmine's SpecRunner headlessly" << std::endl << std::endl;
-        std::cerr << "  specrunner SpecRunner.html" << std::endl;
+        std::cerr << "  specrunner [-c] SpecRunner.html" << std::endl;
         return 1;
     }
 
     QApplication app(argc, argv);
 
     HeadlessSpecRunner runner;
-    runner.load(QString::fromLocal8Bit(argv[1]));
+    runner.setColors(showColors);
+    runner.load(QString::fromLocal8Bit(filename));
     return app.exec();
 }
 
