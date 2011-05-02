@@ -30,6 +30,12 @@ Tested in the following environments:
 * Mac OS X 10.6, with MacPorts Qt and Nokia Qt.mpkg
 * Kubuntu 10.10
 
+### Autotest Integration
+
+`jasmine-headless-webkit` can integrate with Autotest. Your jasmine.yml file needs to be in the default
+path, and you have to be ready to use a very alpha implementation of the feature. If used with RSpec 2,
+Jasmine tests run after RSpec.
+
 ## License
 
 * Copyright (c) 2011 John Bintz
