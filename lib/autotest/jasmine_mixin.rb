@@ -1,6 +1,8 @@
 module JasmineMixin
   JASMINE_PROGRAM = File.expand_path('../../../bin/jasmine-headless-webkit', __FILE__)
 
+  JAVASCRIPT_EXTENSIONS = %w{js}
+
   def self.included(klass)
     klass::ALL_HOOKS << [ :run_jasmine, :ran_jasmine ]
   end
@@ -57,13 +59,15 @@ module JasmineMixin
 
   def find_files
     Hash[super.find_all { |file, mtime|
+      is_js = (file[%r{\.(#{JAVASCRIPT_EXTENSIONS.join('|')})$}] != nil)
+
       case self.is_jasmine_running
       when :all
         true
       when :no
-        file[%r{\.js$}] == nil
+        !is_js
       when :yes
-        file[%r{\.js$}] != nil
+        is_js
       end
     }]
   end
@@ -80,5 +84,9 @@ module JasmineMixin
     add_mapping(%r{public/javascripts/(.*)\.js}) { |_, m|
       [ "spec/javascripts/#{m[1]}_spec.js" ]
     }
+  end
+
+  def add_javascript_extensions(*extensions)
+    self.class::JAVASCRIPT_EXTENSIONS << extensions
   end
 end
