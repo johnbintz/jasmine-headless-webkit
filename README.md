@@ -1,11 +1,13 @@
 # Jasmine Headless WebKit runner
 
+Run your specs at sonic boom speed! No pesky reload button or page rendering slowdowns!
+
 ## Introduction
 
-This gem works with projects that have used the [Jasmine gem](https://github.com/pivotal/jasmine-gem) to 
+This gem works with projects that have used the [Jasmine gem](https://github.com/pivotal/jasmine-gem) to
 create a `jasmine.yml` file that defines what to test. The runner loads that
-`jasmine.yml` file and executes the tests in a Qt WebKit widget, displaying the results to the console and
-setting the exit code to one of the following:
+`jasmine.yml` file and executes the tests defined within in a Qt WebKit widget, displaying the results
+to the console and setting the exit code to one of the following:
 
 * 0 for success
 * 1 for spec run failure
@@ -13,7 +15,7 @@ setting the exit code to one of the following:
 
 `console.log` works, too, so you can run your specs side-by-side in a browser if you're so inclined. It
 serializes whatever you're passing in as as JSON string, so objects that are cyclical in nature will not
-serialize.
+serialize. If anyone has a good solution for this, please suggest and/or fork'n'fix.
 
 ## Installation
 
@@ -26,6 +28,8 @@ Tested in the following environments:
 
 * Mac OS X 10.6, with MacPorts Qt and Nokia Qt.mpkg
 * Kubuntu 10.10
+
+Let me know via a message or in the Issues section if it works on your setup and it's not listed!
 
 ## Usage
 
@@ -96,5 +100,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
 
