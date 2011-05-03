@@ -36,11 +36,26 @@ signals:
   void consoleLog(const QString &msg, int lineNumber, const QString &sourceID);
 protected:
   void javaScriptConsoleMessage(const QString & message, int lineNumber, const QString & sourceID);
+  bool javaScriptConfirm(QWebFrame *frame, const QString &msg);
+  void javaScriptAlert(QWebFrame *frame, const QString &msg);
 };
 
 void HeadlessSpecRunnerPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
 {
   emit consoleLog(message, lineNumber, sourceID);
+}
+
+bool HeadlessSpecRunnerPage::javaScriptConfirm(QWebFrame *frame, const QString &msg)
+{
+  std::cout << "[TODO] ";
+  std::cout << "jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm for now. Returning true." << std::endl;
+  return true;
+}
+
+void HeadlessSpecRunnerPage::javaScriptAlert(QWebFrame *frame, const QString &msg)
+{
+  std::cout << "[alert] ";
+  std::cout << qPrintable(msg) << std::endl;
 }
 
 class HeadlessSpecRunner: public QObject
