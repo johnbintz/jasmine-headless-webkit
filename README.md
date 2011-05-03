@@ -33,7 +33,8 @@ Tested in the following environments:
 
 Current supported options:
 
-* `-c` enables color output
+* `-c`/`--colors` enables color output
+* `--no-colors` disables color output
 
 These options can also be placed into a `.jasmine-headless-webkit` file in your project root.
 

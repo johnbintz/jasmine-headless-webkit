@@ -5,7 +5,8 @@ require 'fileutils'
 require 'getoptlong'
 
 opts = GetoptLong.new(
-  [ '--colors', '-c', GetoptLong::NO_ARGUMENT ]
+  [ '--colors', '-c', GetoptLong::NO_ARGUMENT ],
+  [ '--no-colors', GetoptLong::NO_ARGUMENT ]
 )
 
 options = { :colors => false }
@@ -15,6 +16,8 @@ process_options = lambda { |*args|
   case opt
   when '--colors', '-c'
     options[:colors] = true
+  when '--no-colors', '-nc'
+    options[:colors] = false
   end
 }
 
