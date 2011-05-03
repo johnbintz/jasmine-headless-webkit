@@ -4,15 +4,16 @@
 
 This gem works with projects that have used the [Jasmine gem](https://github.com/pivotal/jasmine-gem) to 
 create a `jasmine.yml` file that defines what to test. The runner loads that
-`jasmine.yml` file and executes the
-tests in a Qt WebKit widget, displaying the results to the console and setting the exit code to one
-of the following:
+`jasmine.yml` file and executes the tests in a Qt WebKit widget, displaying the results to the console and
+setting the exit code to one of the following:
 
 * 0 for success
 * 1 for spec run failure
 * 2 for spec run success, but `console.log` was called during the run
 
-`console.log` works, too, so you can run your specs side-by-side in a browser if you're so inclined.
+`console.log` works, too, so you can run your specs side-by-side in a browser if you're so inclined. It
+serializes whatever you're passing in as as JSON string, so objects that are cyclical in nature will not
+serialize.
 
 ## Installation
 
@@ -20,7 +21,11 @@ of the following:
 
 ## Usage
 
-    jasmine-headless-webkit [path to jasmine.yml, defaults to spec/javascripts/support/jasmine.yml]
+    jasmine-headless-webkit [options] [path to jasmine.yml, defaults to spec/javascripts/support/jasmine.yml]
+
+Current supported options:
+
+* `-c` enables color output
 
 Installation requires Qt 4.7. See [senchalabs/examples](https://github.com/senchalabs/examples) and [my fork
 of examples](https://github.com/johnbintz/examples) for more information on the QtWebKit runner.
@@ -32,9 +37,19 @@ Tested in the following environments:
 
 ### Autotest Integration
 
-`jasmine-headless-webkit` can integrate with Autotest. Your jasmine.yml file needs to be in the default
+`jasmine-headless-webkit` can integrate with Autotest. Your `jasmine.yml` file needs to be in the default
 path, and you have to be ready to use a very alpha implementation of the feature. If used with RSpec 2,
-Jasmine tests run after RSpec.
+Jasmine tests run after RSpec tests.
+
+### Server Interaction
+
+`jasmine-headless-webkit` works the same as if you create an HTML file, manually load the Jasmine library and
+your code & tests into the page, and open that page in a browser. Because of this, there's no way to handle
+server interaction with your application or with a Jasmine server. If you need to test server interaction,
+do one of the following:
+
+* Stub your server responses using [Sinon.JS](http://sinonjs.org/)
+* Use [PhantomJS](http://www.phantomjs.org/) against a running copy of a Jasmine server, instead of this project
 
 ## License
 
