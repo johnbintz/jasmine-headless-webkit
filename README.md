@@ -46,6 +46,14 @@ Jasmine tests run after RSpec tests.
 You need to create a `.jasmine-headless-webkit` file in your project root for this integration
 to work.
 
+`jasmine-headless-webkit` provides two new hooks: `:run_jasmine` and `:ran_jasmine` for before and after the
+Jasmine specs have run. This is a good place to do things like re-package all your assets using 
+[Jammit](http://documentcloud.github.com/jammit/):
+
+    Autotest.add_hook(:run_jasmine) do |at|
+      system %{jammit}
+    end
+
 ### Server Interaction
 
 `jasmine-headless-webkit` works the same as if you create an HTML file, manually load the Jasmine library and
