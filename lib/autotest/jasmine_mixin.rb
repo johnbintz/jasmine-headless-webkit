@@ -73,7 +73,7 @@ module JasmineMixin
   end
 
   def make_jasmine_cmd
-    "#{JASMINE_PROGRAM} -c"
+    "#{JASMINE_PROGRAM}"
   end
 
   def setup_jasmine_project_mappings

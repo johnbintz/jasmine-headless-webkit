@@ -19,14 +19,6 @@ serialize.
 
 `gem install jasmine-headless-webkit` or use Bundler.
 
-## Usage
-
-    jasmine-headless-webkit [options] [path to jasmine.yml, defaults to spec/javascripts/support/jasmine.yml]
-
-Current supported options:
-
-* `-c` enables color output
-
 Installation requires Qt 4.7. See [senchalabs/examples](https://github.com/senchalabs/examples) and [my fork
 of examples](https://github.com/johnbintz/examples) for more information on the QtWebKit runner.
 
@@ -35,11 +27,24 @@ Tested in the following environments:
 * Mac OS X 10.6, with MacPorts Qt and Nokia Qt.mpkg
 * Kubuntu 10.10
 
+## Usage
+
+    jasmine-headless-webkit [options] [path to jasmine.yml, defaults to spec/javascripts/support/jasmine.yml]
+
+Current supported options:
+
+* `-c` enables color output
+
+These options can also be placed into a `.jasmine-headless-webkit` file in your project root.
+
 ### Autotest Integration
 
 `jasmine-headless-webkit` can integrate with Autotest. Your `jasmine.yml` file needs to be in the default
 path, and you have to be ready to use a very alpha implementation of the feature. If used with RSpec 2,
 Jasmine tests run after RSpec tests.
+
+You need to create a `.jasmine-headless-webkit` file in your project root for this integration
+to work.
 
 ### Server Interaction
 

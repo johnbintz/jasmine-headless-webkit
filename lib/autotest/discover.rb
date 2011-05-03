@@ -1,1 +1,1 @@
-Autotest.add_discovery { 'jasmine' if File.file?('./spec/javascripts/support/jasmine.yml') }
+Autotest.add_discovery { 'jasmine' if File.file?('./.jasmine-headless-webkit') }

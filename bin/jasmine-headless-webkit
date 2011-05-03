@@ -8,13 +8,21 @@ opts = GetoptLong.new(
   [ '--colors', '-c', GetoptLong::NO_ARGUMENT ]
 )
 
-colors = false
-opts.each do |opt, arg|
+options = { :colors => false }
+
+process_options = lambda { |*args|
+  opt = args.shift
   case opt
-  when '--colors'
-    colors = true
+  when '--colors', '-c'
+    options[:colors] = true
   end
+}
+
+if File.file?('.jasmine-headless-webkit')
+  File.readlines('.jasmine-headless-webkit').collect { |line| line.strip.split(' ', 2) }.flatten(1).each(&process_options)
 end
+
+opts.each(&process_options)
 
 data = YAML.load_file(ARGV.shift || 'spec/javascripts/support/jasmine.yml')
 gem_dir = File.expand_path('../..', __FILE__)
@@ -78,7 +86,7 @@ window.console = { log: function(data) { debug.log(JSON.stringify(data)); } };
 HTML
 
 File.open(target = "specrunner.#{$$}.html", 'w') { |fh| fh.print output }
-system %{#{File.join(gem_dir, 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner')} #{colors ? '-c' : ''} #{target}}
+system %{#{File.join(gem_dir, 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner')} #{options[:colors] ? '-c' : ''} #{target}}
 status = $?.exitstatus
 FileUtils.rm_f target
 
