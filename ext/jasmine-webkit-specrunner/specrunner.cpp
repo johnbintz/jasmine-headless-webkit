@@ -34,6 +34,7 @@ class HeadlessSpecRunnerPage: public QWebPage
   Q_OBJECT
 signals:
   void consoleLog(const QString &msg, int lineNumber, const QString &sourceID);
+  void internalLog(const QString &note, const QString &msg);
 protected:
   void javaScriptConsoleMessage(const QString & message, int lineNumber, const QString & sourceID);
   bool javaScriptConfirm(QWebFrame *frame, const QString &msg);
@@ -47,15 +48,13 @@ void HeadlessSpecRunnerPage::javaScriptConsoleMessage(const QString &message, in
 
 bool HeadlessSpecRunnerPage::javaScriptConfirm(QWebFrame *frame, const QString &msg)
 {
-  std::cout << "[TODO] ";
-  std::cout << "jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm for now. Returning true." << std::endl;
+  emit internalLog("TODO", "jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm for now. Returning true."); 
   return true;
 }
 
 void HeadlessSpecRunnerPage::javaScriptAlert(QWebFrame *frame, const QString &msg)
 {
-  std::cout << "[alert] ";
-  std::cout << qPrintable(msg) << std::endl;
+  emit internalLog("alert", msg);
 }
 
 class HeadlessSpecRunner: public QObject
@@ -71,6 +70,7 @@ public slots:
 private slots:
     void watch(bool ok);
     void errorLog(const QString &msg, int lineNumber, const QString &sourceID);
+    void internalLog(const QString &note, const QString &msg);
 protected:
     bool hasElement(const char *select);
     void timerEvent(QTimerEvent *event);
@@ -98,6 +98,7 @@ HeadlessSpecRunner::HeadlessSpecRunner()
     m_page.settings()->enablePersistentStorage();
     connect(&m_page, SIGNAL(loadFinished(bool)), this, SLOT(watch(bool)));
     connect(&m_page, SIGNAL(consoleLog(QString, int, QString)), this, SLOT(errorLog(QString, int, QString)));
+    connect(&m_page, SIGNAL(internalLog(QString, QString)), this, SLOT(internalLog(QString, QString)));
 }
 
 void HeadlessSpecRunner::load(const QString &spec)
@@ -160,6 +161,14 @@ void HeadlessSpecRunner::errorLog(const QString &msg, int lineNumber, const QStr
   hasErrors = true;
   m_runs = 0;
   m_ticker.start(200, this);
+}
+
+void HeadlessSpecRunner::internalLog(const QString &note, const QString &msg) {
+  red();
+  std::cout << "[" << qPrintable(note) << "] ";
+  clear();
+  std::cout << qPrintable(msg);
+  std::cout << std::endl;
 }
 
 void HeadlessSpecRunner::log(const QString &msg)

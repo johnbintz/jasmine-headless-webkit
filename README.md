@@ -38,6 +38,14 @@ Current supported options:
 
 These options can also be placed into a `.jasmine-headless-webkit` file in your project root.
 
+### JavaScript Dialogs
+
+You can call `alert()` and `confirm()` in your code. `alert()` will print the message to the console, and
+`confirm()` will always return true. There's no way right now to respond to `confirm()`, so it's best to
+mock that call:
+
+    spyOn(window, 'confirm').andReturn(false);
+
 ### Autotest Integration
 
 `jasmine-headless-webkit` can integrate with Autotest. Your `jasmine.yml` file needs to be in the default
