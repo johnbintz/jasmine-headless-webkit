@@ -30,6 +30,11 @@ opts.each(&process_options)
 data = YAML.load_file(ARGV.shift || 'spec/javascripts/support/jasmine.yml')
 gem_dir = File.expand_path('../..', __FILE__)
 
+if !File.file?(File.join(gem_dir, 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner'))
+  puts "The Qt WebKit widget is not compiled! Try re-installing this gem."
+  exit 1
+end
+
 puts "Running Jasmine specs..."
 
 files = [
