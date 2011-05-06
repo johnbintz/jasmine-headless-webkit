@@ -42,6 +42,23 @@ Current supported options:
 
 These options can also be placed into a `.jasmine-headless-webkit` file in your project root.
 
+### CoffeeScript Support
+
+`jasmine-headless-webkit` brings in the `coffee-script-source` gem and allows you to run CoffeeScript
+files without needing compilation. It uses [the `<script type="text/coffeescript">` method](http://jashkenas.github.com/coffee-script/#scripts) of loading
+CoffeeScript. All you need to do is configure your `jasmine.yml` file to look for .coffee files:
+
+    src_files:
+      - app/assets/javascripts/**/*.coffee
+    spec_files:
+      - **/*[sS]pec.coffee
+
+*(This will probably make it difficult to test your code in an official Jasmine server for now. You can try 
+[a technique like this](https://github.com/jbaudanza/rack-asset-compiler/blob/master/examples/jasmine_config.rb) for compiling CoffeeScript when it's requested from the server
+or use [this fork of jasmine-gem](https://github.com/johnbintz/jasmine-gem/tree/coffeescript-inline-support) which
+is thoroughly untested.*
+
+
 ### JavaScript Dialogs
 
 You can call `alert()` and `confirm()` in your code. `alert()` will print the message to the console, and
