@@ -56,7 +56,7 @@ CoffeeScript. All you need to do is configure your `jasmine.yml` file to look fo
 *(This will probably make it difficult to test your code in an official Jasmine server for now. You can try 
 [a technique like this](https://github.com/jbaudanza/rack-asset-compiler/blob/master/examples/jasmine_config.rb) for compiling CoffeeScript when it's requested from the server
 or use [this fork of jasmine-gem](https://github.com/johnbintz/jasmine-gem/tree/coffeescript-inline-support) which
-is thoroughly untested.*
+is thoroughly untested.)*
 
 
 ### JavaScript Dialogs
