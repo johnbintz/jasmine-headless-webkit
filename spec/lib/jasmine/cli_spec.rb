@@ -14,7 +14,7 @@ describe Jasmine::CLI do
           'stylesheets' => [],
           'helpers' => [ 'helpers/**/*.js' ],
           'spec_files' => [ '**/*[sS]pec.js' ],
-          'src_dir' => '',
+          'src_dir' => nil,
           'spec_dir' => 'spec/javascripts'
         }
       end

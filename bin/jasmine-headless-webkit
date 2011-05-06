@@ -7,6 +7,8 @@ require 'yaml'
 require 'fileutils'
 require 'getoptlong'
 
+require 'rubygems'
+require 'jasmine'
 require 'jasmine/cli'
 
 include Jasmine::CLI
@@ -44,9 +46,8 @@ end
 puts "Running Jasmine specs..."
 
 files = [
-  'file://' + File.join(gem_dir, 'jasmine/lib/jasmine.js'),
-  'file://' + File.join(gem_dir, 'jasmine/lib/jasmine-html.js'),
-  'file://' + File.join(gem_dir, 'jasmine/lib/jasmine.css')
+  'file://' + File.join(Jasmine.root, 'lib/jasmine.js'),
+  'file://' + File.join(Jasmine.root, 'lib/jasmine-html.js'),
 ]
 
 files += [ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'helpers', 'spec_dir' ], [ 'spec_files', 'spec_dir' ] ].collect do |searches, root|
@@ -57,10 +58,13 @@ files += [ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'helpers'
     data[searches].collect do |search|
       path = search
       path = File.join(data[root], path) if data[root]
+      p path
       Dir[path]
     end
   end
 end
+
+p files
 
 files = files.flatten.compact.collect { |file|
   case File.extname(file)

@@ -4,7 +4,7 @@ module Jasmine
       'spec_files' => [ '**/*[sS]pec.js' ],
       'helpers' => [ 'helpers/**/*.js' ],
       'spec_dir' => 'spec/javascripts',
-      'src_dir' => '',
+      'src_dir' => nil,
       'stylesheets' => [],
       'src_files' => []
     }

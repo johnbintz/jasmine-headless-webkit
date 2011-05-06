@@ -21,4 +21,5 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency 'jasmine'
+  s.add_dependency 'coffee-script-source'
 end
