@@ -7,11 +7,12 @@ module JasmineMixin
     klass::ALL_HOOKS << [ :run_jasmine, :ran_jasmine ]
   end
 
-  attr_accessor :is_jasmine_running, :jasmine_to_run
+  attr_accessor :is_jasmine_running, :jasmine_to_run, :jasmine_ran_once
 
   def initialize
     super()
     setup_jasmine_project_mappings
+    jasmine_ran_once = false
   end
 
   def get_to_green
@@ -20,6 +21,7 @@ module JasmineMixin
       super if find_files_to_test
 
       reset_jasmine(:yes)
+      self.last_mtime = Time.at(0) if !options[:no_full_after_start] && !jasmine_ran_once
       run_jasmine if find_files_to_test
 
       self.is_jasmine_running = :all
@@ -50,6 +52,8 @@ module JasmineMixin
     end
 
     hook :ran_jasmine
+
+    jasmine_ran_once = true
   end
 
   def all_jasmine_good
