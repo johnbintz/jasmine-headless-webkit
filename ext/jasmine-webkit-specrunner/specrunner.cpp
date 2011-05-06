@@ -112,7 +112,9 @@ void HeadlessSpecRunner::load(const QString &spec)
 void HeadlessSpecRunner::watch(bool ok)
 {
     if (!ok) {
-        std::cerr << "Can't load' " << qPrintable(m_page.mainFrame()->url().toString()) << std::endl;
+        std::cerr << "Can't load " << qPrintable(m_page.mainFrame()->url().toString()) << ", the file may be broken." << std::endl;
+        std::cerr << "Out of curiosity, did your tests try to submit a form and you haven't prevented that?" << std::endl;
+        std::cerr << "Try running your tests in your browser with the Jasmine server and see what happens." << std::endl;
         QApplication::instance()->exit(1);
         return;
     }
