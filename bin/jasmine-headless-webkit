@@ -1,8 +1,15 @@
 #!/usr/bin/env ruby
 
+gem_dir = File.expand_path('../..', __FILE__)
+$:.unshift(File.join(gem_dir, 'lib'))
+
 require 'yaml'
 require 'fileutils'
 require 'getoptlong'
+
+require 'jasmine/cli'
+
+include Jasmine::CLI
 
 opts = GetoptLong.new(
   [ '--colors', '-c', GetoptLong::NO_ARGUMENT ],
@@ -28,7 +35,6 @@ end
 opts.each(&process_options)
 
 data = YAML.load_file(ARGV.shift || 'spec/javascripts/support/jasmine.yml')
-gem_dir = File.expand_path('../..', __FILE__)
 
 if !File.file?(File.join(gem_dir, 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner'))
   puts "The Qt WebKit widget is not compiled! Try re-installing this gem."
@@ -42,12 +48,6 @@ files = [
   'file://' + File.join(gem_dir, 'jasmine/lib/jasmine-html.js'),
   'file://' + File.join(gem_dir, 'jasmine/lib/jasmine.css')
 ]
-
-DEFAULTS = {
-  'spec_files' => [ '**/*[sS]pec.js' ],
-  'helpers' => [ 'helpers/**/*.js' ],
-  'spec_dir' => 'spec/javascripts'
-}
 
 files += [ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'helpers', 'spec_dir' ], [ 'spec_files', 'spec_dir' ] ].collect do |searches, root|
   data[searches] ||= DEFAULTS[searches]
