@@ -10,13 +10,12 @@ require 'getoptlong'
 require 'rubygems'
 
 gem 'jasmine'
-gem 'coffee-script-source'
+gem 'coffee-script'
 
 require 'jasmine'
-require 'coffee_script/source'
+require 'coffee-script'
 
 require 'jasmine/cli'
-
 include Jasmine::CLI
 
 opts = GetoptLong.new(
@@ -53,8 +52,7 @@ puts "Running Jasmine specs..."
 
 files = [
   'file://' + File.join(Jasmine.root, 'lib/jasmine.js'),
-  'file://' + File.join(Jasmine.root, 'lib/jasmine-html.js'),
-  'file://' + CoffeeScript::Source.bundled_path,
+  'file://' + File.join(Jasmine.root, 'lib/jasmine-html.js')
 ]
 
 files += [ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'helpers', 'spec_dir' ], [ 'spec_files', 'spec_dir' ] ].collect do |searches, root|
@@ -75,7 +73,7 @@ files = files.flatten.compact.collect { |file|
   when '.js'
     %{<script type="text/javascript" src="#{file}"></script>}
   when '.coffee'
-    %{<script type="text/coffeescript" src="#{file}"></script>}
+    %{<script type="text/javascript">#{CoffeeScript.compile File.read(file)}</script>}
   when '.css'
     %{<link rel="stylesheet" href="#{file}" type="text/css" />}
   end

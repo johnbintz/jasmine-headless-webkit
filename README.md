@@ -44,9 +44,8 @@ These options can also be placed into a `.jasmine-headless-webkit` file in your 
 
 ### CoffeeScript Support
 
-`jasmine-headless-webkit` brings in the `coffee-script-source` gem and allows you to run CoffeeScript
-files without needing compilation. It uses [the `<script type="text/coffeescript">` method](http://jashkenas.github.com/coffee-script/#scripts) of loading
-CoffeeScript. All you need to do is configure your `jasmine.yml` file to look for .coffee files:
+`jasmine-headless-webkit` brings in the `coffee-script` gem and compiles & injects all CoffeeScript into the
+generated HTML page. All you need to do is configure your `jasmine.yml` file to look for .coffee files:
 
     src_files:
       - app/assets/javascripts/**/*.coffee
