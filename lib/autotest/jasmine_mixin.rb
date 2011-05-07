@@ -86,11 +86,11 @@ module JasmineMixin
     }
 
     add_mapping(%r{public/javascripts/(.*)\.js}) { |_, m|
-      files_matching(%{spec/javascripts/#{m[1]}_spec\..*$})
+      files_matching(%r{spec/javascripts/#{m[1]}_spec\..*$})
     }
 
     add_mapping(%r{app/coffeescripts/(.*)\.coffee}) { |_, m|
-      files_matching(%{spec/javascripts/#{m[1]}_spec\..*$})
+      files_matching(%r{spec/javascripts/#{m[1]}_spec\..*$})
     }
   end
 
