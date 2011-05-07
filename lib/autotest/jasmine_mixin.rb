@@ -31,6 +31,16 @@ module JasmineMixin
     reset_jasmine(:all)
   end
 
+  def rerun_all_tests
+    reset_jasmine(:no)
+    super
+
+    reset_jasmine(:yes)
+    run_jasmine
+
+    reset_jasmine(:all)
+  end
+
   def reset_jasmine(method)
     self.files_to_test = new_hash_of_arrays
     self.is_jasmine_running = method
