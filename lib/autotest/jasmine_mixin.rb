@@ -1,17 +1,18 @@
 module JasmineMixin
   JASMINE_PROGRAM = File.expand_path('../../../bin/jasmine-headless-webkit', __FILE__)
 
-  JAVASCRIPT_EXTENSIONS = %w{js}
+  JAVASCRIPT_EXTENSIONS = %w{js coffee}
 
   def self.included(klass)
     klass::ALL_HOOKS << [ :run_jasmine, :ran_jasmine ]
   end
 
-  attr_accessor :is_jasmine_running, :jasmine_to_run
+  attr_accessor :is_jasmine_running, :jasmine_to_run, :jasmine_ran_once
 
   def initialize
     super()
     setup_jasmine_project_mappings
+    jasmine_ran_once = false
   end
 
   def get_to_green
@@ -20,11 +21,22 @@ module JasmineMixin
       super if find_files_to_test
 
       reset_jasmine(:yes)
+      self.last_mtime = Time.at(0) if !options[:no_full_after_start] && !jasmine_ran_once
       run_jasmine if find_files_to_test
 
       self.is_jasmine_running = :all
       wait_for_changes unless all_jasmine_good
     end until all_jasmine_good
+
+    reset_jasmine(:all)
+  end
+
+  def rerun_all_tests
+    reset_jasmine(:no)
+    super
+
+    reset_jasmine(:yes)
+    run_jasmine
 
     reset_jasmine(:all)
   end
@@ -50,6 +62,8 @@ module JasmineMixin
     end
 
     hook :ran_jasmine
+
+    jasmine_ran_once = true
   end
 
   def all_jasmine_good
@@ -77,12 +91,16 @@ module JasmineMixin
   end
 
   def setup_jasmine_project_mappings
-    add_mapping(%r{spec/javascripts/.*_spec\.js}) { |filename, _|
+    add_mapping(%r{spec/javascripts/.*_spec\.(js|coffee)}) { |filename, _|
       filename
     }
 
     add_mapping(%r{public/javascripts/(.*)\.js}) { |_, m|
-      [ "spec/javascripts/#{m[1]}_spec.js" ]
+      files_matching(%r{spec/javascripts/#{m[1]}_spec\..*$})
+    }
+
+    add_mapping(%r{app/coffeescripts/(.*)\.coffee}) { |_, m|
+      files_matching(%r{spec/javascripts/#{m[1]}_spec\..*$})
     }
   end
 
