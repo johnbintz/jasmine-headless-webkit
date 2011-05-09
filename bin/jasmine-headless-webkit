@@ -22,10 +22,11 @@ include Jasmine::CLI
 
 opts = GetoptLong.new(
   [ '--colors', '-c', GetoptLong::NO_ARGUMENT ],
-  [ '--no-colors', GetoptLong::NO_ARGUMENT ]
+  [ '--no-colors', GetoptLong::NO_ARGUMENT ],
+  [ '--keep', GetoptLong::NO_ARGUMENT ]
 )
 
-options = { :colors => false }
+options = { :colors => false, :remove_html_file => true }
 
 @process_options = lambda { |*args|
   opt = args.flatten.shift
@@ -34,6 +35,8 @@ options = { :colors => false }
     options[:colors] = true
   when '--no-colors', '-nc'
     options[:colors] = false
+  when '--keep', '-k'
+    options[:remove_html_file] = false
   end
 }
 
@@ -111,7 +114,7 @@ HTML
 File.open(target = "specrunner.#{$$}.html", 'w') { |fh| fh.print output }
 system %{#{File.join(gem_dir, 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner')} #{options[:colors] ? '-c' : ''} #{target}}
 status = $?.exitstatus
-FileUtils.rm_f target
+FileUtils.rm_f target if options[:remove_html_file] || (status == 0)
 
 exit status
 

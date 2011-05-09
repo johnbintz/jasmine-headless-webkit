@@ -39,6 +39,7 @@ Current supported options:
 
 * `-c`/`--colors` enables color output
 * `--no-colors` disables color output
+* `--keep` preserves the temporary HTML document if an error occurs in testing
 
 These options can also be placed into a `.jasmine-headless-webkit` file in your project root.
 
