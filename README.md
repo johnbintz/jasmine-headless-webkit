@@ -57,6 +57,7 @@ generated HTML page. All you need to do is configure your `jasmine.yml` file to 
 or use [this fork of jasmine-gem](https://github.com/johnbintz/jasmine-gem/tree/coffeescript-inline-support) which
 is thoroughly untested.)*
 
+You will get line numbers on compile errors, but not logic errors. This is a CoffeeScript thing, and they're working on it. :)
 
 ### JavaScript Dialogs
 
