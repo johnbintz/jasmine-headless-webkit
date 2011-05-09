@@ -27,8 +27,8 @@ opts = GetoptLong.new(
 
 options = { :colors => false }
 
-process_options = lambda { |*args|
-  opt = args.shift
+@process_options = lambda { |*args|
+  opt = args.flatten.shift
   case opt
   when '--colors', '-c'
     options[:colors] = true
@@ -37,11 +37,9 @@ process_options = lambda { |*args|
   end
 }
 
-if File.file?('.jasmine-headless-webkit')
-  File.readlines('.jasmine-headless-webkit').collect { |line| line.strip.split(' ', 2) }.flatten(1).each(&process_options)
-end
+read_defaults_file if defaults_file?
 
-opts.each(&process_options)
+opts.each(&@process_options)
 
 data = YAML.load_file(ARGV.shift || 'spec/javascripts/support/jasmine.yml')
 

@@ -5,4 +5,4 @@ gemspec
 
 gem 'rspec'
 gem 'autotest'
-
+gem 'fakefs', :require => nil
