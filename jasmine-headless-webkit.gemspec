@@ -22,4 +22,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'jasmine'
   s.add_dependency 'coffee-script'
+  s.add_dependency 'rainbow'
 end

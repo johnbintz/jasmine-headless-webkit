@@ -9,11 +9,13 @@ require 'getoptlong'
 
 require 'rubygems'
 
+gem 'rainbow'
 gem 'jasmine'
 gem 'coffee-script'
 
 require 'jasmine'
 require 'coffee-script'
+require 'rainbow'
 
 require 'jasmine/cli'
 include Jasmine::CLI
@@ -73,7 +75,14 @@ files = files.flatten.compact.collect { |file|
   when '.js'
     %{<script type="text/javascript" src="#{file}"></script>}
   when '.coffee'
-    %{<script type="text/javascript">#{CoffeeScript.compile File.read(file)}</script>}
+    begin
+      %{<script type="text/javascript">#{CoffeeScript.compile(fh = File.open(file))}</script>}
+    rescue CoffeeScript::CompilationError => e
+      puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), file.color(:yellow), e.message.color(:white) ]
+      exit 1
+    ensure
+      fh.close
+    end
   when '.css'
     %{<link rel="stylesheet" href="#{file}" type="text/css" />}
   end
