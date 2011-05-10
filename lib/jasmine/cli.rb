@@ -9,6 +9,7 @@ module Jasmine
       'src_files' => []
     }
 
+    RUNNER = 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner'
     DEFAULTS_FILE = '.jasmine-headless-webkit'
 
     def process_jasmine_config(overrides = {})
@@ -21,6 +22,29 @@ module Jasmine
 
     def defaults_file?
       File.file?(DEFAULTS_FILE)
+    end
+
+    def jasmine_html_template(files)
+      <<-HTML
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Jasmine Test Runner</title>
+  <script type="text/javascript">
+    window.console = { log: function(data) { debug.log(JSON.stringify(data)); } };
+  </script>
+      #{files.join("\n")}
+</head>
+<body>
+
+<script type="text/javascript">
+  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+  jasmine.getEnv().execute();
+</script>
+
+</body>
+</html>
+      HTML
     end
   end
 end

@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'rubygems'
+
 gem_dir = File.expand_path('../..', __FILE__)
 $:.unshift(File.join(gem_dir, 'lib'))
 
@@ -7,11 +9,9 @@ require 'yaml'
 require 'fileutils'
 require 'getoptlong'
 
-require 'rubygems'
-
-gem 'rainbow'
 gem 'jasmine'
 gem 'coffee-script'
+gem 'rainbow'
 
 require 'jasmine'
 require 'coffee-script'
@@ -41,22 +41,18 @@ options = { :colors => false, :remove_html_file => true }
 }
 
 read_defaults_file if defaults_file?
-
 opts.each(&@process_options)
 
 data = YAML.load_file(ARGV.shift || 'spec/javascripts/support/jasmine.yml')
 
-if !File.file?(File.join(gem_dir, 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner'))
+if !File.file?(File.join(gem_dir, RUNNER))
   puts "The Qt WebKit widget is not compiled! Try re-installing this gem."
   exit 1
 end
 
 puts "Running Jasmine specs..."
 
-files = [
-  'file://' + File.join(Jasmine.root, 'lib/jasmine.js'),
-  'file://' + File.join(Jasmine.root, 'lib/jasmine-html.js')
-]
+files = %w{jasmine jasmine-html}.collect { |name| File.join(Jasmine.root, "lib/#{name}.js") }
 
 files += [ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'helpers', 'spec_dir' ], [ 'spec_files', 'spec_dir' ] ].collect do |searches, root|
   data[searches] ||= DEFAULTS[searches]
@@ -89,30 +85,10 @@ files = files.flatten.compact.collect { |file|
   end
 }
 
-output = <<-HTML
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-  "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-  <title>Jasmine Test Runner</title>
-  <script type="text/javascript">
-window.console = { log: function(data) { debug.log(JSON.stringify(data)); } };
-  </script>
-  #{files.join("\n")}
-</head>
-<body>
-
-<script type="text/javascript">
-  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
-  jasmine.getEnv().execute();
-</script>
-
-</body>
-</html>
-HTML
+output = jasmine_html_template(files)
 
 File.open(target = "specrunner.#{$$}.html", 'w') { |fh| fh.print output }
-system %{#{File.join(gem_dir, 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner')} #{options[:colors] ? '-c' : ''} #{target}}
+system %{#{File.join(gem_dir, RUNNER)} #{options[:colors] ? '-c' : ''} #{target}}
 status = $?.exitstatus
 FileUtils.rm_f target if options[:remove_html_file] || (status == 0)
 
