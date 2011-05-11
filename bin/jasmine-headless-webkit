@@ -51,6 +51,8 @@ options = {
 read_defaults_file if defaults_file?
 opts.each(&@process_options)
 
+@spec_filter = ARGV.dup
+
 data = YAML.load_file(options[:jasmine_config])
 
 if !File.file?(File.join(gem_dir, RUNNER))
@@ -70,7 +72,11 @@ files += [ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'helpers'
     data[searches].collect do |search|
       path = search
       path = File.join(data[root], path) if data[root]
-      Dir[path]
+      files = Dir[path]
+      if searches == 'spec_files'
+        files = files.find_all { |file| use_spec?(file) }
+      end
+      files
     end
   end
 end

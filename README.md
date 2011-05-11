@@ -33,7 +33,7 @@ Let me know via a message or in the Issues section if it works on your setup and
 
 ## Usage
 
-    jasmine-headless-webkit [options]
+    jasmine-headless-webkit [options] [list of spec files to run]
 
 Current supported options:
 
@@ -41,6 +41,8 @@ Current supported options:
 * `--no-colors` disables color output
 * `--keep` preserves the temporary HTML document if an error occurs in testing
 * `-j`/`--jasmine-config` sets the `jasmine.yml` file to load *(defaults to `spec/javascripts/support/jasmine.yml`)*
+
+If provided, only the requested spec files will be executed. Otherwise, all matching specs will be run.
 
 These options can also be placed into a `.jasmine-headless-webkit` file in your project root.
 

@@ -24,6 +24,10 @@ module Jasmine
       File.file?(DEFAULTS_FILE)
     end
 
+    def use_spec?(file)
+      @spec_filter.empty? || @spec_filter.include?(file)
+    end
+
     def jasmine_html_template(files)
       <<-HTML
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
