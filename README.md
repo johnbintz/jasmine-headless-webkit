@@ -33,13 +33,14 @@ Let me know via a message or in the Issues section if it works on your setup and
 
 ## Usage
 
-    jasmine-headless-webkit [options] [path to jasmine.yml, defaults to spec/javascripts/support/jasmine.yml]
+    jasmine-headless-webkit [options]
 
 Current supported options:
 
 * `-c`/`--colors` enables color output
 * `--no-colors` disables color output
 * `--keep` preserves the temporary HTML document if an error occurs in testing
+* `-j`/`--jasmine-config` sets the `jasmine.yml` file to load *(defaults to `spec/javascripts/support/jasmine.yml`)*
 
 These options can also be placed into a `.jasmine-headless-webkit` file in your project root.
 

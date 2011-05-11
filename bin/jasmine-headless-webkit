@@ -23,13 +23,19 @@ include Jasmine::CLI
 opts = GetoptLong.new(
   [ '--colors', '-c', GetoptLong::NO_ARGUMENT ],
   [ '--no-colors', GetoptLong::NO_ARGUMENT ],
-  [ '--keep', GetoptLong::NO_ARGUMENT ]
+  [ '--keep', GetoptLong::NO_ARGUMENT ],
+  [ '--jasmine-config', '-j', GetoptLong::REQUIRED_ARGUMENT ]
 )
 
-options = { :colors => false, :remove_html_file => true }
+options = {
+  :colors => false, 
+  :remove_html_file => true,
+  :jasmine_config => 'spec/javascripts/support/jasmine.yml'
+}
 
 @process_options = lambda { |*args|
-  opt = args.flatten.shift
+  opt, arg = args.flatten[0..1]
+
   case opt
   when '--colors', '-c'
     options[:colors] = true
@@ -37,13 +43,15 @@ options = { :colors => false, :remove_html_file => true }
     options[:colors] = false
   when '--keep', '-k'
     options[:remove_html_file] = false
+  when '--jasmine-config', '-j'
+    options[:jasmine_config] = arg
   end
 }
 
 read_defaults_file if defaults_file?
 opts.each(&@process_options)
 
-data = YAML.load_file(ARGV.shift || 'spec/javascripts/support/jasmine.yml')
+data = YAML.load_file(options[:jasmine_config])
 
 if !File.file?(File.join(gem_dir, RUNNER))
   puts "The Qt WebKit widget is not compiled! Try re-installing this gem."
