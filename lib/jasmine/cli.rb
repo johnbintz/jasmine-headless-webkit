@@ -42,7 +42,6 @@ module Jasmine
 <body>
 
 <script type="text/javascript">
-  //jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
   jasmine.getEnv().addReporter(new jasmine.HeadlessReporter());
   jasmine.getEnv().execute();
 </script>
