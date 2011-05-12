@@ -63,6 +63,7 @@ end
 puts "Running Jasmine specs..."
 
 files = %w{jasmine jasmine-html}.collect { |name| File.join(Jasmine.root, "lib/#{name}.js") }
+files << File.join(gem_dir, 'jasmine/jasmine.headless-reporter.js')
 
 files += [ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'helpers', 'spec_dir' ], [ 'spec_files', 'spec_dir' ] ].collect do |searches, root|
   data[searches] ||= DEFAULTS[searches]

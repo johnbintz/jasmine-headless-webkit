@@ -66,7 +66,11 @@ public:
     void setColors(bool colors);
 public slots:
     void log(const QString &msg);
-    void specLog(int indent, const QString &msg, const QString &clazz);
+    void specPassed();
+    void specFailed();
+    void printName(const QString &name);
+    void printResult(const QString &result);
+    void finishSuite(const QString &duration, const QString &total, const QString& failed);
 private slots:
     void watch(bool ok);
     void errorLog(const QString &msg, int lineNumber, const QString &sourceID);
@@ -81,6 +85,8 @@ private:
     bool hasErrors;
     bool usedConsole;
     bool showColors;
+    bool isFinished;
+    bool didFail;
     
     void red();
     void green();
@@ -94,6 +100,8 @@ HeadlessSpecRunner::HeadlessSpecRunner()
     , hasErrors(false)
     , usedConsole(false)
     , showColors(false)
+    , isFinished(false)
+    , didFail(false)
 {
     m_page.settings()->enablePersistentStorage();
     connect(&m_page, SIGNAL(loadFinished(bool)), this, SLOT(watch(bool)));
@@ -104,7 +112,7 @@ HeadlessSpecRunner::HeadlessSpecRunner()
 void HeadlessSpecRunner::load(const QString &spec)
 {
     m_ticker.stop();
-    m_page.mainFrame()->addToJavaScriptWindowObject("debug", this);
+    m_page.mainFrame()->addToJavaScriptWindowObject("JHW", this);
     m_page.mainFrame()->load(spec);
     m_page.setPreferredContentsSize(QSize(1024, 600));
 }
@@ -152,6 +160,23 @@ void HeadlessSpecRunner::clear()
   if (showColors) std::cout << "\033[m";
 }
 
+void HeadlessSpecRunner::specPassed()
+{
+  green();
+  std::cout << '.';
+  clear();
+  fflush(stdout);
+}
+
+void HeadlessSpecRunner::specFailed()
+{
+  didFail = true;
+  red();
+  std::cout << 'F';
+  clear();
+  fflush(stdout);
+}
+
 void HeadlessSpecRunner::errorLog(const QString &msg, int lineNumber, const QString &sourceID)
 {
   red();
@@ -183,33 +208,37 @@ void HeadlessSpecRunner::log(const QString &msg)
   std::cout << std::endl;
 }
 
-void HeadlessSpecRunner::specLog(int indent, const QString &msg, const QString &clazz)
+void HeadlessSpecRunner::printName(const QString &name)
 {
-    for (int i = 0; i < indent; ++i)
-        std::cout << "  ";
-    if ( clazz.endsWith("fail") ) {
-        red();
-    } else {
-        yellow();
-    }
-    std::cout << qPrintable(msg);
-    clear();
-    std::cout << std::endl;
+  std::cout << std::endl << std::endl;
+  red();
+  std::cout << qPrintable(name) << std::endl;
+  clear();
 }
 
-#define DUMP_MSG "(function(n, i) { \
-  if (n.toString() === '[object NodeList]') { \
-    for (var c = 0; c < n.length; ++c) arguments.callee(n[c], i); return \
-  }\
-  if (n.className === 'description' || n.className == 'resultMessage fail') {\
-    debug.specLog(i, n.textContent, n.className);\
-  }\
-  var e = n.firstElementChild;\
-  while (e) {\
-    arguments.callee(e, i + 1); e = e.nextElementSibling; \
-  }\
-  n.className = '';\
-})(document.getElementsByClassName('suite failed'), 0);"
+void HeadlessSpecRunner::printResult(const QString &result)
+{
+  red();
+  std::cout << "  " << qPrintable(result) << std::endl;
+  clear();
+}
+
+void HeadlessSpecRunner::finishSuite(const QString &duration, const QString &total, const QString& failed)
+{
+  std::cout << std::endl;
+  if (didFail) {
+    red();
+    std::cout << "FAIL: ";
+  } else {
+    green();
+    std::cout << "PASS: ";
+  }
+
+  std::cout << qPrintable(total) << " tests, " << qPrintable(failed) << " failures, " << qPrintable(duration) << " secs." << std::endl;
+  clear();
+
+  isFinished = true;
+}
 
 void HeadlessSpecRunner::timerEvent(QTimerEvent *event)
 {
@@ -222,28 +251,17 @@ void HeadlessSpecRunner::timerEvent(QTimerEvent *event)
         QApplication::instance()->exit(1);
 
     if (!hasErrors) {
-      if (!hasElement(".jasmine_reporter") && !hasElement(".runner.running"))
-          return;
+      if (isFinished) {
+        int exitCode = 0;
+        if (didFail) {
+          exitCode = 1;
+        } else {
+          if (usedConsole) {
+            exitCode = 2;
+          }
+        }
 
-      if (hasElement(".runner.passed")) {
-          QWebElement desc = m_page.mainFrame()->findFirstElement(".description");
-          green();
-          std::cout << "PASS: " << qPrintable(desc.toPlainText());
-          clear();
-          std::cout << std::endl;
-          QApplication::instance()->exit(usedConsole ? 2 : 0);
-          return;
-      }
-
-      if (hasElement(".runner.failed")) {
-          QWebElement desc = m_page.mainFrame()->findFirstElement(".description");
-          red();
-          std::cout << "FAIL: " << qPrintable(desc.toPlainText());
-          clear();
-          std::cout << std::endl;
-          m_page.mainFrame()->evaluateJavaScript(DUMP_MSG);
-          QApplication::instance()->exit(1);
-          return;
+        QApplication::instance()->exit(exitCode);
       }
 
       if (m_runs > 30) {

@@ -35,14 +35,15 @@ module Jasmine
 <head>
   <title>Jasmine Test Runner</title>
   <script type="text/javascript">
-    window.console = { log: function(data) { debug.log(JSON.stringify(data)); } };
+    window.console = { log: function(data) { JHW.log(JSON.stringify(data)); } };
   </script>
-      #{files.join("\n")}
+  #{files.join("\n")}
 </head>
 <body>
 
 <script type="text/javascript">
-  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+  //jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+  jasmine.getEnv().addReporter(new jasmine.HeadlessReporter());
   jasmine.getEnv().execute();
 </script>
 
