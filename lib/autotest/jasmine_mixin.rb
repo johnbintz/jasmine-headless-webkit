@@ -87,7 +87,8 @@ module JasmineMixin
   end
 
   def make_jasmine_cmd
-    "#{JASMINE_PROGRAM}"
+    self.files_to_test.empty? ? '' :
+      %{#{JASMINE_PROGRAM} #{self.files_to_test.keys.collect { |key| %{'#{key}'} }.join(' ')}}.tap { |o| p o }
   end
 
   def setup_jasmine_project_mappings
