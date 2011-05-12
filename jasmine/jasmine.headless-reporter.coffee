@@ -5,6 +5,8 @@ class HeadlessReporterResult
   constructor: (name) ->
     @name = name
     @results = []
+  addResult: (message) ->
+    @results.push(message)
   print: ->
     JHW.printName(@name)
     for result in @results
@@ -15,17 +17,16 @@ class jasmine.HeadlessReporter
   constructor: ->
     @results = []
     @failedCount = 0
-    @totalDuration = 0.0
     @length = 0
   reportRunnerResults: (runner) ->
     for result in @results
       do (result) =>
         result.print()
 
-    JHW.finishSuite(@totalDuration / 1000.0, @length, @failedCount)
+    JHW.finishSuite((new Date() - @startTime) / 1000.0, @length, @failedCount)
   reportRunnerStarting: (runner) ->
+    @startTime = new Date()
   reportSpecResults: (spec) ->
-    @totalDuration += (new Date() - spec.startTime)
     if spec.results().passed()
       JHW.specPassed()
     else
@@ -35,9 +36,8 @@ class jasmine.HeadlessReporter
         do (result) =>
           if result.type == 'expect' and !result.passed_
             @failedCount += 1
-            failureResult.results.push(result.message)
+            failureResult.addResult(result.message)
       @results.push(failureResult)
   reportSpecStarting: (spec) ->
-    spec.startTime = new Date()
   reportSuiteResults: (suite) ->
     @length += suite.specs().length

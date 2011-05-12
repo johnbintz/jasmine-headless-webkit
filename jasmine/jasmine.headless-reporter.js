@@ -9,6 +9,9 @@
       this.name = name;
       this.results = [];
     }
+    HeadlessReporterResult.prototype.addResult = function(message) {
+      return this.results.push(message);
+    };
     HeadlessReporterResult.prototype.print = function() {
       var result, _i, _len, _ref, _results;
       JHW.printName(this.name);
@@ -28,7 +31,6 @@
     function HeadlessReporter() {
       this.results = [];
       this.failedCount = 0;
-      this.totalDuration = 0.0;
       this.length = 0;
     }
     HeadlessReporter.prototype.reportRunnerResults = function(runner) {
@@ -41,12 +43,13 @@
         result = _ref[_i];
         _fn(result);
       }
-      return JHW.finishSuite(this.totalDuration / 1000.0, this.length, this.failedCount);
+      return JHW.finishSuite((new Date() - this.startTime) / 1000.0, this.length, this.failedCount);
     };
-    HeadlessReporter.prototype.reportRunnerStarting = function(runner) {};
+    HeadlessReporter.prototype.reportRunnerStarting = function(runner) {
+      return this.startTime = new Date();
+    };
     HeadlessReporter.prototype.reportSpecResults = function(spec) {
       var failureResult, result, _fn, _i, _len, _ref;
-      this.totalDuration += new Date() - spec.startTime;
       if (spec.results().passed()) {
         return JHW.specPassed();
       } else {
@@ -56,7 +59,7 @@
         _fn = __bind(function(result) {
           if (result.type === 'expect' && !result.passed_) {
             this.failedCount += 1;
-            return failureResult.results.push(result.message);
+            return failureResult.addResult(result.message);
           }
         }, this);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -66,9 +69,7 @@
         return this.results.push(failureResult);
       }
     };
-    HeadlessReporter.prototype.reportSpecStarting = function(spec) {
-      return spec.startTime = new Date();
-    };
+    HeadlessReporter.prototype.reportSpecStarting = function(spec) {};
     HeadlessReporter.prototype.reportSuiteResults = function(suite) {
       return this.length += suite.specs().length;
     };
