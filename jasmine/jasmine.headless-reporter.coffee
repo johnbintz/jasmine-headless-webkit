@@ -22,9 +22,10 @@ class jasmine.HeadlessReporter
       do (result) =>
         result.print()
 
-    JHW.finishSuite(@totalDuration, @length, @failedCount)
+    JHW.finishSuite(@totalDuration / 1000.0, @length, @failedCount)
   reportRunnerStarting: (runner) ->
   reportSpecResults: (spec) ->
+    @totalDuration += (new Date() - spec.startTime)
     if spec.results().passed()
       JHW.specPassed()
     else
@@ -37,9 +38,6 @@ class jasmine.HeadlessReporter
             failureResult.results.push(result.message)
       @results.push(failureResult)
   reportSpecStarting: (spec) ->
-    # something here
+    spec.startTime = new Date()
   reportSuiteResults: (suite) ->
-    suite.startTime ?= new Date()
-    @totalDuration += (new Date() - suite.startTime) / 1000.0;
-
     @length += suite.specs().length

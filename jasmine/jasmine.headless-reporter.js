@@ -41,11 +41,12 @@
         result = _ref[_i];
         _fn(result);
       }
-      return JHW.finishSuite(this.totalDuration, this.length, this.failedCount);
+      return JHW.finishSuite(this.totalDuration / 1000.0, this.length, this.failedCount);
     };
     HeadlessReporter.prototype.reportRunnerStarting = function(runner) {};
     HeadlessReporter.prototype.reportSpecResults = function(spec) {
       var failureResult, result, _fn, _i, _len, _ref;
+      this.totalDuration += new Date() - spec.startTime;
       if (spec.results().passed()) {
         return JHW.specPassed();
       } else {
@@ -65,15 +66,10 @@
         return this.results.push(failureResult);
       }
     };
-    HeadlessReporter.prototype.reportSpecStarting = function(spec) {};
+    HeadlessReporter.prototype.reportSpecStarting = function(spec) {
+      return spec.startTime = new Date();
+    };
     HeadlessReporter.prototype.reportSuiteResults = function(suite) {
-      var _ref;
-            if ((_ref = suite.startTime) != null) {
-        _ref;
-      } else {
-        suite.startTime = new Date();
-      };
-      this.totalDuration += (new Date() - suite.startTime) / 1000.0;
       return this.length += suite.specs().length;
     };
     return HeadlessReporter;

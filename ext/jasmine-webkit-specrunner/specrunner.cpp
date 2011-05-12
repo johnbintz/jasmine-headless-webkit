@@ -234,8 +234,9 @@ void HeadlessSpecRunner::finishSuite(const QString &duration, const QString &tot
     std::cout << "PASS: ";
   }
 
-  std::cout << qPrintable(total) << " tests, " << qPrintable(failed) << " failures, " << qPrintable(duration) << " secs." << std::endl;
+  std::cout << qPrintable(total) << " tests, " << qPrintable(failed) << " failures, " << qPrintable(duration) << " secs.";
   clear();
+  std::cout << std::endl;
 
   isFinished = true;
 }
