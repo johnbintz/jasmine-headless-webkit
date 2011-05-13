@@ -35,7 +35,7 @@ module Jasmine
 <head>
   <title>Jasmine Test Runner</title>
   <script type="text/javascript">
-    window.console = { log: function(data) { JHW.log(JSON.stringify(data)); } };
+    window.console = { log: function(data) { JHW.log(JSON.stringify(data)) } }
   </script>
   #{files.join("\n")}
 </head>
