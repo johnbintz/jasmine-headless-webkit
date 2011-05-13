@@ -87,6 +87,7 @@ private:
     bool showColors;
     bool isFinished;
     bool didFail;
+    bool consoleNotUsedThisRun;
     
     void red();
     void green();
@@ -102,6 +103,7 @@ HeadlessSpecRunner::HeadlessSpecRunner()
     , showColors(false)
     , isFinished(false)
     , didFail(false)
+    , consoleNotUsedThisRun(false)
 {
     m_page.settings()->enablePersistentStorage();
     connect(&m_page, SIGNAL(loadFinished(bool)), this, SLOT(watch(bool)));
@@ -162,6 +164,7 @@ void HeadlessSpecRunner::clear()
 
 void HeadlessSpecRunner::specPassed()
 {
+  consoleNotUsedThisRun = true;
   green();
   std::cout << '.';
   clear();
@@ -170,6 +173,7 @@ void HeadlessSpecRunner::specPassed()
 
 void HeadlessSpecRunner::specFailed()
 {
+  consoleNotUsedThisRun = true;
   didFail = true;
   red();
   std::cout << 'F';
@@ -202,6 +206,10 @@ void HeadlessSpecRunner::log(const QString &msg)
 {
   usedConsole = true;
   green();
+  if (consoleNotUsedThisRun) {
+    std::cout << std::endl;
+    consoleNotUsedThisRun = false;
+  }
   std::cout << "[console] ";
   clear();
   std::cout << qPrintable(msg);
