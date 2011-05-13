@@ -9,10 +9,6 @@ require 'yaml'
 require 'fileutils'
 require 'getoptlong'
 
-gem 'jasmine'
-gem 'coffee-script'
-gem 'rainbow'
-
 require 'jasmine'
 require 'coffee-script'
 require 'rainbow'
