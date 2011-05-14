@@ -86,7 +86,7 @@ files = files.flatten.compact.collect { |file|
     begin
       %{<script type="text/javascript">#{CoffeeScript.compile(fh = File.open(file))}</script>}
     rescue CoffeeScript::CompilationError => e
-      puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), file.color(:yellow), e.message.color(:white) ]
+      puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), file.color(:yellow), e.message.to_s.color(:white) ]
       exit 1
     ensure
       fh.close
