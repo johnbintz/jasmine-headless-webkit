@@ -27,12 +27,13 @@ class jasmine.HeadlessReporter
   reportRunnerStarting: (runner) ->
     @startTime = new Date()
   reportSpecResults: (spec) ->
-    if spec.results().passed()
+    results = spec.results()
+    if results.passed()
       JHW.specPassed()
     else
       JHW.specFailed()
       failureResult = new HeadlessReporterResult(spec.getFullName())
-      for result in spec.results().getItems()
+      for result in results.getItems()
         do (result) =>
           if result.type == 'expect' and !result.passed_
             @failedCount += 1

@@ -49,13 +49,14 @@
       return this.startTime = new Date();
     };
     HeadlessReporter.prototype.reportSpecResults = function(spec) {
-      var failureResult, result, _fn, _i, _len, _ref;
-      if (spec.results().passed()) {
+      var failureResult, result, results, _fn, _i, _len, _ref;
+      results = spec.results();
+      if (results.passed()) {
         return JHW.specPassed();
       } else {
         JHW.specFailed();
         failureResult = new HeadlessReporterResult(spec.getFullName());
-        _ref = spec.results().getItems();
+        _ref = results.getItems();
         _fn = __bind(function(result) {
           if (result.type === 'expect' && !result.passed_) {
             this.failedCount += 1;
