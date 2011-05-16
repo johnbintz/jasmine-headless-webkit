@@ -16,6 +16,11 @@ require 'rainbow'
 require 'jasmine/cli'
 include Jasmine::CLI
 
+if !File.file?(File.join(gem_dir, RUNNER))
+  puts "The Qt WebKit widget is not compiled! Try re-installing this gem."
+  exit 1
+end
+
 opts = GetoptLong.new(
   [ '--colors', '-c', GetoptLong::NO_ARGUMENT ],
   [ '--no-colors', GetoptLong::NO_ARGUMENT ],
@@ -46,39 +51,32 @@ options = {
 
 read_defaults_file if defaults_file?
 opts.each(&@process_options)
-
 @spec_filter = ARGV.dup
 
 data = YAML.load_file(options[:jasmine_config])
-
-if !File.file?(File.join(gem_dir, RUNNER))
-  puts "The Qt WebKit widget is not compiled! Try re-installing this gem."
-  exit 1
-end
 
 puts "Running Jasmine specs..."
 
 files = %w{jasmine jasmine-html}.collect { |name| File.join(Jasmine.root, "lib/#{name}.js") }
 files << File.join(gem_dir, 'jasmine/jasmine.headless-reporter.js')
 
-files += [ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'helpers', 'spec_dir' ], [ 'spec_files', 'spec_dir' ] ].collect do |searches, root|
-  data[searches] ||= DEFAULTS[searches]
-  data[root] ||= DEFAULTS[root]
+[ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'helpers', 'spec_dir' ], [ 'spec_files', 'spec_dir' ] ].each do |searches, root|
+  if data[searches] ||= DEFAULTS[searches]
+    data[root] ||= DEFAULTS[root]
 
-  if data[searches]
     data[searches].collect do |search|
       path = search
       path = File.join(data[root], path) if data[root]
-      files = Dir[path]
+      found_files = Dir[path]
       if searches == 'spec_files'
-        files = files.find_all { |file| use_spec?(file) }
+        found_files = found_files.find_all { |file| use_spec?(file) }
       end
-      files
+      files += found_files
     end
   end
 end
 
-files = files.flatten.compact.collect { |file|
+files = files.collect { |file|
   case File.extname(file)
   when '.js'
     %{<script type="text/javascript" src="#{file}"></script>}
