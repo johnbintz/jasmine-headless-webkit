@@ -49,7 +49,7 @@ options = {
   end
 }
 
-read_defaults_file if defaults_file?
+read_defaults_files!
 opts.each(&@process_options)
 @spec_filter = ARGV.dup
 

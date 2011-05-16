@@ -11,17 +11,18 @@ module Jasmine
 
     RUNNER = 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner'
     DEFAULTS_FILE = '.jasmine-headless-webkit'
+    GLOBAL_DEFAULTS_FILE = File.expand_path("~/#{DEFAULTS_FILE}")
 
     def process_jasmine_config(overrides = {})
       DEFAULTS.merge(overrides)
     end
 
-    def read_defaults_file
-      File.readlines(DEFAULTS_FILE).collect { |line| line.strip.split(' ', 2) }.each(&@process_options)
-    end
-
-    def defaults_file?
-      File.file?(DEFAULTS_FILE)
+    def read_defaults_files!
+      [ GLOBAL_DEFAULTS_FILE, DEFAULTS_FILE ].each do |file|
+        if File.file?(file)
+          File.readlines(file).collect { |line| line.strip.split(' ', 2) }.each(&@process_options)
+        end
+      end
     end
 
     def use_spec?(file)
@@ -49,6 +50,11 @@ module Jasmine
 </body>
 </html>
       HTML
+    end
+
+    private
+    def read_config_file(file)
+
     end
   end
 end

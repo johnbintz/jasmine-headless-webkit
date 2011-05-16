@@ -41,22 +41,21 @@ describe Jasmine::CLI do
   end
 
   describe '#read_defaults_file' do
-    let(:test_data) { %w{first second} }
+    let(:global_test_data) { %w{first second} }
+    let(:test_data) { %w{third fourth} }
 
     before do
+      File.open(GLOBAL_DEFAULTS_FILE, 'w') { |fh| fh.puts global_test_data.join(' ') }
       File.open(DEFAULTS_FILE, 'w') { |fh| fh.puts test_data.join(' ') }
     end
 
     it "should read the options" do
-      found = false
+      all_data = []
+      @process_options = lambda { |*args| all_data << args.flatten }
 
-      @process_options = lambda { |*args|
-        found = true if args.flatten == test_data
-      }
+      read_defaults_files!
 
-      read_defaults_file
-
-      found.should be_true
+      all_data.should == [ global_test_data, test_data ]
     end
   end
 

@@ -44,7 +44,8 @@ Current supported options:
 
 If provided, only the requested spec files will be executed. Otherwise, all matching specs will be run.
 
-These options can also be placed into a `.jasmine-headless-webkit` file in your project root.
+These options can also be placed into a `.jasmine-headless-webkit` file in your project root, or into a
+`.jasmine-headless-webkit` file in your home directory. Project level options override global options.
 
 ### CoffeeScript Support
 
