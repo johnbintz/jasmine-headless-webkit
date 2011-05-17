@@ -72,9 +72,9 @@ src_files:
   - public/javascripts/models/**/*.js
   - public/javascripts/collections/**/*.js
   - public/javascripts/views/**/*.js
-  - public/javascripts/models/**/*.coffee
-  - public/javascripts/collections/**/*.coffee
-  - public/javascripts/views/**/*.coffee
+  - app/coffeescripts/models/**/*.coffee
+  - app/coffeescripts/collections/**/*.coffee
+  - app/coffeescripts/views/**/*.coffee
 helpers:
   - helpers/**/*.{js,coffee}
 spec_files:
