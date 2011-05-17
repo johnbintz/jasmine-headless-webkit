@@ -3,7 +3,7 @@
 Run your specs at sonic boom speed! No pesky reload button or page rendering slowdowns!
 
 http://johnbintz.github.com/jasmine-headless-webkit/ has the most up-to-date information on using
-this project. You can see the source of that site on the gh-pages fork.
+this project. You can see the source of that site on the gh-pages branch.
 
 ## License
 
