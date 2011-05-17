@@ -89,26 +89,26 @@ body #container #inner-container .yaml .p-Indicator {
   color: #78a39d;
 }
 /* line 81, ../sass/screen.scss */
-body #container #inner-container .js .nx, body #container #inner-container .ruby .nx {
+body #container #inner-container .js .nx, body #container #inner-container .ruby .nx, body #container #inner-container .coffeescript .nx {
   color: #78a39d;
 }
 /* line 85, ../sass/screen.scss */
-body #container #inner-container .js .s1, body #container #inner-container .ruby .s1 {
+body #container #inner-container .js .s1, body #container #inner-container .js .ss, body #container #inner-container .ruby .s1, body #container #inner-container .ruby .ss, body #container #inner-container .coffeescript .s1, body #container #inner-container .coffeescript .ss {
   color: #e68917;
 }
 /* line 89, ../sass/screen.scss */
-body #container #inner-container .js .nb, body #container #inner-container .ruby .nb {
+body #container #inner-container .js .nb, body #container #inner-container .ruby .nb, body #container #inner-container .coffeescript .nb {
   color: #abb592;
 }
 /* line 93, ../sass/screen.scss */
-body #container #inner-container .js .kc, body #container #inner-container .js .kp, body #container #inner-container .ruby .kc, body #container #inner-container .ruby .kp {
+body #container #inner-container .js .kc, body #container #inner-container .js .kp, body #container #inner-container .ruby .kc, body #container #inner-container .ruby .kp, body #container #inner-container .coffeescript .kc, body #container #inner-container .coffeescript .kp {
   color: #a7b585;
 }
 /* line 97, ../sass/screen.scss */
-body #container #inner-container .js .no, body #container #inner-container .ruby .no {
+body #container #inner-container .js .no, body #container #inner-container .ruby .no, body #container #inner-container .coffeescript .no {
   color: #de1629;
 }
 /* line 101, ../sass/screen.scss */
-body #container #inner-container .js .n, body #container #inner-container .ruby .n {
+body #container #inner-container .js .n, body #container #inner-container .ruby .n, body #container #inner-container .coffeescript .n {
   color: #cef56b;
 }

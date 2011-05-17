@@ -93,6 +93,38 @@ does not support out of the box. Once there's official support, you'll be able t
 and the Jasmine test server when you're using CoffeeScript. CoffeeScript files are compiled and injected into the generated HTML
 files.
 
+Never done Jasmine in CoffeeScript? It looks like this:
+
+{% highlight coffeescript %}
+describe 'Component', ->
+  describe 'StorylineNode', ->
+    model = null
+
+    beforeEach ->
+      model = new ComponentStorylineNode({id: 1})
+
+    it 'should not be new', ->
+      expect(model.isNew()).toEqual(false)
+{% endhighlight %}
+
+...and it turns into this...
+
+{% highlight js %}
+describe('Component', function() {
+  return describe('StorylineNode', function() {
+    var model;
+    model = null;
+    beforeEach(function() {
+      return model = new ComponentStorylineNode({
+        id: 1
+      });
+    });
+    return it('should not be new', function() {
+      return expect(model.isNew()).toEqual(false);
+    });
+  });
+});
+{% endhighlight %}
 #### Server interaction
 
 Since there's no Jasmine server running, there's no way to grab test files from the filesystem via Ajax.
@@ -191,6 +223,23 @@ Jasmine::Headless::Task.new('jasmine:headless') do |t|
   t.jasmine_config = 'this/is/the/path.yml'
 end
 {% endhighlight %}
+
+If you've bundled `jasmine-headless-webkit` in with Rails, you'll also get a basic task for running your
+Jasmine specs. Be sure to include the gem in the development group so you get with a normal call to `rake -T`:
+
+{% highlight ruby %}
+group :test, :development do
+  gem 'jasmine-headless-webkit'
+end
+{% endhighlight %}
+
+<pre>
+# rake -T
+
+rake jasmine:headless     # Run Jasmine specs headlessly
+</pre>
+
+This is the same as running `jasmine-headless-webkit -c`.
 
 ## I have a problem or helpful suggestion, good sir.
 

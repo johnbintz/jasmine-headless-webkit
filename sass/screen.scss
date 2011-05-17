@@ -77,12 +77,12 @@ body {
         }
       }
 
-      .js, .ruby {
+      .js, .ruby, .coffeescript {
         .nx {
           color: $indicator-code-color;
         }
 
-        .s1 {
+        .s1, .ss {
           color: $scalar-code-color;
         }
 
