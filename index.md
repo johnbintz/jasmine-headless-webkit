@@ -62,7 +62,7 @@ If it works in yours, [leave me a message on GitHub](https://github.com/johnbint
 gem, your application and spec files, and any helpers you may need. The runner then creates a WebKit widget that
 loads the HTML file, runs the tests, and grabs the results of the test to show back to you. Awesome!
 
-`jasmine-headless-webkit` uses the same `jasmine.yml` file that the Jasmine gem file uses to define where particular
+`jasmine-headless-webkit` uses the same `jasmine.yml` file that the Jasmine gem uses to define where particular
 files for the testing process are located:
 
 {% highlight yaml %}
