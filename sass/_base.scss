@@ -1,0 +1,35 @@
+// Imports -------------------------------------------------------------------
+
+@import "susy";
+
+// Grid ----------------------------------------------------------------------
+// http://colorschemedesigner.com/#0F31Tblebw0w0
+
+$total-cols             : 12;
+$col-width              : 3em;
+$gutter-width           : 1em;
+$side-gutter-width      : $gutter-width;
+
+$show-grid-backgrounds  : false;
+
+$page-background-color: #554B3E;
+$content-background-color: #B8A287;
+$text-color: #493318;
+
+$link-color: #171233;
+$link-visited-color: #2F2D3B;
+
+$header-color: #715F49;
+$other-header-color: #36384E;
+$code-background-color: #113422;
+$code-foreground-color: #B6868A;
+
+// Code Coloring
+// http://colorschemedesigner.com/#5.31Tblebw0w0
+
+$scalar-code-color: #E68917;
+$indicator-code-color: #78A39D;
+$variable-code-color: #ABB592;
+$primitive-code-color: #A7B585;
+$class-code-color: #DE1629;
+$object-code-color: #CEF56B;

@@ -1,0 +1,107 @@
+// Imports -------------------------------------------------------------------
+
+@import "base";
+
+/* Layout ------------------------------------------------------------------*/
+
+body {
+  background-color: $page-background-color;
+  margin: 0;
+
+  #container {
+    background-color: $content-background-color;
+    @include container;
+    @include susy-grid-background;
+
+    #inner-container {
+      @include columns($total-cols);
+      @include alpha;
+      color: $text-color;
+
+      a {
+        color: $link-color;
+      }
+
+      a:visited {
+        color: $link-visited-color;
+      }
+
+      img.large {
+        display: block;
+        margin: 0 auto;
+      }
+
+      img[src*="f5.png"] {
+        @include float-right;
+      }
+
+      div, p, li, span {
+        font-family: 'Crimson Text', 'Georgia', sans-serif
+      }
+
+      pre, code, code > span, pre > div > span {
+        font-family: 'Courier';
+      }
+
+      pre {
+        padding: $gutter-width;
+        background-color: $code-background-color;
+        color: $code-foreground-color;
+      }
+
+      p > code {
+        color: $text-color - #222;
+      }
+
+      h1, h2, h3, h4 {
+        font-family: 'Neuton', 'Helvetica', sans-serif
+      }
+
+      h1 {
+        text-align: center;
+        font-size: 3.25em;
+        margin: 0;
+      }
+
+      .gist-highlight {
+        font-size: 75%
+      }
+
+      .yaml {
+        .l-Scalar-Plain {
+          color: $scalar-code-color;
+        }
+
+        .p-Indicator {
+          color: $indicator-code-color;
+        }
+      }
+
+      .js, .ruby {
+        .nx {
+          color: $indicator-code-color;
+        }
+
+        .s1 {
+          color: $scalar-code-color;
+        }
+
+        .nb {
+          color: $variable-code-color;
+        }
+
+        .kc, .kp {
+          color: $primitive-code-color;
+        }
+
+        .no {
+          color: $class-code-color;
+        }
+
+        .n {
+          color: $object-code-color;
+        }
+      }
+    }
+  }
+}
