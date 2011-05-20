@@ -9,7 +9,7 @@ require 'yaml'
 require 'fileutils'
 require 'getoptlong'
 
-require 'jasmine'
+require 'jasmine/base'
 require 'coffee-script'
 require 'rainbow'
 
