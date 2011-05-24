@@ -205,10 +205,10 @@ jasmine-headless-webkit spec/javascripts/models/node_viewer.coffee
 Support for Autotest is built-in. All you need to do is create a `.jasmine-headless-webkit` file in your project directory
 and Autotest will pick up that you want to use it for Jasmine. _(this only works by itself or with RSpec at the moment)_
 
-You can also use it with watchr, which is what I do now. Here's the watchr script I use to run both RSpec and
-`jasmine-headless-webkit`:
+If you use [Guard](https://github.com/guard/guard/), which I just switched to doing, install [`guard-jasmine-headless-webkit`](http://github.com/johnbintz/guard-jasmine-headless-webkit/)
+and run `guard init jasmine-headless-webkit` to add the necessary bits to your `Guardfile` to test a Rails 3.1 (or a well-structured Rails 3.0) app.
 
-<script src="https://gist.github.com/965115.js?file=test.watchr.rb"></script>
+You can also use it with watchr, if you're so inclined. [Here's the watchr script](https://gist.github.com/965115/) I use to run both RSpec and `jasmine-headless-webkit`.
 
 ## Rake tasks
 
