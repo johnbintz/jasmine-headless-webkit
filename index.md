@@ -155,6 +155,7 @@ console.log($('#element').parent().html())
 jasmine-headless-webkit [ -c / --colors ] 
                         [ --no-colors ] 
                         [ --keep ] 
+                        [ --report <report file> ] 
                         [ -j / --jasmine-config <path to jasmine.yml> ]
                         <spec files to run>
 {% endhighlight %}
@@ -185,6 +186,14 @@ If you have colors turned on globally, you can turn them off per-project or per-
 CoffeeScript logic errors can be hard to track down. Keep the generated HTML files with the `--keep` flag and you'll
 get `specrunner.$$.html` files in your working directory.
 
+### Writing out a machine-readable report
+
+Use the `--report` option to create a simple report file like this:
+
+    <total tests>/<failures>/<T if console was used, F otherwise>/<total time>
+
+[`guard-jasmine-headless-webkit`](http://github.com/guard/guard-jasmine-headless-webkit/) uses this for the Growl notifications.
+
 ### Using a different `jasmine.yml` file
 
 If for some reason you're not using the default path for a `jasmine.yml` file (which is `spec/javascripts/support/jasmine.yml`),
@@ -202,13 +211,11 @@ jasmine-headless-webkit spec/javascripts/models/node_viewer.coffee
 ## Automated testing during development
 
 `jasmine-headless-webkit` works best when it's running all the time, re-running tests when you update the appropriate files.
-Support for Autotest is built-in. All you need to do is create a `.jasmine-headless-webkit` file in your project directory
-and Autotest will pick up that you want to use it for Jasmine. _(this only works by itself or with RSpec at the moment)_
-
-If you use [Guard](https://github.com/guard/guard/), which I just switched to doing, install [`guard-jasmine-headless-webkit`](http://github.com/johnbintz/guard-jasmine-headless-webkit/)
+If you use [Guard](https://github.com/guard/guard/), install [`guard-jasmine-headless-webkit`](http://github.com/guard/guard-jasmine-headless-webkit/)
 and run `guard init jasmine-headless-webkit` to add the necessary bits to your `Guardfile` to test a Rails 3.1 (or a well-structured Rails 3.0) app.
 
-You can also use it with watchr, if you're so inclined. [Here's the watchr script](https://gist.github.com/965115/) I use to run both RSpec and `jasmine-headless-webkit`.
+Support for Autotest is built-in. All you need to do is create a `.jasmine-headless-webkit` file in your project directory
+and Autotest will pick up that you want to use it for Jasmine. _(this only works by itself or with RSpec at the moment)_
 
 ## Rake tasks
 
