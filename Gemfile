@@ -4,5 +4,8 @@ source "http://rubygems.org"
 gemspec
 
 gem 'rspec'
-gem 'autotest'
 gem 'fakefs', :require => nil
+gem 'guard'
+gem 'guard-rspec'
+gem 'guard-shell'
+gem 'growl'

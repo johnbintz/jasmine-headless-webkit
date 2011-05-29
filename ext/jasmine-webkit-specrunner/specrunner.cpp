@@ -23,6 +23,8 @@
 
 #include <QtGui>
 #include <QtWebKit>
+#include <QFile>
+#include <QTextStream>
 #include <iostream>
 
 #if QT_VERSION < QT_VERSION_CHECK(4, 7, 0)
@@ -64,6 +66,7 @@ public:
     HeadlessSpecRunner();
     void load(const QString &spec);
     void setColors(bool colors);
+    void reportFile(const QString &file);
 public slots:
     void log(const QString &msg);
     void specPassed();
@@ -88,6 +91,7 @@ private:
     bool isFinished;
     bool didFail;
     bool consoleNotUsedThisRun;
+    QString reportFilename;
     
     void red();
     void green();
@@ -140,6 +144,11 @@ bool HeadlessSpecRunner::hasElement(const char *select)
 void HeadlessSpecRunner::setColors(bool colors)
 {
     showColors = colors;
+}
+
+void HeadlessSpecRunner::reportFile(const QString &file)
+{
+    reportFilename = file;
 }
 
 void HeadlessSpecRunner::red()
@@ -246,6 +255,18 @@ void HeadlessSpecRunner::finishSuite(const QString &duration, const QString &tot
   clear();
   std::cout << std::endl;
 
+  if (!reportFilename.isEmpty()) {
+    QFile reportFH(reportFilename);
+
+    if (reportFH.open(QFile::WriteOnly)) {
+      QTextStream report(&reportFH);
+      report << qPrintable(total) << "/" << qPrintable(failed) << "/";
+      report << (usedConsole ? "T" : "F");
+      report << "/" << qPrintable(duration) << "\n";
+      reportFH.close();
+    }
+  }
+
   isFinished = true;
 }
 
@@ -284,15 +305,19 @@ void HeadlessSpecRunner::timerEvent(QTimerEvent *event)
 
 int main(int argc, char** argv)
 {
-    bool showColors = false;
     char *filename = NULL;
+    char *reporter = NULL;
+    char showColors = false;
 
     int c, index;
 
-    while ((c = getopt(argc, argv, "c")) != -1) {
+    while ((c = getopt(argc, argv, "cr:")) != -1) {
       switch(c) {
         case 'c':
           showColors = true;
+          break;
+        case 'r':
+          reporter = optarg;
           break;
       }
     }
@@ -311,10 +336,11 @@ int main(int argc, char** argv)
     }
 
     QApplication app(argc, argv);
-
     HeadlessSpecRunner runner;
-    runner.setColors(showColors);
+    runner.setColors(true);
+    runner.reportFile(reporter);
     runner.load(QString::fromLocal8Bit(filename));
     return app.exec();
 }
+
 

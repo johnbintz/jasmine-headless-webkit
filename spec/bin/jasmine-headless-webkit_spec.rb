@@ -1,24 +1,52 @@
 require 'spec_helper'
 
 describe "jasmine-headless-webkit" do
+  let(:report) { 'spec/report.txt' }
+
+  before do
+    FileUtils.rm_f report
+  end
+
+  after do
+    FileUtils.rm_f report
+  end
+
   describe 'success' do
     it "should succeed with error code 0" do
-      %x{bin/jasmine-headless-webkit -j spec/jasmine/success/success.yml}
+      system %{bin/jasmine-headless-webkit -j spec/jasmine/success/success.yml --report #{report}}
       $?.exitstatus.should == 0
+
+      parts = File.read(report).strip.split('/')
+      parts.length.should == 4
+      parts[0].should == "1"
+      parts[1].should == "0"
+      parts[2].should == "F"
     end
   end
 
   describe 'failure' do
     it "should fail with an error code of 1" do
-      %x{bin/jasmine-headless-webkit -j spec/jasmine/failure/failure.yml}
+      system %{bin/jasmine-headless-webkit -j spec/jasmine/failure/failure.yml --report #{report}}
       $?.exitstatus.should == 1
+
+      parts = File.read(report).strip.split('/')
+      parts.length.should == 4
+      parts[0].should == "1"
+      parts[1].should == "1"
+      parts[2].should == "F"
     end
   end
 
   describe 'with console.log' do
     it "should succeed, but has a console.log so an error code of 2" do
-      %x{bin/jasmine-headless-webkit -j spec/jasmine/console_log/console_log.yml}
+      system %{bin/jasmine-headless-webkit -j spec/jasmine/console_log/console_log.yml --report #{report}}
       $?.exitstatus.should == 2
+
+      parts = File.read(report).strip.split('/')
+      parts.length.should == 4
+      parts[0].should == "1"
+      parts[1].should == "0"
+      parts[2].should == "T"
     end
   end
 end

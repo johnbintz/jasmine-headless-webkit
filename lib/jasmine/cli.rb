@@ -52,6 +52,19 @@ module Jasmine
       HTML
     end
 
+    def runner_path
+      @runner_path ||= File.join(gem_dir, RUNNER)
+    end
+
+    def jasmine_command(options, target)
+      [
+        runner_path,
+        options[:colors] ? '-c' : nil,
+        options[:report] ? "-r #{options[:report]}" : nil,
+        target
+      ].join(" ")
+    end
+
     private
     def read_config_file(file)
 

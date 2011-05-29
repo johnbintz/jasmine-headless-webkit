@@ -2,7 +2,10 @@
 
 require 'rubygems'
 
-gem_dir = File.expand_path('../..', __FILE__)
+def gem_dir
+  File.expand_path('../..', __FILE__)
+end
+
 $:.unshift(File.join(gem_dir, 'lib'))
 
 require 'yaml'
@@ -25,13 +28,15 @@ opts = GetoptLong.new(
   [ '--colors', '-c', GetoptLong::NO_ARGUMENT ],
   [ '--no-colors', GetoptLong::NO_ARGUMENT ],
   [ '--keep', GetoptLong::NO_ARGUMENT ],
+  [ '--report', GetoptLong::REQUIRED_ARGUMENT ],
   [ '--jasmine-config', '-j', GetoptLong::REQUIRED_ARGUMENT ]
 )
 
 options = {
   :colors => false, 
   :remove_html_file => true,
-  :jasmine_config => 'spec/javascripts/support/jasmine.yml'
+  :jasmine_config => 'spec/javascripts/support/jasmine.yml',
+  :report => false
 }
 
 @process_options = lambda { |*args|
@@ -42,8 +47,10 @@ options = {
     options[:colors] = true
   when '--no-colors', '-nc'
     options[:colors] = false
-  when '--keep', '-k'
+  when '--keep'
     options[:remove_html_file] = false
+  when '--report'
+    options[:report] = arg
   when '--jasmine-config', '-j'
     options[:jasmine_config] = arg
   end
@@ -97,7 +104,7 @@ files = files.collect { |file|
 output = jasmine_html_template(files)
 
 File.open(target = "specrunner.#{$$}.html", 'w') { |fh| fh.print output }
-system %{#{File.join(gem_dir, RUNNER)} #{options[:colors] ? '-c' : ''} #{target}}
+system jasmine_command(options, target)
 status = $?.exitstatus
 FileUtils.rm_f target if options[:remove_html_file] || (status == 0)
 
