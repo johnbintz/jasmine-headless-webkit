@@ -248,7 +248,13 @@ void HeadlessSpecRunner::finishSuite(const QString &duration, const QString &tot
     std::cout << "FAIL: ";
   } else {
     green();
-    std::cout << "PASS: ";
+    std::cout << "PASS";
+
+    if (hasErrors) {
+      std::cout << " with JS errors";
+    }
+
+    std::cout << ": ";
   }
 
   std::cout << qPrintable(total) << " tests, " << qPrintable(failed) << " failures, " << qPrintable(duration) << " secs.";
@@ -280,24 +286,22 @@ void HeadlessSpecRunner::timerEvent(QTimerEvent *event)
     if (hasErrors && m_runs > 2)
         QApplication::instance()->exit(1);
 
-    if (!hasErrors) {
-      if (isFinished) {
-        int exitCode = 0;
-        if (didFail) {
-          exitCode = 1;
-        } else {
-          if (usedConsole) {
-            exitCode = 2;
-          }
+    if (isFinished) {
+      int exitCode = 0;
+      if (didFail || hasErrors) {
+        exitCode = 1;
+      } else {
+        if (usedConsole) {
+          exitCode = 2;
         }
-
-        QApplication::instance()->exit(exitCode);
       }
 
-      if (m_runs > 30) {
-          std::cout << "WARNING: too many runs and the test is still not finished!" << std::endl;
-          QApplication::instance()->exit(1);
-      }
+      QApplication::instance()->exit(exitCode);
+    }
+
+    if (m_runs > 30) {
+        std::cout << "WARNING: too many runs and the test is still not finished!" << std::endl;
+        QApplication::instance()->exit(1);
     }
 }
 

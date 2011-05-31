@@ -24,6 +24,20 @@ describe "jasmine-headless-webkit" do
     end
   end
 
+
+  describe 'success but with js error' do
+    it "should succeed with error code 0" do
+      system %{bin/jasmine-headless-webkit -j spec/jasmine/success_with_error/success_with_error.yml --report #{report}}
+      $?.exitstatus.should == 1
+
+      parts = File.read(report).strip.split('/')
+      parts.length.should == 4
+      parts[0].should == "1"
+      parts[1].should == "0"
+      parts[2].should == "F"
+    end
+  end
+
   describe 'failure' do
     it "should fail with an error code of 1" do
       system %{bin/jasmine-headless-webkit -j spec/jasmine/failure/failure.yml --report #{report}}

@@ -1,0 +1,9 @@
+src_files:
+  - spec/jasmine/success_with_error/success_with_error.js
+
+spec_files:
+  - spec/jasmine/success_with_error/success_with_error_spec.js
+
+src_dir: .
+spec_dir: .
+
