@@ -21,6 +21,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency 'jasmine'
-  s.add_dependency 'coffee-script'
+  s.add_dependency 'coffee-script', '>= 2.2'
   s.add_dependency 'rainbow'
 end
