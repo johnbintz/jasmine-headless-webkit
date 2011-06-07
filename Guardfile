@@ -21,3 +21,5 @@ def compile
 end
 
 compile
+
+guard 'coffeescript', :input => 'jasmine'

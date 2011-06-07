@@ -221,6 +221,8 @@ void HeadlessSpecRunner::log(const QString &msg)
   }
   std::cout << "[console] ";
   clear();
+  if (msg.contains("\n"))
+    std::cout << std::endl;
   std::cout << qPrintable(msg);
   std::cout << std::endl;
 }
