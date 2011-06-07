@@ -45,8 +45,8 @@ describe Jasmine::CLI do
     let(:test_data) { %w{third fourth} }
 
     before do
-      File.open(GLOBAL_DEFAULTS_FILE, 'w') { |fh| fh.puts global_test_data.join(' ') }
-      File.open(DEFAULTS_FILE, 'w') { |fh| fh.puts test_data.join(' ') }
+      File.open(Jasmine::CLI::GLOBAL_DEFAULTS_FILE, 'w') { |fh| fh.puts global_test_data.join(' ') }
+      File.open(Jasmine::CLI::DEFAULTS_FILE, 'w') { |fh| fh.puts test_data.join(' ') }
     end
 
     it "should read the options" do
