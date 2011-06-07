@@ -142,8 +142,8 @@ of course:
 spyOn(window, 'confirm').andReturn(false)
 {% endhighlight %}
 
-`console.log()` also works, though it's just a wrapper around `JSON.stringify()`. This means that cyclical objects, like HTML
-elements, can't be directly serialized (yet). Use jQuery to help you retrieve the HTML:
+`console.log()` also works. If Jasmine is loaded, you get to use `jasmine.pp`, Jasmine's built-in pretty-printer.
+If not, you'll get `JSON.stringify()`. This means that cyclical objects, like HTML elements, can't be directly serialized (yet). Use jQuery to help you retrieve the HTML:
 
 {% highlight js %}
 console.log($('#element').parent().html())
