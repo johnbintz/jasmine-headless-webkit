@@ -37,11 +37,9 @@ module Jasmine
   <title>Jasmine Test Runner</title>
   <script type="text/javascript">
     window.console = { log: function(data) { 
-      if (jasmine) {
-        JHW.log(jasmine.pp(data))
-      } else {
-        JHW.log(JSON.stringify(data)); 
-      }
+      JHW.log(JSON.stringify(data));
+    }, pp: function(data) {
+      JHW.log(jasmine ? jasmine.pp(data) : JSON.stringify(data));
     } };
   </script>
   #{files.join("\n")}
