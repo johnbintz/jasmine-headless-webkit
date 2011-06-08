@@ -25,7 +25,7 @@ they'll even work when running in the Jasmine gem's server with no changes to yo
 
 `jasmine-headless-webkit` also streamlines your workflow in other ways:
 
-* It integrates with [Autotest](https://github.com/seattlerb/zentest) and can easily be used with [watchr](https://github.com/mynyml/watchr) to automate the running of your tests during development.
+* It integrates with [Guard](https://github.com/guard/guard) when using [`guard-jasmine-headless-webkit`](https://github.com/guard/guard-jasmine-headless-webkit), and it works out-of-the-box with [Autotest](https://github.com/seattlerb/zentest).
 * It compiles [CoffeeScript](http://jashkenas.github.com/coffee-script/), both for your tests and for your application logic.
 * It can be configured like RSpec, and its output is very similar to RSpec's output, so you don't need to learn too much new stuff to use and integrate it.
 
@@ -47,7 +47,8 @@ to use the Jasmine gem:
 
 ### What do I need to get it working?
 
-Installation requires Qt 4.7.  The Internets will tell you how to get that for your particular environment.
+Installation requires Qt 4.7.  [`capybara-webkit`](https://github.com/thoughtbot/capybara-webkit) has the best instructions for installing Qt on various
+operating systems, so I'm not going to duplicate their work.
 `jasmine-headless-webkit` has been tested in the following environments:
 
 * Mac OS X 10.6, with MacPorts Qt and Nokia Qt.mpkg
@@ -125,12 +126,13 @@ describe('Component', function() {
   });
 });
 {% endhighlight %}
+
 #### Server interaction
 
 Since there's no Jasmine server running, there's no way to grab test files from the filesystem via Ajax.
 If you need to test server interaction, do one of the following:
 
-* Stub your server responses using [Sinon.JS](http://sinonjs.org/).
+* Stub your server responses using [Sinon.JS](http://sinonjs.org/), the recommended way.
 * Use [PhantomJS](http://www.phantomjs.org/) against a running copy of a Jasmine server, instead of this project.
 
 #### What else works?
@@ -142,12 +144,14 @@ of course:
 spyOn(window, 'confirm').andReturn(false)
 {% endhighlight %}
 
-`console.log()` also works. If Jasmine is loaded, you get to use `jasmine.pp`, Jasmine's built-in pretty-printer.
-If not, you'll get `JSON.stringify()`. This means that cyclical objects, like HTML elements, can't be directly serialized (yet). Use jQuery to help you retrieve the HTML:
+`console.log()` also works.  It uses `JSON.stringify()` to serialize objects. This means that cyclical objects, like HTML elements, can't be directly serialized (yet). Use jQuery to help you retrieve the HTML:
 
 {% highlight js %}
 console.log($('#element').parent().html())
 {% endhighlight %}
+
+If you need a heavy-weight object printer, you also have `console.pp()`, which uses Jasmine's built-in pretty-printer if available, and falls back to `JSON.stringify()` if it's not. This one's the best for
+printing HTML nodes, but it can be pretty noisy when printing objects.
 
 ## Running the runner
 
