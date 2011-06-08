@@ -51,6 +51,7 @@
     HeadlessReporter.prototype.reportSpecResults = function(spec) {
       var failureResult, result, results, _fn, _i, _len, _ref;
       results = spec.results();
+      this.length += results.getItems().length;
       if (results.passed()) {
         return JHW.specPassed();
       } else {
@@ -71,9 +72,7 @@
       }
     };
     HeadlessReporter.prototype.reportSpecStarting = function(spec) {};
-    HeadlessReporter.prototype.reportSuiteResults = function(suite) {
-      return this.length += suite.specs().length;
-    };
+    HeadlessReporter.prototype.reportSuiteResults = function(suite) {};
     return HeadlessReporter;
   })();
 }).call(this);

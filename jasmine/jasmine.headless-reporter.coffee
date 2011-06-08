@@ -28,6 +28,7 @@ class jasmine.HeadlessReporter
     @startTime = new Date()
   reportSpecResults: (spec) ->
     results = spec.results()
+    @length += results.getItems().length
     if results.passed()
       JHW.specPassed()
     else
@@ -41,4 +42,3 @@ class jasmine.HeadlessReporter
       @results.push(failureResult)
   reportSpecStarting: (spec) ->
   reportSuiteResults: (suite) ->
-    @length += suite.specs().length
