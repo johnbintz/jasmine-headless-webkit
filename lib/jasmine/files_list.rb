@@ -40,6 +40,8 @@ module Jasmine
       coffeescript_run = []
 
       files.collect { |file|
+        next @code_for_file[file] if @code_for_file[file]
+
         coffeescript_run << file if (ext = File.extname(file)) == '.coffee'
           
         output = []
@@ -55,6 +57,8 @@ module Jasmine
             %{<link rel="stylesheet" href="#{file}" type="text/css" />}
           end
         end
+
+        @code_for_file[file] = output if output.length == 1
 
         output
       }.flatten.reject(&:empty?)
