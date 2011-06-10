@@ -8,6 +8,7 @@ end
 
 $:.unshift(File.join(gem_dir, 'lib'))
 
+require 'benchmark'
 require 'yaml'
 require 'fileutils'
 require 'getoptlong'
@@ -36,7 +37,7 @@ opts = GetoptLong.new(
 )
 
 options = {
-  :colors => false, 
+  :colors => false,
   :remove_html_file => true,
   :jasmine_config => 'spec/javascripts/support/jasmine.yml',
   :report => false,
@@ -68,7 +69,7 @@ opts.each(&@process_options)
 puts "Running Jasmine specs..."
 
 files_list = Jasmine::FilesList.new(
-  :config => load_config(options[:jasmine_config]), 
+  :config => load_config(options[:jasmine_config]),
   :only => ARGV.dup
 )
 

@@ -37,25 +37,42 @@ module Jasmine
 
     private
     def to_html(files)
+      coffeescript_run = []
+
       files.collect { |file|
         next @code_for_file[file] if @code_for_file[file]
 
-        @code_for_file[file] = (case File.extname(file)
-        when '.js'
-          %{<script type="text/javascript" src="#{file}"></script>}
-        when '.coffee'
-          begin
-            %{<script type="text/javascript">#{CoffeeScript.compile(fh = File.open(file))}</script>}
-          rescue CoffeeScript::CompilationError => e
-            puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), file.color(:yellow), e.message.to_s.color(:white) ]
-            exit 1
-          ensure
-            fh.close
+        coffeescript_run << file if (ext = File.extname(file)) == '.coffee'
+          
+        output = []
+        if (files.last == file or ext != '.coffee') and !coffeescript_run.empty?
+          output << ensure_coffeescript_run!(coffeescript_run)
+        end
+
+        if ext != '.coffee'
+          output << case File.extname(file)
+          when '.js'
+            %{<script type="text/javascript" src="#{file}"></script>}
+          when '.css'
+            %{<link rel="stylesheet" href="#{file}" type="text/css" />}
           end
-        when '.css'
-          %{<link rel="stylesheet" href="#{file}" type="text/css" />}
-        end)
-      }
+        end
+
+        @code_for_file[file] = output
+      }.flatten.reject(&:empty?)
+    end
+
+    def ensure_coffeescript_run!(files)
+      data = StringIO.new
+      files.each { |file| data << File.read(file) }
+      data.rewind
+
+      %{<script type="text/javascript">#{CoffeeScript.compile(data)}</script>}
+    rescue CoffeeScript::CompilationError => e
+      puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), file.color(:yellow), e.message.to_s.color(:white) ]
+      exit 1
+    ensure
+      files.clear
     end
 
     def spec_filter
