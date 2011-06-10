@@ -13,6 +13,10 @@ module Jasmine
     DEFAULTS_FILE = '.jasmine-headless-webkit'
     GLOBAL_DEFAULTS_FILE = File.expand_path("~/#{DEFAULTS_FILE}")
 
+    def load_config(file)
+      process_jasmine_config(YAML.load_file(file))
+    end
+
     def process_jasmine_config(overrides = {})
       DEFAULTS.merge(overrides)
     end
@@ -23,10 +27,6 @@ module Jasmine
           File.readlines(file).collect { |line| line.strip.split(' ', 2) }.each(&@process_options)
         end
       end
-    end
-
-    def use_spec?(file)
-      @spec_filter.empty? || @spec_filter.include?(file)
     end
 
     def jasmine_html_template(files)

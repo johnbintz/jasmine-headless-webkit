@@ -1,3 +1,7 @@
+RSpec.configure do |c|
+  c.mock_with :mocha
+end
+
 specrunner = 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner'
 
 if !File.file?(specrunner)

@@ -58,32 +58,4 @@ describe Jasmine::CLI do
       all_data.should == [ global_test_data, test_data ]
     end
   end
-
-  describe '#use_spec?' do
-    let(:spec_file) { 'my/spec.js' }
-
-    context 'no filter provided' do
-      before do
-        @spec_filter = []
-      end
-
-      it "should allow the spec" do
-        use_spec?(spec_file).should be_true
-      end
-    end
-
-    context 'filter provided' do
-      before do
-        @spec_filter = [ spec_file ]
-      end
-
-      it "should use the spec" do
-        use_spec?(spec_file).should be_true
-      end
-
-      it "should not use the spec" do
-        use_spec?('other/file').should be_false
-      end
-    end
-  end
 end

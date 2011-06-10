@@ -17,6 +17,7 @@ require 'coffee-script'
 require 'rainbow'
 
 require 'jasmine/cli'
+require 'jasmine/files_list'
 include Jasmine::CLI
 
 if !File.file?(File.join(gem_dir, RUNNER))
@@ -58,50 +59,15 @@ options = {
 
 read_defaults_files!
 opts.each(&@process_options)
-@spec_filter = ARGV.dup
-
-data = YAML.load_file(options[:jasmine_config])
 
 puts "Running Jasmine specs..."
 
-files = %w{jasmine jasmine-html}.collect { |name| File.join(Jasmine.root, "lib/#{name}.js") }
-files << File.join(gem_dir, 'jasmine/jasmine.headless-reporter.js')
+files_list = Jasmine::FilesList.new(
+  :config => load_config(options[:jasmine_config]), 
+  :only => ARGV.dup
+)
 
-[ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'helpers', 'spec_dir' ], [ 'spec_files', 'spec_dir' ] ].each do |searches, root|
-  if data[searches] ||= DEFAULTS[searches]
-    data[root] ||= DEFAULTS[root]
-
-    data[searches].collect do |search|
-      path = search
-      path = File.join(data[root], path) if data[root]
-      found_files = Dir[path]
-      if searches == 'spec_files'
-        found_files = found_files.find_all { |file| use_spec?(file) }
-      end
-      files += found_files
-    end
-  end
-end
-
-files = files.collect { |file|
-  case File.extname(file)
-  when '.js'
-    %{<script type="text/javascript" src="#{file}"></script>}
-  when '.coffee'
-    begin
-      %{<script type="text/javascript">#{CoffeeScript.compile(fh = File.open(file))}</script>}
-    rescue CoffeeScript::CompilationError => e
-      puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), file.color(:yellow), e.message.to_s.color(:white) ]
-      exit 1
-    ensure
-      fh.close
-    end
-  when '.css'
-    %{<link rel="stylesheet" href="#{file}" type="text/css" />}
-  end
-}
-
-output = jasmine_html_template(files)
+output = jasmine_html_template(files_list.files_to_html)
 
 File.open(target = "specrunner.#{$$}.html", 'w') { |fh| fh.print output }
 system jasmine_command(options, target)
