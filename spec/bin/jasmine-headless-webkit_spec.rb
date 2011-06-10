@@ -64,6 +64,15 @@ describe "jasmine-headless-webkit" do
     end
   end
 
+  describe 'with coffeescript error' do
+    it "should fail" do
+      system %{bin/jasmine-headless-webkit -j spec/jasmine/coffeescript_error/coffeescript_error.yml --report #{report}}
+      $?.exitstatus.should == 1
+
+      File.exist?(report).should be_false
+    end
+  end
+
   describe 'with filtered run' do
     context "don't run a full run, just the filtered run" do
       it "should succeed and run both" do

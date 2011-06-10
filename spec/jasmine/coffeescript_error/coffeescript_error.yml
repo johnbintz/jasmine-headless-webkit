@@ -1,0 +1,10 @@
+
+src_files:
+  - spec/jasmine/coffeescript_error/src.coffee
+
+spec_files:
+  - spec/jasmine/coffeescript_error/spec.coffee
+
+src_dir: .
+spec_dir: .
+

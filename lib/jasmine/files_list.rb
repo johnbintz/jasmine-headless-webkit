@@ -71,8 +71,16 @@ module Jasmine
 
       %{<script type="text/javascript">#{CoffeeScript.compile(data)}</script>}
     rescue CoffeeScript::CompilationError => e
-      puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), file.color(:yellow), e.message.to_s.color(:white) ]
-      exit 1
+      files.each do |file|
+        begin
+          CoffeeScript.compile(fh = File.open(file))
+        rescue CoffeeScript::CompilationError => ne
+          puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), file.color(:yellow), ne.message.to_s.color(:white) ]
+          exit 1
+        ensure
+          fh.close
+        end
+      end
     ensure
       files.clear
     end
