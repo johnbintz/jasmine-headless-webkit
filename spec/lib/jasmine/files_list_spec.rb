@@ -90,7 +90,7 @@ describe Jasmine::FilesList do
       'spec_files' => [ '*_spec.js' ],
       'spec_dir' => spec_dir
     } }
-    
+
     before do
       %w{one_spec.js two_spec.js}.each do |file|
         File.open(File.join(spec_dir, file), 'w')
@@ -101,6 +101,7 @@ describe Jasmine::FilesList do
 
     it 'should return all files for files' do
       files_list.files.any? { |file| file['two_spec.js'] }.should be_true
+      files_list.filtered?.should be_true
     end
 
     it 'should return only filtered files for filtered_files' do
@@ -113,9 +114,14 @@ describe Jasmine::FilesList do
 
     before do
       files_list.instance_variable_set(:@files, [
-        'test.js',
-        'test.coffee',
-        'test.css'
+                                       'test.js',
+                                       'test.coffee',
+                                       'test.css'
+      ])
+
+      files_list.instance_variable_set(:@filtered_files, [
+                                       'test.js',
+                                       'test.coffee'
       ])
 
       File.open('test.coffee', 'w')
@@ -126,16 +132,21 @@ describe Jasmine::FilesList do
     describe '#files_to_html' do
       it "should create the right HTML" do
         files_list.files_to_html.should == [
-%{<script type="text/javascript" src="test.js"></script>},
-%{<script type="text/javascript">i compiled</script>},
-%{<link rel="stylesheet" href="test.css" type="text/css" />}
+          %{<script type="text/javascript" src="test.js"></script>},
+          %{<script type="text/javascript">i compiled</script>},
+          %{<link rel="stylesheet" href="test.css" type="text/css" />}
         ]
       end
     end
-  end
 
-  describe '#filtered_files_to_html' do
-
+    describe '#filtered_files_to_html' do
+      it "should create the right HTML" do
+        files_list.filtered_files_to_html.should == [
+          %{<script type="text/javascript" src="test.js"></script>},
+          %{<script type="text/javascript">i compiled</script>}
+        ]
+      end
+    end
   end
 end
 

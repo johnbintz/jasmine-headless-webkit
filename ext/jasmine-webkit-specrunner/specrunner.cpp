@@ -26,6 +26,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <iostream>
+#include <QQueue>
 
 #if QT_VERSION < QT_VERSION_CHECK(4, 7, 0)
 #error Use Qt 4.7 or later version
@@ -64,9 +65,10 @@ class HeadlessSpecRunner: public QObject
     Q_OBJECT
 public:
     HeadlessSpecRunner();
-    void load(const QString &spec);
     void setColors(bool colors);
     void reportFile(const QString &file);
+    void addFile(const QString &spec);
+    void go();
 public slots:
     void log(const QString &msg);
     void specPassed();
@@ -78,6 +80,7 @@ private slots:
     void watch(bool ok);
     void errorLog(const QString &msg, int lineNumber, const QString &sourceID);
     void internalLog(const QString &note, const QString &msg);
+    void addJHW();
 protected:
     bool hasElement(const char *select);
     void timerEvent(QTimerEvent *event);
@@ -91,12 +94,14 @@ private:
     bool isFinished;
     bool didFail;
     bool consoleNotUsedThisRun;
+    QQueue<QString> runnerFiles;
     QString reportFilename;
     
     void red();
     void green();
     void yellow();
     void clear();
+    void loadSpec();
 };
 
 HeadlessSpecRunner::HeadlessSpecRunner()
@@ -113,14 +118,30 @@ HeadlessSpecRunner::HeadlessSpecRunner()
     connect(&m_page, SIGNAL(loadFinished(bool)), this, SLOT(watch(bool)));
     connect(&m_page, SIGNAL(consoleLog(QString, int, QString)), this, SLOT(errorLog(QString, int, QString)));
     connect(&m_page, SIGNAL(internalLog(QString, QString)), this, SLOT(internalLog(QString, QString)));
+    connect(m_page.mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(addJHW()));
 }
 
-void HeadlessSpecRunner::load(const QString &spec)
+void HeadlessSpecRunner::addFile(const QString &spec)
+{
+  runnerFiles.enqueue(spec);
+}
+
+void HeadlessSpecRunner::go()
 {
     m_ticker.stop();
-    m_page.mainFrame()->addToJavaScriptWindowObject("JHW", this);
-    m_page.mainFrame()->load(spec);
     m_page.setPreferredContentsSize(QSize(1024, 600));
+    addJHW();
+    loadSpec();
+}
+void HeadlessSpecRunner::addJHW()
+{
+    m_page.mainFrame()->addToJavaScriptWindowObject("JHW", this);
+}
+
+void HeadlessSpecRunner::loadSpec()
+{
+    m_page.mainFrame()->load(runnerFiles.dequeue());
+    m_ticker.start(200, this);
 }
 
 void HeadlessSpecRunner::watch(bool ok)
@@ -298,7 +319,11 @@ void HeadlessSpecRunner::timerEvent(QTimerEvent *event)
         }
       }
 
-      QApplication::instance()->exit(exitCode);
+      if ((exitCode == 0 && runnerFiles.count() == 0) || (exitCode != 0)) {
+        QApplication::instance()->exit(exitCode);
+      } else {
+        loadSpec();
+      }
     }
 
     if (m_runs > 30) {
@@ -311,7 +336,6 @@ void HeadlessSpecRunner::timerEvent(QTimerEvent *event)
 
 int main(int argc, char** argv)
 {
-    char *filename = NULL;
     char *reporter = NULL;
     char showColors = false;
 
@@ -328,16 +352,9 @@ int main(int argc, char** argv)
       }
     }
 
-    bool filenameFound = false;
-
-    for (index = optind; index < argc; index++) {
-      filename = argv[index];
-      filenameFound = true;
-    }
-
-    if (!filenameFound) {
+    if (optind == argc) {
         std::cerr << "Run Jasmine's SpecRunner headlessly" << std::endl << std::endl;
-        std::cerr << "  specrunner [-c] SpecRunner.html" << std::endl;
+        std::cerr << "  specrunner [-c] [-r <report file>] specrunner.html ..." << std::endl;
         return 1;
     }
 
@@ -345,7 +362,12 @@ int main(int argc, char** argv)
     HeadlessSpecRunner runner;
     runner.setColors(true);
     runner.reportFile(reporter);
-    runner.load(QString::fromLocal8Bit(filename));
+
+    for (index = optind; index < argc; index++) {
+      runner.addFile(QString::fromLocal8Bit(argv[index]));
+    }
+    runner.go();
+
     return app.exec();
 }
 

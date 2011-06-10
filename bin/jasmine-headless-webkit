@@ -18,6 +18,7 @@ require 'rainbow'
 
 require 'jasmine/cli'
 require 'jasmine/files_list'
+require 'jasmine/template_writer'
 include Jasmine::CLI
 
 if !File.file?(File.join(gem_dir, RUNNER))
@@ -67,12 +68,12 @@ files_list = Jasmine::FilesList.new(
   :only => ARGV.dup
 )
 
-output = jasmine_html_template(files_list.files_to_html)
-
-File.open(target = "specrunner.#{$$}.html", 'w') { |fh| fh.print output }
-system jasmine_command(options, target)
+system jasmine_command(options, targets = Jasmine::TemplateWriter.write!(files_list))
 status = $?.exitstatus
-FileUtils.rm_f target if options[:remove_html_file] || (status == 0)
+
+if options[:remove_html_file] || (status == 0)
+  targets.each { |target| FileUtils.rm_f target }
+end
 
 exit status
 

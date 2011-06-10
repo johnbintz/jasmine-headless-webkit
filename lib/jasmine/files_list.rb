@@ -12,7 +12,8 @@ module Jasmine
 
     def initialize(options = {})
       @options = options
-      @files = DEFAULT_FILES
+      @files = DEFAULT_FILES.dup
+      @filtered_files = @files.dup
       use_config! if config?
     end
 
@@ -20,7 +21,20 @@ module Jasmine
       spec_filter.empty? || spec_filter.include?(file)
     end
 
+    def filtered?
+      files != filtered_files
+    end
+
     def files_to_html
+      to_html(files)
+    end
+
+    def filtered_files_to_html
+      to_html(filtered_files)
+    end
+
+    private
+    def to_html(files)
       files.collect { |file|
         case File.extname(file)
         when '.js'
@@ -40,7 +54,6 @@ module Jasmine
       }
     end
 
-    private
     def spec_filter
       @options[:only] || []
     end
