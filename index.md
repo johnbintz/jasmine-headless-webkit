@@ -158,6 +158,7 @@ printing HTML nodes, but it can be pretty noisy when printing objects.
 {% highlight bash %}
 jasmine-headless-webkit [ -c / --colors ] 
                         [ --no-colors ] 
+                        [ --no-full-run ] 
                         [ --keep ] 
                         [ --report <report file> ] 
                         [ -j / --jasmine-config <path to jasmine.yml> ]
@@ -211,6 +212,22 @@ will be run. You can limit the run to only certain files by passing those to `ja
 {% highlight bash %}
 jasmine-headless-webkit spec/javascripts/models/node_viewer.coffee
 {% endhighlight %}
+
+#### Filtered runs and full runs
+
+Typically, targeted spec running is done by a tool like Guard, and the order of running goes like this:
+
+* Run the filtered spec
+  * If it fails, stop processing and alert the user
+  * If it succeeds, run all specs and alert on success or failure
+
+Having your test running tool re-run `jasmine-headless-webkit` is fast, but there's still the cost of instantiating QtWebKit and Ruby
+with each run. Versions of `jasmine-headless-webkit` 0.3.0 and greater will do this for you, keeping the widget in memory and running
+Jasmine tests on first the filtered suite, and then the complete suite. The results you'll get are for the last run that's executed, which
+is typically what you want to know anyway. Newer versions of `guard-jasmine-headless-webkit` also support this behavior. This trims
+valuable seconds off of testing with every run, saving you enough time every day to run to the coffee shop and get some delicious brew!
+
+If you don't want this behavior, pass in `--no-full-run` and filtered runs will be the only thing that runs when you request one.
 
 ## Automated testing during development
 
