@@ -322,6 +322,7 @@ void HeadlessSpecRunner::timerEvent(QTimerEvent *event)
       if ((exitCode == 0 && runnerFiles.count() == 0) || (exitCode != 0)) {
         QApplication::instance()->exit(exitCode);
       } else {
+        isFinished = false;
         loadSpec();
       }
     }
