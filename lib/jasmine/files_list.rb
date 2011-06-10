@@ -15,6 +15,8 @@ module Jasmine
       @files = DEFAULT_FILES.dup
       @filtered_files = @files.dup
       use_config! if config?
+
+      @code_for_file = {}
     end
 
     def use_spec?(file)
@@ -36,7 +38,9 @@ module Jasmine
     private
     def to_html(files)
       files.collect { |file|
-        case File.extname(file)
+        next @code_for_file[file] if @code_for_file[file]
+
+        @code_for_file[file] = (case File.extname(file)
         when '.js'
           %{<script type="text/javascript" src="#{file}"></script>}
         when '.coffee'
@@ -50,7 +54,7 @@ module Jasmine
           end
         when '.css'
           %{<link rel="stylesheet" href="#{file}" type="text/css" />}
-        end
+        end)
       }
     end
 
