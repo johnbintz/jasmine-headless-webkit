@@ -31,14 +31,16 @@ opts = GetoptLong.new(
   [ '--no-colors', GetoptLong::NO_ARGUMENT ],
   [ '--keep', GetoptLong::NO_ARGUMENT ],
   [ '--report', GetoptLong::REQUIRED_ARGUMENT ],
-  [ '--jasmine-config', '-j', GetoptLong::REQUIRED_ARGUMENT ]
+  [ '--jasmine-config', '-j', GetoptLong::REQUIRED_ARGUMENT ],
+  [ '--no-full-run', GetoptLong::NO_ARGUMENT ]
 )
 
 options = {
   :colors => false, 
   :remove_html_file => true,
   :jasmine_config => 'spec/javascripts/support/jasmine.yml',
-  :report => false
+  :report => false,
+  :full_run => true
 }
 
 @process_options = lambda { |*args|
@@ -55,6 +57,8 @@ options = {
     options[:report] = arg
   when '--jasmine-config', '-j'
     options[:jasmine_config] = arg
+  when '--no-full-run'
+    options[:full_run] = false
   end
 }
 
@@ -68,7 +72,11 @@ files_list = Jasmine::FilesList.new(
   :only => ARGV.dup
 )
 
-system jasmine_command(options, targets = Jasmine::TemplateWriter.write!(files_list))
+targets = Jasmine::TemplateWriter.write!(files_list)
+run_targets = targets.dup
+run_targets.pop if !options[:full_run]
+
+system jasmine_command(options, run_targets)
 status = $?.exitstatus
 
 if options[:remove_html_file] || (status == 0)

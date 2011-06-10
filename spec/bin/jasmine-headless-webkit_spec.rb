@@ -65,26 +65,41 @@ describe "jasmine-headless-webkit" do
   end
 
   describe 'with filtered run' do
-    it "should fail and not run the second" do
-      system %{bin/jasmine-headless-webkit -j spec/jasmine/filtered_failure/filtered_failure.yml --report #{report} ./spec/jasmine/filtered_failure/failure_spec.js}
-      $?.exitstatus.should == 1
+    context "don't run a full run, just the filtered run" do
+      it "should succeed and run both" do
+        system %{bin/jasmine-headless-webkit -j spec/jasmine/filtered_success/filtered_success.yml --no-full-run --report #{report} ./spec/jasmine/filtered_success/success_one_spec.js}
+        $?.exitstatus.should == 0
 
-      parts = File.read(report).strip.split('/')
-      parts.length.should == 4
-      parts[0].should == "1"
-      parts[1].should == "1"
-      parts[2].should == "F"
+        parts = File.read(report).strip.split('/')
+        parts.length.should == 4
+        parts[0].should == "1"
+        parts[1].should == "0"
+        parts[2].should == "F"
+      end
     end
 
-    it "should succeed and run both" do
-      system %{bin/jasmine-headless-webkit -j spec/jasmine/filtered_success/filtered_success.yml --report #{report} ./spec/jasmine/filtered_success/success_one_spec.js}
-      $?.exitstatus.should == 0
+    context "do both runs" do
+      it "should fail and not run the second" do
+        system %{bin/jasmine-headless-webkit -j spec/jasmine/filtered_failure/filtered_failure.yml --report #{report} ./spec/jasmine/filtered_failure/failure_spec.js}
+        $?.exitstatus.should == 1
 
-      parts = File.read(report).strip.split('/')
-      parts.length.should == 4
-      parts[0].should == "2"
-      parts[1].should == "0"
-      parts[2].should == "F"
+        parts = File.read(report).strip.split('/')
+        parts.length.should == 4
+        parts[0].should == "1"
+        parts[1].should == "1"
+        parts[2].should == "F"
+      end
+
+      it "should succeed and run both" do
+        system %{bin/jasmine-headless-webkit -j spec/jasmine/filtered_success/filtered_success.yml --report #{report} ./spec/jasmine/filtered_success/success_one_spec.js}
+        $?.exitstatus.should == 0
+
+        parts = File.read(report).strip.split('/')
+        parts.length.should == 4
+        parts[0].should == "2"
+        parts[1].should == "0"
+        parts[2].should == "F"
+      end
     end
   end
 end
