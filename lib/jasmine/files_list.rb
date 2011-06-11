@@ -98,7 +98,7 @@ module Jasmine
           data[searches].collect do |search|
             path = search
             path = File.join(data[root], path) if data[root]
-            found_files = Dir[path]
+            found_files = Dir[path] - @files
 
             @files += found_files
 

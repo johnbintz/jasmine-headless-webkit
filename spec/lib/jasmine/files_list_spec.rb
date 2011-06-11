@@ -24,13 +24,14 @@ describe Jasmine::FilesList do
     let(:src_dir) { 'src' }
     let(:spec_dir) { 'spec' }
 
+    let(:first_file) { File.join(src_dir, 'js/first_file.js') }
     let(:src_file) { File.join(src_dir, 'js/src_file.js') }
     let(:spec_file) { File.join(spec_dir, 'spec_file_spec.js') }
     let(:helper_file) { File.join(spec_dir, 'helper/helper_file.js') }
     let(:stylesheet_file) { File.join(src_dir, 'stylesheet/blah.css') }
 
     before do
-      [ src_file, spec_file, helper_file, stylesheet_file ].each do |file|
+      [ first_file, src_file, spec_file, helper_file, stylesheet_file ].each do |file|
         File.open(file, 'w')
       end
     end
@@ -38,7 +39,7 @@ describe Jasmine::FilesList do
     let(:config) { {
       'src_dir' => src_dir,
       'spec_dir' => spec_dir,
-      'src_files' => [ 'js/*.js' ],
+      'src_files' => [ 'js/first_file.js', 'js/*.js' ],
       'spec_files' => [ '*_spec.js' ],
       'helpers' => [ 'helper/*.js' ],
       'stylesheets' => [ 'stylesheet/*.css' ]
@@ -46,6 +47,7 @@ describe Jasmine::FilesList do
 
     it 'should read the data from the jasmine.yml file and add the files' do
       files_list.files.should == Jasmine::FilesList::DEFAULT_FILES + [
+        File.expand_path(first_file),
         File.expand_path(src_file),
         File.expand_path(stylesheet_file),
         File.expand_path(helper_file),
