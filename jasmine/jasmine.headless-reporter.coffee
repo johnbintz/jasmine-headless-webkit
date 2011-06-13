@@ -1,5 +1,5 @@
 if !jasmine?
-  throw new Exception("jasmine not laoded!")
+  throw new Error("jasmine not laoded!")
 
 class HeadlessReporterResult
   constructor: (name) ->
