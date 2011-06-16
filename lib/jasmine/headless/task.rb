@@ -1,6 +1,8 @@
 module Jasmine
   module Headless
     class Task
+      include Rake::DSL
+
       attr_accessor :colors, :keep_on_error, :jasmine_config
 
       def initialize(name = 'jasmine:headless')
