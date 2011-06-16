@@ -7,7 +7,7 @@ describe Jasmine::Headless::Runner do
   let(:options) { Jasmine::Headless::Options.new(opts) }
 
   describe '#initialize' do
-    let(:opts) { { :test => 'test' } }
+    let(:opts) { { :test => 'test', :jasmine_config => nil } }
 
     it 'should have default options' do
       runner.options[:test].should == 'test'

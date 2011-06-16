@@ -7,9 +7,11 @@ describe Jasmine::Headless::Options do
   let(:opts) { {} }
 
   describe '#initialize' do
+    let(:default_config) {  'spec/javascripts/support/jasmine.yml' }
+
     context 'empty' do
       it "should have default options" do
-        options[:jasmine_config].should == 'spec/javascripts/support/jasmine.yml'
+        options[:jasmine_config].should == default_config
       end
     end
     
@@ -18,6 +20,14 @@ describe Jasmine::Headless::Options do
 
       it 'should override an option' do
         options[:jasmine_config].should == 'test'
+      end
+    end
+    
+    context 'with nil provided' do
+      let(:opts) { { :jasmine_config => nil } }
+
+      it 'should override an option' do
+        options[:jasmine_config].should == default_config
       end
     end
   end

@@ -27,7 +27,8 @@ module Jasmine
       end
 
       def initialize(opts = {})
-        @options = DEFAULT_OPTIONS.dup.merge(opts)
+        @options = DEFAULT_OPTIONS.dup
+        opts.each { |k, v| @options[k] = v if v }
       end
 
       def process_option(*args)

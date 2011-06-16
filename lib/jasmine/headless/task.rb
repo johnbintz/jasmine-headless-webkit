@@ -1,3 +1,5 @@
+require 'jasmine/headless/runner'
+
 module Jasmine
   module Headless
     class Task
@@ -18,7 +20,11 @@ module Jasmine
 
         desc 'Run Jasmine specs headlessly'
         task name do
-          system %{jasmine-headless-webkit #{@colors ? "-c" : "--no-colors"} #{@keep_on_error ? "--keep" : ""} #{@jasmine_config ? "-j #{@jasmine_config}" : ""}}
+          Jasmine::Headless::Runner.run(
+            :colors => colors, 
+            :remove_html_file => !@keep_on_error, 
+            :jasmine_config => @jasmine_config
+          )
         end
       end
     end
