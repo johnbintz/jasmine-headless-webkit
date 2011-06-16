@@ -1,7 +1,11 @@
 module Jasmine
   module Headless
     class Task
-      include Rake::DSL
+      begin
+        include Rake::DSL
+      rescue NameError
+        # never mind
+      end
 
       attr_accessor :colors, :keep_on_error, :jasmine_config
 
