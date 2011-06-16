@@ -8,81 +8,8 @@ end
 
 $:.unshift(File.join(gem_dir, 'lib'))
 
-require 'benchmark'
-require 'yaml'
-require 'fileutils'
-require 'getoptlong'
-
-require 'jasmine/base'
-require 'coffee-script'
-require 'rainbow'
-
-require 'jasmine/cli'
-require 'jasmine/files_list'
-require 'jasmine/template_writer'
-include Jasmine::CLI
-
-if !File.file?(File.join(gem_dir, RUNNER))
-  puts "The Qt WebKit widget is not compiled! Try re-installing this gem."
-  exit 1
-end
-
-opts = GetoptLong.new(
-  [ '--colors', '-c', GetoptLong::NO_ARGUMENT ],
-  [ '--no-colors', GetoptLong::NO_ARGUMENT ],
-  [ '--keep', GetoptLong::NO_ARGUMENT ],
-  [ '--report', GetoptLong::REQUIRED_ARGUMENT ],
-  [ '--jasmine-config', '-j', GetoptLong::REQUIRED_ARGUMENT ],
-  [ '--no-full-run', GetoptLong::NO_ARGUMENT ]
-)
-
-options = {
-  :colors => false,
-  :remove_html_file => true,
-  :jasmine_config => 'spec/javascripts/support/jasmine.yml',
-  :report => false,
-  :full_run => true
-}
-
-@process_options = lambda { |*args|
-  opt, arg = args.flatten[0..1]
-
-  case opt
-  when '--colors', '-c'
-    options[:colors] = true
-  when '--no-colors', '-nc'
-    options[:colors] = false
-  when '--keep'
-    options[:remove_html_file] = false
-  when '--report'
-    options[:report] = arg
-  when '--jasmine-config', '-j'
-    options[:jasmine_config] = arg
-  when '--no-full-run'
-    options[:full_run] = false
-  end
-}
-
-read_defaults_files!
-opts.each(&@process_options)
-
 puts "Running Jasmine specs..."
 
-files_list = Jasmine::FilesList.new(
-  :config => load_config(options[:jasmine_config]),
-  :only => ARGV.dup
-)
-
-targets = Jasmine::TemplateWriter.write!(files_list)
-run_targets = targets.dup
-run_targets.pop if !options[:full_run]
-
-system jasmine_command(options, run_targets)
-status = $?.exitstatus
-
-if options[:remove_html_file] || (status == 0)
-  targets.each { |target| FileUtils.rm_f target }
-end
-
-exit status
+require 'jasmine/headless/cli'
+exit Jasmine::Headless::CLI.run
 

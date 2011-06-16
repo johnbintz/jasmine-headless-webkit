@@ -16,11 +16,7 @@ describe "jasmine-headless-webkit" do
       system %{bin/jasmine-headless-webkit -j spec/jasmine/success/success.yml --report #{report}}
       $?.exitstatus.should == 0
 
-      parts = File.read(report).strip.split('/')
-      parts.length.should == 4
-      parts[0].should == "1"
-      parts[1].should == "0"
-      parts[2].should == "F"
+      report.should be_a_report_containing(1, 0, false)
     end
   end
 
@@ -30,11 +26,7 @@ describe "jasmine-headless-webkit" do
       system %{bin/jasmine-headless-webkit -j spec/jasmine/success_with_error/success_with_error.yml --report #{report}}
       $?.exitstatus.should == 1
 
-      parts = File.read(report).strip.split('/')
-      parts.length.should == 4
-      parts[0].should == "1"
-      parts[1].should == "0"
-      parts[2].should == "F"
+      report.should be_a_report_containing(1, 0, false)
     end
   end
 
@@ -43,11 +35,7 @@ describe "jasmine-headless-webkit" do
       system %{bin/jasmine-headless-webkit -j spec/jasmine/failure/failure.yml --report #{report}}
       $?.exitstatus.should == 1
 
-      parts = File.read(report).strip.split('/')
-      parts.length.should == 4
-      parts[0].should == "1"
-      parts[1].should == "1"
-      parts[2].should == "F"
+      report.should be_a_report_containing(1, 1, false)
     end
   end
 
@@ -56,11 +44,7 @@ describe "jasmine-headless-webkit" do
       system %{bin/jasmine-headless-webkit -j spec/jasmine/console_log/console_log.yml --report #{report}}
       $?.exitstatus.should == 2
 
-      parts = File.read(report).strip.split('/')
-      parts.length.should == 4
-      parts[0].should == "1"
-      parts[1].should == "0"
-      parts[2].should == "T"
+      report.should be_a_report_containing(1, 0, true)
     end
   end
 
@@ -79,11 +63,7 @@ describe "jasmine-headless-webkit" do
         system %{bin/jasmine-headless-webkit -j spec/jasmine/filtered_success/filtered_success.yml --no-full-run --report #{report} ./spec/jasmine/filtered_success/success_one_spec.js}
         $?.exitstatus.should == 0
 
-        parts = File.read(report).strip.split('/')
-        parts.length.should == 4
-        parts[0].should == "1"
-        parts[1].should == "0"
-        parts[2].should == "F"
+        report.should be_a_report_containing(1, 0, false)
       end
     end
 
@@ -92,22 +72,14 @@ describe "jasmine-headless-webkit" do
         system %{bin/jasmine-headless-webkit -j spec/jasmine/filtered_failure/filtered_failure.yml --report #{report} ./spec/jasmine/filtered_failure/failure_spec.js}
         $?.exitstatus.should == 1
 
-        parts = File.read(report).strip.split('/')
-        parts.length.should == 4
-        parts[0].should == "1"
-        parts[1].should == "1"
-        parts[2].should == "F"
+        report.should be_a_report_containing(1, 1, false)
       end
 
       it "should succeed and run both" do
         system %{bin/jasmine-headless-webkit -j spec/jasmine/filtered_success/filtered_success.yml --report #{report} ./spec/jasmine/filtered_success/success_one_spec.js}
         $?.exitstatus.should == 0
 
-        parts = File.read(report).strip.split('/')
-        parts.length.should == 4
-        parts[0].should == "2"
-        parts[1].should == "0"
-        parts[2].should == "F"
+        report.should be_a_report_containing(2, 0, false)
       end
     end
   end

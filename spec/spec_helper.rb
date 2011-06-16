@@ -10,3 +10,13 @@ if !File.file?(specrunner)
   end
 end
 
+RSpec::Matchers.define :be_a_report_containing do |total, fails, used_console|
+  match do |filename|
+    parts = File.read(filename).strip.split('/')
+    parts.length.should == 4
+    parts[0].should == total.to_s
+    parts[1].should == fails.to_s
+    parts[2].should == (used_console ? "T" : "F")
+    true
+  end
+end
