@@ -63,7 +63,6 @@ module Jasmine
         system jasmine_command(run_targets)
         status = $?.exitstatus
 
-        p @options
         if @options[:remove_html_file] || (status == 0)
           targets.each { |target| FileUtils.rm_f target }
         end
