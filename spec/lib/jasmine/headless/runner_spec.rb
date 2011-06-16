@@ -6,6 +6,15 @@ describe Jasmine::Headless::Runner do
   let(:runner) { Jasmine::Headless::Runner.new(options) }
   let(:options) { Jasmine::Headless::Options.new(opts) }
 
+  describe '#initialize' do
+    let(:opts) { { :test => 'test' } }
+
+    it 'should have default options' do
+      runner.options[:test].should == 'test'
+      runner.options[:jasmine_config].should == 'spec/javascripts/support/jasmine.yml'
+    end
+  end
+
   describe '#load_config' do
     include FakeFS::SpecHelpers
 

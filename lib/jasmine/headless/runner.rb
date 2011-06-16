@@ -24,7 +24,10 @@ module Jasmine
 
       RUNNER = File.expand_path('../../../../ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner', __FILE__)
 
-      def self.run(options = DEFAULT_OPTIONS.dup)
+      attr_reader :options
+
+      def self.run(options = {})
+        options = Options.new(options) if !options.kind_of?(Options)
         new(options).run
       end
 
@@ -60,6 +63,7 @@ module Jasmine
         system jasmine_command(run_targets)
         status = $?.exitstatus
 
+        p @options
         if @options[:remove_html_file] || (status == 0)
           targets.each { |target| FileUtils.rm_f target }
         end

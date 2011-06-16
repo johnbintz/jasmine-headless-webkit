@@ -20,3 +20,4 @@ RSpec::Matchers.define :be_a_report_containing do |total, fails, used_console|
     true
   end
 end
+
