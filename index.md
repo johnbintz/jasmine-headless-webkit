@@ -25,7 +25,7 @@ they'll even work when running in the Jasmine gem's server with no changes to yo
 
 `jasmine-headless-webkit` also streamlines your workflow in other ways:
 
-* It integrates with [Guard](https://github.com/guard/guard) when using [`guard-jasmine-headless-webkit`](https://github.com/guard/guard-jasmine-headless-webkit), and it works out-of-the-box with [Autotest](https://github.com/seattlerb/zentest).
+* It integrates with [Guard](https://github.com/guard/guard) when using [`guard-jasmine-headless-webkit`](https://github.com/guard/guard-jasmine-headless-webkit).
 * It compiles [CoffeeScript](http://jashkenas.github.com/coffee-script/), both for your tests and for your application logic.
 * It can be configured like RSpec, and its output is very similar to RSpec's output, so you don't need to learn too much new stuff to use and integrate it.
 
@@ -229,14 +229,21 @@ valuable seconds off of testing with every run, saving you enough time every day
 
 If you don't want this behavior, pass in `--no-full-run` and filtered runs will be the only thing that runs when you request one.
 
+## Running the runner from a Ruby program
+
+You can call the runner from Ruby:
+
+{% highlight ruby %}
+
+{% endhighlight %}
+
 ## Automated testing during development
 
 `jasmine-headless-webkit` works best when it's running all the time, re-running tests when you update the appropriate files.
 If you use [Guard](https://github.com/guard/guard/), install [`guard-jasmine-headless-webkit`](http://github.com/guard/guard-jasmine-headless-webkit/)
 and run `guard init jasmine-headless-webkit` to add the necessary bits to your `Guardfile` to test a Rails 3.1 (or a well-structured Rails 3.0) app.
 
-Support for Autotest is built-in. All you need to do is create a `.jasmine-headless-webkit` file in your project directory
-and Autotest will pick up that you want to use it for Jasmine. _(this only works by itself or with RSpec at the moment)_
+Support for Autotest is deprecated and no new features will be added to the Autotest runners unless provided by other users.
 
 ## Rake tasks
 
