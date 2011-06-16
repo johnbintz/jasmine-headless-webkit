@@ -23,7 +23,6 @@ describe "jasmine-headless-webkit" do
 
   describe 'success but with js error' do
     it "should succeed with error code 0" do
-      p "here"
       system %{bin/jasmine-headless-webkit -j spec/jasmine/success_with_error/success_with_error.yml --report #{report}}
       $?.exitstatus.should == 1
 
