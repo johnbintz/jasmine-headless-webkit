@@ -2,7 +2,7 @@
   var HeadlessReporterResult;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   if (!(typeof jasmine !== "undefined" && jasmine !== null)) {
-    throw new Exception("jasmine not laoded!");
+    throw new Error("jasmine not laoded!");
   }
   HeadlessReporterResult = (function() {
     function HeadlessReporterResult(name) {
