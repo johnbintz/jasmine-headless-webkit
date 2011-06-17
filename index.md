@@ -18,7 +18,7 @@ But there's a solution for fast, accurate browser-based testing, using one of th
 
 ## Enter `jasmine-headless-webkit`
 
-`jasmine-headless-webkit` uses the [Qt WebKit widget](http://trac.webkit.org/wiki/QtWebKit) to run your specs without needing to render a pixel. It's nearly
+`jasmine-headless-webkit` uses the [QtWebKit widget](http://trac.webkit.org/wiki/QtWebKit) to run your specs without needing to render a pixel. It's nearly
 as fast as running in a JavaScript engine like Node.js, and, since it's a real browser environment, all the modules
 you would normally use, like jQuery and Backbone, work without any modifications. If you write your tests correctly,
 they'll even work when running in the Jasmine gem's server with no changes to your code.
@@ -234,7 +234,22 @@ If you don't want this behavior, pass in `--no-full-run` and filtered runs will 
 You can call the runner from Ruby:
 
 {% highlight ruby %}
+require 'jasmine/headless/runner'
 
+status_code = Jasmine::Headless::Runner.run(
+  :colors => false, 
+    #=> true to get colors
+  :remove_html_file => true, 
+    #=> false to keep specrunners on failure
+  :jasmine_config => 'spec/javascripts/support/jasmine.yml',
+    #=> run a different config
+  :report => false, 
+    #=> filename if a report file should be written
+  :full_run => true, 
+    #=> false to not run a full run after a targeted run
+  :files => ['file_one_spec.js', 'file_two_spec.coffee']
+    #=> files to use for a targeted run, [] to run all
+)
 {% endhighlight %}
 
 ## Automated testing during development
@@ -243,7 +258,7 @@ You can call the runner from Ruby:
 If you use [Guard](https://github.com/guard/guard/), install [`guard-jasmine-headless-webkit`](http://github.com/guard/guard-jasmine-headless-webkit/)
 and run `guard init jasmine-headless-webkit` to add the necessary bits to your `Guardfile` to test a Rails 3.1 (or a well-structured Rails 3.0) app.
 
-Support for Autotest is deprecated and no new features will be added to the Autotest runners unless provided by other users.
+Support for Autotest is *deprecated* and no new features will be added to the Autotest runners unless provided by other users.
 
 ## Rake tasks
 
