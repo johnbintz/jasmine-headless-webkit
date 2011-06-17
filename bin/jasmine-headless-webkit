@@ -11,5 +11,9 @@ $:.unshift(File.join(gem_dir, 'lib'))
 puts "Running Jasmine specs..."
 
 require 'jasmine/headless/cli'
-exit Jasmine::Headless::CLI.run
+begin
+  exit Jasmine::Headless::CLI.run
+rescue StandardError => e
+  exit 1
+end
 

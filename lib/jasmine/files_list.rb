@@ -76,7 +76,7 @@ module Jasmine
           CoffeeScript.compile(fh = File.open(file))
         rescue CoffeeScript::CompilationError => ne
           puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), file.color(:yellow), ne.message.to_s.color(:white) ]
-          exit 1
+          raise ne
         ensure
           fh.close
         end
