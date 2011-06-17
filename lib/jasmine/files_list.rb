@@ -81,6 +81,9 @@ module Jasmine
           fh.close
         end
       end
+    rescue StandardError => e
+      puts "[%s] Error in compiling one of the followng: %s" % [ 'coffeescript'.color(:red), files.join(' ').color(:yellow) ]
+      raise e
     ensure
       files.clear
     end
