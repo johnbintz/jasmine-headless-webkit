@@ -3,11 +3,7 @@ require 'jasmine/headless/runner'
 module Jasmine
   module Headless
     class Task
-      begin
-        include Rake::DSL
-      rescue NameError
-        # never mind
-      end
+      include Rake::DSL if defined?(Rake::DSL)
 
       attr_accessor :colors, :keep_on_error, :jasmine_config
 
