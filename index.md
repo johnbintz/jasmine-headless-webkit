@@ -258,6 +258,43 @@ status_code = Jasmine::Headless::Runner.run(
 If you use [Guard](https://github.com/guard/guard/), install [`guard-jasmine-headless-webkit`](http://github.com/guard/guard-jasmine-headless-webkit/)
 and run `guard init jasmine-headless-webkit` to add the necessary bits to your `Guardfile` to test a Rails 3.1 (or a well-structured Rails 3.0) app.
 
+### Rails 3.1 and the Asset Pipeline
+
+Since your JS code can now flow through the Rails 3.1 asset pipeline, and since it's not easy for non-Rails apps to get access to that pipeline,
+testing your pipelined code in Rails 3.1 is a bit more difficult. The best way is to regenrate your code with each change and then run
+`jasmine-headless-webkit` on the code, and now, there's a Guard for that! [`guard-rails-assets`](http://github.com/dnagir/guard-rails-assets) will watch
+your app's code for changes and rebuild your pipelined JS code, ready to be tested with `jasmine-headless-webkit`:
+
+{% highlight ruby %}
+guard 'rails-assets' do
+  watch(%r{^app/assets/javascripts/(.*)\.(js|coffee)$})
+end
+
+guard 'jasmine-headless-webkit' do
+  watch(%r{^public/assets/.*\.js$})
+  watch(%r{^spec/javascripts/.*\.coffee$})
+end
+{% endhighlight %}
+
+### Jammit for JS templates
+
+If you like to use Jammit to shove together your JS templates into one file, you can use a Guard for that, too! [`guard-jammit`](http://github.com/guard/guard-jammit)
+provides Jammit watching support, but the current version (as of 2011-06-18) does not support some changes to Jammit's internals. Use [my fork](http://github.com/johnbintz/guard-jammit)
+until that gets fixed.
+
+{% highlight ruby %}
+guard 'jammit' do
+  watch(%r{^app/views/.*\.jst$$})
+end
+
+guard 'jasmine-headless-webkit' do
+  watch(%r{^public/assets/.*\.js$})
+  watch(%r{^spec/javascripts/.*\.coffee$})
+end
+{% endhighlight %}
+
+### Autotest
+
 Support for Autotest is *deprecated* and no new features will be added to the Autotest runners unless provided by other users.
 
 ## Rake tasks
