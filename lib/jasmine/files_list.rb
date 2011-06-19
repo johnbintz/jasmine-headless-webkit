@@ -66,7 +66,7 @@ module Jasmine
 
     def ensure_coffeescript_run!(files)
       data = StringIO.new
-      files.each { |file| data << File.read(file) }
+      files.each { |file| data << File.read(file) << "\n" }
       data.rewind
 
       %{<script type="text/javascript">#{CoffeeScript.compile(data)}</script>}

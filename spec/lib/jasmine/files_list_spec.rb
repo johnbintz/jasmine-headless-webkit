@@ -129,7 +129,7 @@ describe Jasmine::FilesList do
 
         File.open('test.coffee', 'w') { |fh| fh.print "first" }
 
-        CoffeeScript.stubs(:compile).with() { |field| field.read == "first" }.returns("i compiled")
+        CoffeeScript.stubs(:compile).with() { |field| field.read == "first\n" }.returns("i compiled")
       end
 
       context '#files_to_html' do
@@ -172,7 +172,7 @@ describe Jasmine::FilesList do
 
       context '#files_to_html' do
         it "should create the right HTML" do
-          CoffeeScript.stubs(:compile).with() { |field| field.read == "firstsecond" }.returns("i compiled")
+          CoffeeScript.stubs(:compile).with() { |field| field.read == "first\nsecond\n" }.returns("i compiled")
 
           files_list.files_to_html.should == [
             %{<script type="text/javascript" src="test.js"></script>},
@@ -184,7 +184,7 @@ describe Jasmine::FilesList do
 
       context '#filtered_files_to_html' do
         it "should create the right HTML" do
-          CoffeeScript.stubs(:compile).with() { |field| field.read == "first" }.returns("i compiled")
+          CoffeeScript.stubs(:compile).with() { |field| field.read == "first\n" }.returns("i compiled")
 
           files_list.filtered_files_to_html.should == [
             %{<script type="text/javascript" src="test.js"></script>},
