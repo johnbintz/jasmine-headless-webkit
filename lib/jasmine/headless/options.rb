@@ -1,4 +1,5 @@
 require 'forwardable'
+require 'getoptlong'
 
 module Jasmine
   module Headless

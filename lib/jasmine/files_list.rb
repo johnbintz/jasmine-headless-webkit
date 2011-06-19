@@ -1,4 +1,13 @@
-require 'jasmine'
+begin
+  require 'jasmine'
+rescue NameError => e
+  if e.message['ActiveSupport::Concern']
+    $stderr.puts "[%s] %s (%s)" % [ "jasmine-gem".color(:red), e.message.color(:white), e.class.name.color(:yellow) ]
+    $stderr.puts "#{'Jasmine'.color(:red)} believes Rails 3 is available. Try using #{'Bundler'.color(:green)} and running via #{'bundle exec'.color(:green)}."
+  else
+    raise e
+  end
+end
 
 module Jasmine
   class FilesList
