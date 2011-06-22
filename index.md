@@ -53,6 +53,7 @@ operating systems, so I'm not going to duplicate their work.
 
 * Mac OS X 10.6, with MacPorts Qt and Nokia Qt.mpkg
 * Kubuntu 10.10
+* Arch Linux
 
 If it works in yours, [leave me a message on GitHub](https://github.com/johnbintz) or 
 [fork this site](https://github.com/johnbintz/jasmine-headless-webkit/tree/gh-pages) and add your setup.
