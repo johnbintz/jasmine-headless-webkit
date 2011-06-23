@@ -11,7 +11,7 @@ end
 
 module Jasmine
   class FilesList
-    attr_reader :files, :filtered_files
+    attr_reader :files, :filtered_files, :spec_outside_scope
 
     DEFAULT_FILES = [
       File.join(Jasmine.root, "lib/jasmine.js"),
@@ -23,9 +23,14 @@ module Jasmine
       @options = options
       @files = DEFAULT_FILES.dup
       @filtered_files = @files.dup
+      @spec_outside_scope = false
       use_config! if config?
 
       @code_for_file = {}
+    end
+
+    def has_spec_outside_scope?
+      @spec_outside_scope
     end
 
     def use_spec?(file)
@@ -114,10 +119,12 @@ module Jasmine
 
             @files += found_files
 
-            if searches == 'spec_files'
-              found_files = found_files.find_all { |file| use_spec?(file) }
-            end
-            @filtered_files += found_files
+            @filtered_files += (if searches == 'spec_files'
+              @spec_outside_scope = ((spec_filter | found_files).sort != found_files.sort)
+              spec_filter || found_files
+            else
+              found_files
+            end)
           end
         end
       end

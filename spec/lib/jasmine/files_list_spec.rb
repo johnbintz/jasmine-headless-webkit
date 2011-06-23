@@ -99,15 +99,28 @@ describe Jasmine::FilesList do
       end
     end
 
-    let(:filter) { 'spec/one_spec.js' }
+    context 'filter with a file that is matchable' do
+      let(:filter) { [ File.expand_path('spec/one_spec.js') ] }
 
-    it 'should return all files for files' do
-      files_list.files.any? { |file| file['two_spec.js'] }.should be_true
-      files_list.filtered?.should be_true
+      it 'should return all files for files' do
+        files_list.files.any? { |file| file['two_spec.js'] }.should be_true
+        files_list.filtered?.should be_true
+        files_list.should_not have_spec_outside_scope
+      end
+
+      it 'should return only filtered files for filtered_files' do
+        files_list.filtered_files.any? { |file| file['two_spec.js'] }.should be_false
+        files_list.should_not have_spec_outside_scope
+      end
     end
 
-    it 'should return only filtered files for filtered_files' do
-      files_list.filtered_files.any? { |file| file['two_spec.js'] }.should be_false
+    context 'filter with a file that is not even there' do
+      let(:filter) { [ File.expand_path('spec/whatever.js') ] }
+
+      it 'should use the provided file' do
+        files_list.filtered_files.any? { |file| file['whatever.js'] }.should be_true
+        files_list.should have_spec_outside_scope
+      end
     end
   end
 

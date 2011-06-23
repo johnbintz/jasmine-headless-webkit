@@ -26,7 +26,7 @@ describe "jasmine-headless-webkit" do
       system %{bin/jasmine-headless-webkit -j spec/jasmine/success_with_error/success_with_error.yml --report #{report}}
       $?.exitstatus.should == 1
 
-      report.should be_a_report_containing(1, 0, false)
+      report.should be_a_report_containing(0, 0, false)
     end
   end
 
@@ -61,6 +61,13 @@ describe "jasmine-headless-webkit" do
     context "don't run a full run, just the filtered run" do
       it "should succeed and run both" do
         system %{bin/jasmine-headless-webkit -j spec/jasmine/filtered_success/filtered_success.yml --no-full-run --report #{report} ./spec/jasmine/filtered_success/success_one_spec.js}
+        $?.exitstatus.should == 0
+
+        report.should be_a_report_containing(1, 0, false)
+      end
+
+      it "should use a file outside the normal test run and only run one" do
+        system %{bin/jasmine-headless-webkit -j spec/jasmine/filtered_success/filtered_success.yml --report #{report} ./spec/jasmine/filtered_success/success_other_file.js}
         $?.exitstatus.should == 0
 
         report.should be_a_report_containing(1, 0, false)

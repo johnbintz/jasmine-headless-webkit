@@ -58,7 +58,7 @@ module Jasmine
 
         targets = Jasmine::TemplateWriter.write!(files_list)
         run_targets = targets.dup
-        run_targets.pop if !@options[:full_run] && files_list.filtered?
+        run_targets.pop if (!@options[:full_run] && files_list.filtered?) || files_list.has_spec_outside_scope?
 
         system jasmine_command(run_targets)
         status = $?.exitstatus
