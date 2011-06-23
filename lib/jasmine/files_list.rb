@@ -33,10 +33,6 @@ module Jasmine
       @spec_outside_scope
     end
 
-    def use_spec?(file)
-      spec_filter.empty? || spec_filter.include?(file)
-    end
-
     def filtered?
       files != filtered_files
     end

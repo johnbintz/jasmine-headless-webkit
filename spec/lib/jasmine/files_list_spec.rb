@@ -56,32 +56,6 @@ describe Jasmine::FilesList do
     end
   end
 
-  describe '#use_spec?' do
-    let(:spec_file) { 'my/spec.js' }
-
-    let(:files_list) { Jasmine::FilesList.new(:only => filter) }
-
-    context 'no filter provided' do
-      let(:filter) { [] }
-
-      it "should allow the spec" do
-        files_list.use_spec?(spec_file).should be_true
-      end
-    end
-
-    context 'filter provided' do
-      let(:filter) { [ spec_file ] }
-
-      it "should use the spec" do
-        files_list.use_spec?(spec_file).should be_true
-      end
-
-      it "should not use the spec" do
-        files_list.use_spec?('other/file').should be_false
-      end
-    end
-  end
-
   context 'with filtered specs' do
     let(:files_list) { Jasmine::FilesList.new(:only => filter, :config => config) }
     let(:spec_dir) { 'spec' }
