@@ -1,0 +1,10 @@
+src_files:
+  - spec/jasmine/filtered_success_with_console/src.js
+
+spec_files:
+  - spec/jasmine/filtered_success_with_console/*_spec.js
+
+src_dir: .
+spec_dir: .
+
+

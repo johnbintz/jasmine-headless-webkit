@@ -88,6 +88,13 @@ describe "jasmine-headless-webkit" do
 
         report.should be_a_report_containing(2, 0, false)
       end
+
+      it "should succeed and run both, with the first having a console.log call" do
+        system %{bin/jasmine-headless-webkit -j spec/jasmine/filtered_success_with_console/filtered_success.yml --report #{report} ./spec/jasmine/filtered_success_with_console/success_one_spec.js}
+        $?.exitstatus.should == 2
+
+        report.should be_a_report_containing(2, 0, true)
+      end
     end
   end
 end
