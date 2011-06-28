@@ -5,26 +5,35 @@ require 'jasmine/headless/task'
 module Jasmine
   module Headless
     class Task
-      def desc(block)
-      end
-      def task(block)
-      end
+      def desc(block); end
+      def task(block); end
     end
   end
 end
+
 describe Jasmine::Headless::Task do
-  it 'should not explode when Rails is undefined' do
+  after do
     Object.send(:remove_const, :Rails) if defined?(Rails)
-    Jasmine::Headless::Task.new('jasmine:headless') do |t|
+  end
+
+  context 'without Rails' do
+    it 'should not explode when Rails is undefined' do
+      Jasmine::Headless::Task.new('jasmine:headless')
     end
   end
-  it 'should be OK if rails is defined' do
-    module Rails
-      def self.version
-        return "0"
+
+  context 'with Rails' do
+    before do
+      module Rails
+        def self.version
+          return "0"
+        end
       end
     end
-    Jasmine::Headless::Task.new('jasmine:headless') do |t|
+
+    it 'should be OK if rails is defined' do
+      Jasmine::Headless::Task.new('jasmine:headless')
     end
   end
 end
+
