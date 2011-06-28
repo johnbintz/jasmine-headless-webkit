@@ -35,13 +35,8 @@ module Jasmine
         yield self if block_given?
 
         desc 'Run Jasmine specs headlessly'
-        task name do
-          Jasmine::Headless::Runner.run(
-            :colors => colors,
-            :remove_html_file => !@keep_on_error,
-            :jasmine_config => @jasmine_config
-          )
-        end
+        task(name) { run_rake_task }
+
         create_rails_compliant_task if defined?(Rails)
       end
 
@@ -54,6 +49,19 @@ module Jasmine
 
             Rake::Task['assets:precompile'].invoke
           end
+        end
+      end
+
+      def run_rake_task
+        case Jasmine::Headless::Runner.run(
+          :colors => colors,
+          :remove_html_file => !@keep_on_error,
+          :jasmine_config => @jasmine_config
+        )
+        when 1
+          raise Jasmine::Headless::TestFailure
+        when 2
+          raise Jasmine::Headless::ConsoleLogUsage
         end
       end
     end
