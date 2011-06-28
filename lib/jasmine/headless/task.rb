@@ -9,7 +9,7 @@ module Digest
     def file(file)
       self
     end
-    
+
     def hexdigest
       'test'
     end
@@ -37,23 +37,24 @@ module Jasmine
         desc 'Run Jasmine specs headlessly'
         task name do
           Jasmine::Headless::Runner.run(
-            :colors => colors, 
-            :remove_html_file => !@keep_on_error, 
+            :colors => colors,
+            :remove_html_file => !@keep_on_error,
             :jasmine_config => @jasmine_config
           )
         end
-        create_rails_compliant_task if defined?(Rails) 
+        create_rails_compliant_task if defined?(Rails)
       end
+
       private
       def create_rails_compliant_task
-          if Rails.version >= "3.1.0"
-            desc 'Force generate static assets without an MD5 hash, all assets end with -test.<ext>'
-            task 'assets:precompile:for_testing' => :environment do
-              Rails.application.assets.digest_class = Digest::JasmineTest
+        if Rails.version >= "3.1.0"
+          desc 'Force generate static assets without an MD5 hash, all assets end with -test.<ext>'
+          task 'assets:precompile:for_testing' => :environment do
+            Rails.application.assets.digest_class = Digest::JasmineTest
 
-              Rake::Task['assets:precompile'].invoke
-            end
+            Rake::Task['assets:precompile'].invoke
           end
+        end
       end
     end
   end
