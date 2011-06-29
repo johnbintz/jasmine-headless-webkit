@@ -66,4 +66,36 @@ describe Jasmine::Headless::Options do
       options[:jasmine_config].should == 'test'
     end
   end
+
+  describe '.from_command_line' do
+    before do
+      @argv = ARGV.dup
+    end
+
+    let(:options) { described_class.from_command_line }
+
+    context 'no files specified' do
+      before do
+        ARGV.replace([])
+      end
+
+      it 'should have no files' do
+        options[:files].should == []
+      end
+    end
+
+    context 'files specified' do
+      before do
+        ARGV.replace([ "test" ])
+      end
+
+      it 'should have files' do
+        options[:files].should == [ "test" ]
+      end
+    end
+
+    after do
+      ARGV.replace(@argv)
+    end
+  end
 end

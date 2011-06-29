@@ -73,6 +73,16 @@ describe Jasmine::FilesList do
       end
     end
 
+    context 'empty filter' do
+      let(:filter) { [] }
+
+      it 'should return all files for filtered and all files' do
+        files_list.files.any? { |file| file['two_spec.js'] }.should be_true
+        files_list.filtered?.should be_false
+        files_list.should_not have_spec_outside_scope
+      end
+    end
+
     context 'filter with a file that is matchable' do
       let(:filter) { [ File.expand_path('spec/one_spec.js') ] }
 

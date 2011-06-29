@@ -117,7 +117,7 @@ module Jasmine
 
             @filtered_files += (if searches == 'spec_files'
               @spec_outside_scope = ((spec_filter | found_files).sort != found_files.sort)
-              spec_filter || found_files
+              spec_filter.empty? ? found_files : (spec_filter || found_files)
             else
               found_files
             end)
