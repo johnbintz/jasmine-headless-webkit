@@ -68,7 +68,7 @@ describe Jasmine::FilesList do
     } }
 
     before do
-      %w{one_spec.js two_spec.js}.each do |file|
+      %w{one_spec.js two_spec.js whatever.js}.each do |file|
         File.open(File.join(spec_dir, file), 'w')
       end
     end
@@ -85,6 +85,21 @@ describe Jasmine::FilesList do
 
     context 'filter with a file that is matchable' do
       let(:filter) { [ File.expand_path('spec/one_spec.js') ] }
+
+      it 'should return all files for files' do
+        files_list.files.any? { |file| file['two_spec.js'] }.should be_true
+        files_list.filtered?.should be_true
+        files_list.should_not have_spec_outside_scope
+      end
+
+      it 'should return only filtered files for filtered_files' do
+        files_list.filtered_files.any? { |file| file['two_spec.js'] }.should be_false
+        files_list.should_not have_spec_outside_scope
+      end
+    end
+
+    context 'filter with a glob' do
+      let(:filter) { [ File.expand_path('spec/one*') ] }
 
       it 'should return all files for files' do
         files_list.files.any? { |file| file['two_spec.js'] }.should be_true

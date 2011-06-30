@@ -99,7 +99,7 @@ module Jasmine
     end
 
     def spec_filter
-      @options[:only] || []
+      @spec_filter ||= (@options[:only] ? @options[:only].collect { |path| Dir[path] }.flatten : [])
     end
 
     def use_config!
