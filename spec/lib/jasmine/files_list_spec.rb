@@ -9,8 +9,8 @@ describe Jasmine::FilesList do
   describe '#initialize' do
     it "should have default files" do
       files_list.files.should == [
-        File.join(Jasmine.root, "lib/jasmine.js"),
-        File.join(Jasmine.root, "lib/jasmine-html.js"),
+        File.join(Jasmine::Core.path, "jasmine.js"),
+        File.join(Jasmine::Core.path, "jasmine-html.js"),
         File.expand_path('jasmine/jasmine.headless-reporter.js')
       ]
     end

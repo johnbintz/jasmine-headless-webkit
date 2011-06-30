@@ -14,8 +14,8 @@ module Jasmine
     attr_reader :files, :filtered_files, :spec_outside_scope
 
     DEFAULT_FILES = [
-      File.join(Jasmine.root, "lib/jasmine.js"),
-      File.join(Jasmine.root, "lib/jasmine-html.js"),
+      File.join(Jasmine::Core.path, "jasmine.js"),
+      File.join(Jasmine::Core.path, "jasmine-html.js"),
       File.expand_path('../../../jasmine/jasmine.headless-reporter.js', __FILE__)
     ]
 
