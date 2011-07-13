@@ -19,11 +19,22 @@ module Jasmine
       File.expand_path('../../../jasmine/jasmine.headless-reporter.js', __FILE__)
     ]
 
+    class << self
+      def get_spec_line_numbers(file)
+        Hash[file.lines.each_with_index.collect { |line, index|
+          if description = line[%r{(describe|context|it)[( ]*(["'])(.*)\2}, 3]
+            [ description, index + 1 ]
+          end
+        }.compact]
+      end
+    end
+
     def initialize(options = {})
       @options = options
       @files = DEFAULT_FILES.dup
       @filtered_files = @files.dup
       @spec_outside_scope = false
+      @spec_files = []
       use_config! if config?
 
       @code_for_file = {}
@@ -43,6 +54,18 @@ module Jasmine
 
     def filtered_files_to_html
       to_html(filtered_files)
+    end
+
+    def spec_file_line_numbers
+      @spec_file_line_numbers ||= Hash[@spec_files.collect { |file|
+        if File.exist?(file)
+          if !(lines = self.class.get_spec_line_numbers(File.read(file))).empty?
+            [ file, lines ]
+          end
+        else
+          nil
+        end
+      }.compact]
     end
 
     private
@@ -114,6 +137,10 @@ module Jasmine
             found_files = Dir[path] - @files
 
             @files += found_files
+
+            if searches == 'spec_files'
+              @spec_files = @files + spec_filter
+            end
 
             @filtered_files += (if searches == 'spec_files'
               @spec_outside_scope = ((spec_filter | found_files).sort != found_files.sort)

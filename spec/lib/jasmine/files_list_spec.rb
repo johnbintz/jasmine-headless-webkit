@@ -206,5 +206,68 @@ describe Jasmine::FilesList do
       end
     end
   end
+
+  describe '.get_spec_line_numbers' do
+    let(:line_numbers) do
+      described_class.get_spec_line_numbers(file)
+    end
+
+    context 'coffeescript' do
+      let(:file) do
+        <<-SPEC
+describe 'test', ->
+  context 'yes', ->
+    it 'should do something', ->
+      "yes"
+        SPEC
+      end
+
+      it 'should get the line numbers' do
+        line_numbers['test'].should == 1
+        line_numbers['yes'].should == 2
+        line_numbers['should do something'].should == 3
+      end
+    end
+
+    context 'javascript' do
+      let(:file) do
+        <<-SPEC
+describe('test', function() {
+  context('yes', function() {
+    it('should do something', function() {
+
+    });
+  });
+});
+        SPEC
+      end
+
+      it 'should get the line numbers' do
+        line_numbers['test'].should == 1
+        line_numbers['yes'].should == 2
+        line_numbers['should do something'].should == 3
+      end
+    end
+  end
+
+  describe '#spec_file_line_numbers' do
+    include FakeFS::SpecHelpers
+
+    before do
+      files_list.instance_variable_set(:@spec_files, [
+                                       'test.coffee',
+                                       'test2.coffee'
+      ])
+
+      File.open('test.coffee', 'w') { |fh| fh.print "describe('cat')" }
+      File.open('test2.coffee', 'w') { |fh| fh.print "no matches" }
+    end
+
+    it 'should generate filenames and line number info' do
+      files_list.spec_file_line_numbers.should == {
+        'test.coffee' => { 'cat' => 1 }
+      }
+    end
+  end
 end
 

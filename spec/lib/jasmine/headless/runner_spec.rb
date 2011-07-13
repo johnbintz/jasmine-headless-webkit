@@ -68,5 +68,15 @@ describe Jasmine::Headless::Runner do
     it 'should succeed but with javascript error' do
       Jasmine::Headless::Runner.run(:jasmine_config => 'spec/jasmine/success_with_error/success_with_error.yml').should == 1
     end
+
+    it 'should fail on one test' do
+      Jasmine::Headless::Runner.run(
+        :jasmine_config => 'spec/jasmine/failure/failure.yml',
+        :report => report
+      ).should == 1
+
+      report.should be_a_report_containing(1, 1, false)
+      report.should contain_a_failing_spec(['failure', 'should fail with error code of 1'])
+    end
   end
 end

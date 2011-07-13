@@ -72,7 +72,7 @@ public:
 public slots:
     void log(const QString &msg);
     void specPassed();
-    void specFailed();
+    void specFailed(const QString &specDetail);
     void printName(const QString &name);
     void printResult(const QString &result);
     void finishSuite(const QString &duration, const QString &total, const QString& failed);
@@ -96,6 +96,7 @@ private:
     bool consoleNotUsedThisRun;
     QQueue<QString> runnerFiles;
     QString reportFilename;
+    QStack<QString> failedSpecs;
     
     void red();
     void green();
@@ -201,12 +202,13 @@ void HeadlessSpecRunner::specPassed()
   fflush(stdout);
 }
 
-void HeadlessSpecRunner::specFailed()
+void HeadlessSpecRunner::specFailed(const QString &specDetail)
 {
   consoleNotUsedThisRun = true;
   didFail = true;
   red();
   std::cout << 'F';
+  failedSpecs.push(specDetail);
   clear();
   fflush(stdout);
 }
@@ -292,6 +294,14 @@ void HeadlessSpecRunner::finishSuite(const QString &duration, const QString &tot
       report << qPrintable(total) << "/" << qPrintable(failed) << "/";
       report << (usedConsole ? "T" : "F");
       report << "/" << qPrintable(duration) << "\n";
+
+      QString failedSpec;
+
+      while (!failedSpecs.isEmpty()) {
+        failedSpec = failedSpecs.pop();
+        report << qPrintable(failedSpec) << "\n";
+      }
+
       reportFH.close();
     }
   }

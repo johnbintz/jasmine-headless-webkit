@@ -25,7 +25,17 @@ RSpec::Matchers.define :be_a_report_containing do |total, fails, used_console|
   end
 
   def parts(filename = nil)
-    @parts ||= File.read(filename).strip.split('/')
+    @parts ||= File.readlines(filename).first.strip.split('/')
+  end
+end
+
+RSpec::Matchers.define :contain_a_failing_spec do |*parts|
+  match do |filename|
+    report(filename).include?(parts.join("||")).should be_true
+  end
+
+  def report(filename)
+    @report ||= File.readlines(filename)[1..-1].collect(&:strip)
   end
 end
 
