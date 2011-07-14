@@ -42,9 +42,9 @@ Xvfb or virtual framebuffer Xserver for Version 11 [Xvfb Manpages]
 3. Use Xvfb to run the headless rake command `xvfb-run rake jasmine:headless` or `xvfb-run jasmine-headless-webkit -c`
 4. Reference: [MARTIN DALE LYNESS](http://blog.martin-lyness.com/archives/installing-xvfb-on-ubuntu-9-10-karmic-koala)
 
-## Gotcha(s)
+# Gotcha(s)
 
-# Qt 4.7.X
+## Qt 4.7.X
 
 The gem is compiled using **qt4-qmake** and you will need Qt 4.7.x or greater.
 To test if it is installed, you should run `qmake --version` and you should
