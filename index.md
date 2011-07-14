@@ -329,7 +329,7 @@ rake jasmine:headless     # Run Jasmine specs headlessly
 
 This is the same as running `jasmine-headless-webkit -c`.
 
-## Continuous Integration and Using Xvfb
+## Continuous Integration Using Xvfb
 
 Since most continuous integration servers do not have a display, you will need to use
 Xvfb or virtual framebuffer Xserver for Version 11. If you elect not to use Xvfb, you will
