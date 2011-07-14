@@ -1,10 +1,9 @@
 (function() {
-  var HeadlessReporterResult;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   if (!(typeof jasmine !== "undefined" && jasmine !== null)) {
     throw new Error("jasmine not laoded!");
   }
-  HeadlessReporterResult = (function() {
+  window.HeadlessReporterResult = (function() {
     function HeadlessReporterResult(name, splitName) {
       this.name = name;
       this.splitName = splitName;
@@ -32,18 +31,32 @@
       return _results;
     };
     HeadlessReporterResult.prototype._findSpecLine = function() {
-      var bestChoice, file, index, lineNumber, lines, newLineNumber;
+      var bestChoice, file, index, lastLine, line, lineNumber, lines, newLineNumberInfo, _i, _len, _ref;
       bestChoice = {
         accuracy: 0,
         file: null,
         lineNumber: null
       };
-      for (file in SPEC_LINE_NUMBERS) {
-        lines = SPEC_LINE_NUMBERS[file];
+      _ref = HeadlessReporterResult.specLineNumbers;
+      for (file in _ref) {
+        lines = _ref[file];
         index = 0;
-        while (newLineNumber = lines[this.splitName[index]]) {
+        lineNumber = 0;
+        while (newLineNumberInfo = lines[this.splitName[index]]) {
+          if (newLineNumberInfo.length === 0) {
+            lineNumber = newLineNumberInfo[0];
+          } else {
+            lastLine = null;
+            for (_i = 0, _len = newLineNumberInfo.length; _i < _len; _i++) {
+              line = newLineNumberInfo[_i];
+              lastLine = line;
+              if (line > lineNumber) {
+                break;
+              }
+            }
+            lineNumber = lastLine;
+          }
           index++;
-          lineNumber = newLineNumber;
         }
         if (index > bestChoice.accuracy) {
           bestChoice = {

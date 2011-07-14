@@ -1,7 +1,7 @@
 if !jasmine?
   throw new Error("jasmine not laoded!")
 
-class HeadlessReporterResult
+class window.HeadlessReporterResult
   constructor: (@name, @splitName) ->
     @results = []
   addResult: (message) ->
@@ -18,11 +18,21 @@ class HeadlessReporterResult
   _findSpecLine: ->
     bestChoice = { accuracy: 0, file: null, lineNumber: null }
 
-    for file, lines of SPEC_LINE_NUMBERS
+    for file, lines of HeadlessReporterResult.specLineNumbers
       index = 0
-      while newLineNumber = lines[@splitName[index]]
+      lineNumber = 0
+      while newLineNumberInfo = lines[@splitName[index]]
+        if newLineNumberInfo.length == 0
+          lineNumber = newLineNumberInfo[0]
+        else
+          lastLine = null
+          for line in newLineNumberInfo
+            lastLine = line
+            break if line > lineNumber
+
+          lineNumber = lastLine
+
         index++
-        lineNumber = newLineNumber
 
       if index > bestChoice.accuracy
         bestChoice = { accuracy: index, file: file, lineNumber: lineNumber }

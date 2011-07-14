@@ -1,0 +1,5 @@
+src_files: [ 'jasmine/*.coffee' ]
+spec_files: [ 'spec/javascripts/*_spec.coffee' ]
+src_dir: .
+spec_dir: .
+

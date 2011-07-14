@@ -34,7 +34,7 @@ module Jasmine
   </script>
   #{files.join("\n")}
   <script type="text/javascript">
-SPEC_LINE_NUMBERS = #{MultiJson.encode(spec_lines)};
+HeadlessReporterResult.specLineNumbers = #{MultiJson.encode(spec_lines)};
   </script>
 </head>
 <body>

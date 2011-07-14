@@ -21,11 +21,15 @@ module Jasmine
 
     class << self
       def get_spec_line_numbers(file)
-        Hash[file.lines.each_with_index.collect { |line, index|
+        line_numbers = {}
+
+        file.lines.each_with_index.each { |line, index|
           if description = line[%r{(describe|context|it)[( ]*(["'])(.*)\2}, 3]
-            [ description, index + 1 ]
+            (line_numbers[description] ||= []) << (index + 1)
           end
-        }.compact]
+        }
+
+        line_numbers
       end
     end
 
