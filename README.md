@@ -76,7 +76,7 @@ There are excellent [directions](http://doc.qt.nokia.com/latest/install-x11.html
 the source code. You will need to ensure Qt is exported to your $PATH before using qmake, as it will
 install to /usr/local/Trolltech/.
 
-**RubyMine**
+## RubyMine
 
 RubyMine may throw an error when running rake spec, you will need to provide a
 JavaScript runtime environment. Install `gem "therubyracer"` to resolve this problem.
