@@ -22,7 +22,8 @@ module Jasmine
         'src_files' => []
       }
 
-      RUNNER = File.expand_path('../../../../ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner', __FILE__)
+      RUNNER_DIR = File.expand_path('../../../../ext/jasmine-webkit-specrunner', __FILE__)
+      RUNNER = File.join(RUNNER_DIR, 'jasmine-webkit-specrunner')
 
       attr_reader :options
 
@@ -32,7 +33,13 @@ module Jasmine
       end
 
       def initialize(options)
-        raise NoRunnerError if !File.file?(RUNNER)
+        if !File.file?(RUNNER)
+          $stderr.puts "No runner found, attempting to compile..."
+          Dir.chdir RUNNER_DIR do
+            system %{ruby extconf.rb}
+          end
+          raise NoRunnerError if !File.file?(RUNNER)
+        end
 
         @options = options
       end
