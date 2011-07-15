@@ -1,3 +1,8 @@
+## 0.5.1
+
+* File and line number information for failing specs
+* Try to build the runner if it's missing
+
 ## 0.5.0
 
 * Run all tests after focused run if `console.log` was used
