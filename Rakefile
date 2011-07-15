@@ -7,6 +7,12 @@ require 'rspec/core/rake_task'
 
 RSpec::Core::RakeTask.new(:spec)
 
+$: << File.expand_path('../lib', __FILE__)
+
+require 'jasmine/headless/task'
+
+Jasmine::Headless::Task.new
+
 namespace :spec do
   desc "Run on three Rubies"
   task :platforms do
@@ -30,5 +36,5 @@ namespace :spec do
   end
 end
 
-task :default => 'spec:platforms'
+task :default => [ 'spec:platforms', 'jasmine:headless' ]
 
