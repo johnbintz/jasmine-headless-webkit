@@ -381,7 +381,7 @@ int main(int argc, char** argv)
 
     QApplication app(argc, argv);
     HeadlessSpecRunner runner;
-    runner.setColors(true);
+    runner.setColors(showColors);
     runner.reportFile(reporter);
 
     for (index = optind; index < argc; index++) {
