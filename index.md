@@ -47,16 +47,56 @@ to use the Jasmine gem:
 
 ### What do I need to get it working?
 
-Installation requires Qt 4.7.  [`capybara-webkit`](https://github.com/thoughtbot/capybara-webkit) has the best instructions for installing Qt on various
-operating systems, so I'm not going to duplicate their work.
-`jasmine-headless-webkit` has been tested in the following environments:
+Installation requires Qt 4.7. `jasmine-headless-webkit` has been tested in the following environments:
 
 * Mac OS X 10.6, with MacPorts Qt and Nokia Qt.mpkg
-* Kubuntu 10.10
+* Kubuntu 10.10 and 10.04
+* Ubuntu 11.04 9.10
 * Arch Linux
 
 If it works in yours, [leave me a message on GitHub](https://github.com/johnbintz) or 
 [fork this site](https://github.com/johnbintz/jasmine-headless-webkit/tree/gh-pages) and add your setup.
+
+## Qt 4.7.X
+
+The gem is compiled using **qt4-qmake** and you will need Qt 4.7.x or greater.
+Test that qt4-qmake it is installed and verify your version.
+     qmake --version
+
+If you have the Qt 4.7.x or greater, you are ready to install jasmine-headless-webkit.
+     QMake version 2.01a
+     Using Qt version 4.7.2 in /usr/lib
+
+If you receive a different message, you can install qt4-qmake using one of the following commands as root:
+
+### Ubuntu 11.04
+
+``` bash
+sudo apt-get install libqt4-dev
+sudo apt-get install qt4-qmake
+```
+
+### Mac OS X 10.6
+
+``` bash
+sudo port install qt4-mac
+```
+
+### Ubuntu 9.10
+
+Running `sudo apt-get install libqt4-dev` and `sudo apt-get install qt4-qmake` will install qt4,
+but it installs **version 4.5.2**, which will not be able to compile 
+**jasmine-headless-webkit**, as it requires Qt 4.7.X or greater.
+
+You will need to compile qt4-qmake from source
+[Qt version 4.7.0](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.0.tar.gz).
+There are excellent [directions](http://doc.qt.nokia.com/latest/install-x11.html) on how to compile
+the source code. You will need to ensure Qt is exported to your $PATH before using qmake, as the source code will
+install to /usr/local/Trolltech/.
+
+### My OS isn't on here!
+[`capybara-webkit`](https://github.com/thoughtbot/capybara-webkit) has the best instructions for installing Qt on various other
+systems that may not be covered here.
 
 ### How does it work?
 
@@ -398,39 +438,6 @@ to X server.
      xvfb-run jasmine-headless-webkit -c
 
 Reference: [MARTIN DALE LYNESS](http://blog.martin-lyness.com/archives/installing-xvfb-on-ubuntu-9-10-karmic-koala)
-
-## Qt 4.7.X
-
-The gem is compiled using **qt4-qmake** and you will need Qt 4.7.x or greater.
-Test that qt4-qmake it is installed and verify your version.
-     qmake --version
-
-If you have the Qt 4.7.x or greater, you are ready to install jasmine-headless-webkit.
-     QMake version 2.01a
-     Using Qt version 4.7.2 in /usr/lib
-
-If you receive a different message, you can install qt4-qmake using one of the following commands as root.
-
-### Ubuntu 11.04
-
-     sudo apt-get install libqt4-dev
-     sudo apt-get install qt4-qmake
-
-### Mac OS X 10.6
-
-     sudo port install qt4-mac
-
-### Ubuntu 9.10
-
-Running `sudo apt-get install libqt4-dev` and `sudo apt-get install qt4-qmake` will install qt4,
-but it installs **version 4.5.2**, which will not be able to compile 
-**jasmine-headless-webkit**, as it requires Qt 4.7.X or greater.
-
-You will need to compile qt4-qmake from source
-[Qt version 4.7.0](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.0.tar.gz).
-There are excellent [directions](http://doc.qt.nokia.com/latest/install-x11.html) on how to compile
-the source code. You will need to ensure Qt is exported to your $PATH before using qmake, as the source code will
-install to /usr/local/Trolltech/.
 
 ## RubyMine
 
