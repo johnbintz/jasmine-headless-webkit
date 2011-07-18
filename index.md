@@ -329,6 +329,130 @@ rake jasmine:headless     # Run Jasmine specs headlessly
 
 This is the same as running `jasmine-headless-webkit -c`.
 
+## Continuous Integration Using Xvfb
+
+Since most continuous integration servers do not have a display, you will need to use
+Xvfb or virtual framebuffer Xserver for Version 11. If you elect not to use Xvfb, you will
+need to have a browser and graphical display to run `jasmine-headless-webkit -c`.
+
+Reference: [Xvfb Manpages](http://manpages.ubuntu.com/manpages/natty/man1/Xvfb.1.html)
+
+### Install Xvfb
+      sudo apt-get install xvfb
+
+### Resolve Missing Dependencies
+To resolve missing dependencies, you will need to know what to install.
+	$ Xvfb :99 -ac
+You will see a long list of warning messages:
+
+     [dix] Could not init font path element /usr/share/fonts/X11/misc,
+     removing from list!
+     [dix] Could not init font path element /usr/share/fonts/X11/cyrillic,
+     removing from list!
+     [dix] Could not init font path element 
+     /usr/share/fonts/X11/100dpi/:unscaled, removing from list!
+     [dix] Could not init font path element
+      /usr/share/fonts/X11/75dpi/:unscaled, removing from list!
+     [dix] Could not init font path element 
+     /usr/share/fonts/X11/Type1, removing from list!
+     [dix] Could not init font path element 
+     /usr/share/fonts/X11/100dpi, removing from list!
+     [dix] Could not init font path element 
+     /usr/share/fonts/X11/75dpi, removing from list!
+     sh: /usr/bin/xkbcomp: not found
+     (EE) Error compiling keymap (server-42)
+     (EE) XKB: Couldn't compile keymap
+     [config/dbus] couldn't take over org.x.config:
+     org.freedesktop.DBus.Error.AccessDenied 
+     (Connection ":1.74" is not allowed to
+     own the service "org.x.config.display99" 
+     due to security policies in the configuration file)	
+
+Installing the following packages would resolve the above warning messages. Your
+missing packages may be different depending on the packages you have installed.
+     sudo apt-get install x11-xkb-utils
+     sudo apt-get install xfonts-100dpi xfonts-75dpi 
+     sudo apt-get install xfonts-scalable xfonts-cyrillic
+     sudo apt-get install xserver-xorg-core
+
+Once you have resolved these dependencies, you should see:
+     [dix] Could not init font path element /usr/share/fonts/X11/misc,
+     removing from list!
+     [dix] Could not init font path element /usr/share/fonts/X11/cyrillic,
+     removing from list!
+     [dix] Could not init font path element 
+     /usr/share/fonts/X11/100dpi/:unscaled, removing from list!
+     [dix] Could not init font path element
+      /usr/share/fonts/X11/75dpi/:unscaled, removing from list!
+     [dix] Could not init font path element 
+     /usr/share/fonts/X11/Type1, removing from list!
+     [dix] Could not init font path element 
+     /usr/share/fonts/X11/100dpi, removing from list!
+     [dix] Could not init font path element 
+     /usr/share/fonts/X11/75dpi, removing from list!
+
+### Run with Xvfb
+Use Xvfb to run the headless rake command. This will resolve the issue of jasmine-webkit-specrunner failing to connect
+to X server.
+     xvfb-run rake jasmine:headless 
+     xvfb-run jasmine-headless-webkit -c
+
+Reference: [MARTIN DALE LYNESS](http://blog.martin-lyness.com/archives/installing-xvfb-on-ubuntu-9-10-karmic-koala)
+
+## Qt 4.7.X
+
+The gem is compiled using **qt4-qmake** and you will need Qt 4.7.x or greater.
+Test that qt4-qmake it is installed and verify your version.
+     qmake --version
+
+If you have the Qt 4.7.x or greater, you are ready to install jasmine-headless-webkit.
+     QMake version 2.01a
+     Using Qt version 4.7.2 in /usr/lib
+
+If you receive a different message, you can install qt4-qmake using one of the following commands as root.
+
+### Ubuntu 11.04
+
+     sudo apt-get install libqt4-dev
+     sudo apt-get install qt4-qmake
+
+### Mac OS X 10.6
+
+     sudo port install qt4-mac
+
+### Ubuntu 9.10
+
+Running `sudo apt-get install libqt4-dev` and `sudo apt-get install qt4-qmake` will install qt4,
+but it installs **version 4.5.2**, which will not be able to compile 
+**jasmine-headless-webkit**, as it requires Qt 4.7.X or greater.
+
+You will need to compile qt4-qmake from source
+[Qt version 4.7.0](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.0.tar.gz).
+There are excellent [directions](http://doc.qt.nokia.com/latest/install-x11.html) on how to compile
+the source code. You will need to ensure Qt is exported to your $PATH before using qmake, as the source code will
+install to /usr/local/Trolltech/.
+
+## RubyMine
+
+RubyMine may throw an error when running rake spec, you will need to provide a
+JavaScript runtime environment.
+
+     rake aborted!
+     Could not find a JavaScript runtime.
+     See https://github.com/sstephenson/execjs
+     for a list of available runtimes.
+
+To resolve this problem, install the **therubyracer** gem, which is the embed V8 JavaScript interpreter into Ruby.
+Reference: [therubyracer](https://github.com/cowboyd/therubyracer)
+
+You can use it standalone:
+
+    gem install therubyracer
+
+Or you can use it with Bundler:
+
+    gem 'therubyracer'
+
 ## I have a problem or helpful suggestion, good sir.
 
 Here's what you can do:
