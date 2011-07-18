@@ -1,8 +1,6 @@
-case RUBY_PLATFORM
-when /linux/
-	system %{qmake -spec linux-g++}
-else
-	system %{qmake -spec macx-g++}
-end
+$: << File.expand_path("../../../lib", __FILE__)
 
-system %{make}
+require 'qt/qmake'
+
+Qt::Qmake.make!('jasmine-headless-webkit')
+
