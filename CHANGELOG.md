@@ -2,6 +2,7 @@
 
 * File and line number information for failing specs
 * Try to build the runner if it's missing
+* Kill warnings and streamline includes
 
 ## 0.5.0
 
