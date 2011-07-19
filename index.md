@@ -60,6 +60,11 @@ If it works in yours, [leave me a message on GitHub](https://github.com/johnbint
 ## Qt 4.7.X
 
 The gem is compiled using **qt4-qmake** and you will need Qt 4.7.x or greater.
+The version you have installed should be detected correctly, and the appropriate message for installing Qt should
+be given if it's wrong. If it's not, please file a new issue!
+
+### Manually checking the Qt version
+
 Test that qt4-qmake it is installed and verify your version.
      qmake --version
 
