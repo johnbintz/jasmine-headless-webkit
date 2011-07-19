@@ -380,6 +380,7 @@ int main(int argc, char** argv)
     }
 
     QApplication app(argc, argv);
+    app.setApplicationName("jasmine-headless-webkit");
     HeadlessSpecRunner runner;
     runner.setColors(showColors);
     runner.reportFile(reporter);
