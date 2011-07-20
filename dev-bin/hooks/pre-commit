@@ -1,0 +1,5 @@
+#!/bin/bash
+
+bundle exec rake
+if [ $? -ne 0 ]; then exit 1; fi
+

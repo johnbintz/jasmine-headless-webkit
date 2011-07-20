@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for i in $PWD/dev-bin/hooks/*; do
+  ln -sf $i .git/hooks/${i##*/}
+done
+

@@ -3,7 +3,6 @@ require 'jasmine/headless/options'
 
 require 'fileutils'
 
-require 'jasmine/base'
 require 'coffee-script'
 require 'rainbow'
 

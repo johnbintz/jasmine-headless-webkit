@@ -21,16 +21,32 @@ describe Jasmine::Headless::Task do
     end
 
     context 'with Rails' do
-      before do
-        module Rails
-          def self.version
-            return "0"
+      context 'without version' do
+        before do
+          module Rails
+            def self.version
+              return "0"
+            end
           end
+        end
+
+        it 'should be OK if rails is defined' do
+          Jasmine::Headless::Task.new('jasmine:headless')
         end
       end
 
-      it 'should be OK if rails is defined' do
-        Jasmine::Headless::Task.new('jasmine:headless')
+      context 'with version' do
+        before do
+          module Rails
+            def self.version
+              return "0"
+            end
+          end
+        end
+
+        it 'should be OK if rails is defined' do
+          Jasmine::Headless::Task.new('jasmine:headless')
+        end
       end
     end
   end

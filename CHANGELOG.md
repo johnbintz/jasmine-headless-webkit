@@ -2,8 +2,7 @@
 
 * File and line number information for failing specs
 * Try to build the runner if it's missing
-* Smarter directions on getting the right version of Qt installed
-* Various bugfixes for things
+* Kill warnings and streamline includes
 
 ## 0.5.0
 
