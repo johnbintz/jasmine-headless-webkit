@@ -1,7 +1,9 @@
-## 0.5.1
+## 0.6.0
 
 * File and line number information for failing specs
 * Try to build the runner if it's missing
+* Smarter directions on getting the right version of Qt installed
+* Various bugfixes for things
 
 ## 0.5.0
 
