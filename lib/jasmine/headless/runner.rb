@@ -9,6 +9,8 @@ require 'rainbow'
 require 'jasmine/files_list'
 require 'jasmine/template_writer'
 
+require 'yaml'
+
 module Jasmine
   module Headless
     class Runner
