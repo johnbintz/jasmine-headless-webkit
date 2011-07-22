@@ -72,9 +72,9 @@ describe "jasmine-headless-webkit" do
   describe 'tries to click a button' do
     it "should not leave the page nor loop" do
       system %{bin/jasmine-headless-webkit -j spec/jasmine/click_button/click_button.yml --report #{report}}
-      $?.exitstatus.should == 1
+      $?.exitstatus.should == 0
 
-      report.should be_a_report_containing(2, 0, false)
+      report.should be_a_report_containing(0, 0, false)
     end
   end
 
