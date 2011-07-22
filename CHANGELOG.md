@@ -1,3 +1,8 @@
+## 0.6.1
+
+* Ensure YAML is loaded before use
+* Make sure specs can't break out of the page they're running in
+
 ## 0.6.0
 
 * File and line number information for failing specs
