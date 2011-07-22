@@ -13,8 +13,7 @@ class window.HeadlessReporterResult
 
     JHW.printName(output)
     for result in @results
-      do (result) =>
-        JHW.printResult(result)
+      JHW.printResult(result)
   _findSpecLine: ->
     bestChoice = { accuracy: 0, file: null, lineNumber: null }
 
@@ -56,8 +55,7 @@ class jasmine.HeadlessReporter
     @length = 0
   reportRunnerResults: (runner) ->
     for result in @results
-      do (result) =>
-        result.print()
+      result.print()
 
     this.callback() if @callback
     JHW.finishSuite((new Date() - @startTime) / 1000.0, @length, @failedCount)
@@ -73,9 +71,8 @@ class jasmine.HeadlessReporter
       @failedCount++
       failureResult = new HeadlessReporterResult(spec.getFullName(), spec.getSpecSplitName())
       for result in results.getItems()
-        do (result) =>
-          if result.type == 'expect' and !result.passed_
-            failureResult.addResult(result.message)
+        if result.type == 'expect' and !result.passed_
+          failureResult.addResult(result.message)
       @results.push(failureResult)
   reportSpecStarting: (spec) ->
   reportSuiteResults: (suite) ->

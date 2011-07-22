@@ -69,6 +69,15 @@ describe "jasmine-headless-webkit" do
     end
   end
 
+  describe 'tries to click a button' do
+    it "should not leave the page nor loop" do
+      system %{bin/jasmine-headless-webkit -j spec/jasmine/click_button/click_button.yml --report #{report}}
+      $?.exitstatus.should == 1
+
+      report.should be_a_report_containing(2, 0, false)
+    end
+  end
+
   describe 'with filtered run' do
     context "don't run a full run, just the filtered run" do
       it "should succeed and run both" do

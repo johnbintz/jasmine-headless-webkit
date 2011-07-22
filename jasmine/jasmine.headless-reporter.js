@@ -1,5 +1,4 @@
 (function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   if (!(typeof jasmine !== "undefined" && jasmine !== null)) {
     throw new Error("jasmine not laoded!");
   }
@@ -24,9 +23,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         result = _ref[_i];
-        _results.push(__bind(function(result) {
-          return JHW.printResult(result);
-        }, this)(result));
+        _results.push(JHW.printResult(result));
       }
       return _results;
     };
@@ -90,14 +87,11 @@
       this.length = 0;
     }
     HeadlessReporter.prototype.reportRunnerResults = function(runner) {
-      var result, _fn, _i, _len, _ref;
+      var result, _i, _len, _ref;
       _ref = this.results;
-      _fn = __bind(function(result) {
-        return result.print();
-      }, this);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         result = _ref[_i];
-        _fn(result);
+        result.print();
       }
       if (this.callback) {
         this.callback();
@@ -108,7 +102,7 @@
       return this.startTime = new Date();
     };
     HeadlessReporter.prototype.reportSpecResults = function(spec) {
-      var failureResult, result, results, _fn, _i, _len, _ref;
+      var failureResult, result, results, _i, _len, _ref;
       results = spec.results();
       this.length++;
       if (results.passed()) {
@@ -118,14 +112,11 @@
         this.failedCount++;
         failureResult = new HeadlessReporterResult(spec.getFullName(), spec.getSpecSplitName());
         _ref = results.getItems();
-        _fn = __bind(function(result) {
-          if (result.type === 'expect' && !result.passed_) {
-            return failureResult.addResult(result.message);
-          }
-        }, this);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           result = _ref[_i];
-          _fn(result);
+          if (result.type === 'expect' && !result.passed_) {
+            failureResult.addResult(result.message);
+          }
         }
         return this.results.push(failureResult);
       }
