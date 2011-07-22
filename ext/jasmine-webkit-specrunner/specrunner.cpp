@@ -35,6 +35,9 @@
 class HeadlessSpecRunnerPage: public QWebPage
 {
   Q_OBJECT
+public:
+  HeadlessSpecRunnerPage();
+  void oneFalseConfirm();
 signals:
   void consoleLog(const QString &msg, int lineNumber, const QString &sourceID);
   void internalLog(const QString &note, const QString &msg);
@@ -42,7 +45,16 @@ protected:
   void javaScriptConsoleMessage(const QString & message, int lineNumber, const QString & sourceID);
   bool javaScriptConfirm(QWebFrame *frame, const QString &msg);
   void javaScriptAlert(QWebFrame *frame, const QString &msg);
+private:
+  bool confirmResult;
 };
+
+HeadlessSpecRunnerPage::HeadlessSpecRunnerPage()
+  : QWebPage()
+  , confirmResult(true)
+{
+
+}
 
 void HeadlessSpecRunnerPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
 {
@@ -51,13 +63,23 @@ void HeadlessSpecRunnerPage::javaScriptConsoleMessage(const QString &message, in
 
 bool HeadlessSpecRunnerPage::javaScriptConfirm(QWebFrame *frame, const QString &msg)
 {
-  emit internalLog("TODO", "jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm for now. Returning true."); 
-  return true;
+  if (confirmResult) {
+    emit internalLog("TODO", "jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm for now. Returning true."); 
+    return true;
+  } else {
+    confirmResult = true;
+    return false;
+  }
 }
 
 void HeadlessSpecRunnerPage::javaScriptAlert(QWebFrame *frame, const QString &msg)
 {
   emit internalLog("alert", msg);
+}
+
+void HeadlessSpecRunnerPage::oneFalseConfirm()
+{
+  confirmResult = false;
 }
 
 class HeadlessSpecRunner: public QObject
@@ -71,6 +93,7 @@ public:
     void go();
 public slots:
     void log(const QString &msg);
+    void leavePageAttempt(const QString &msg);
     void specPassed();
     void specFailed(const QString &specDetail);
     void printName(const QString &name);
@@ -248,6 +271,16 @@ void HeadlessSpecRunner::log(const QString &msg)
     std::cout << std::endl;
   std::cout << qPrintable(msg);
   std::cout << std::endl;
+}
+
+void HeadlessSpecRunner::leavePageAttempt(const QString &msg)
+{
+  red();
+  std::cout << "[error] ";
+  clear();
+  std::cout << qPrintable(msg) << std::endl;
+  m_page.oneFalseConfirm();
+  hasErrors = true;
 }
 
 void HeadlessSpecRunner::printName(const QString &name)

@@ -31,6 +31,16 @@ module Jasmine
     }, pp: function(data) {
       JHW.log(jasmine ? jasmine.pp(data) : JSON.stringify(data));
     } };
+
+    window.onbeforeunload = function(e) {
+      JHW.leavePageAttempt('The code tried to leave the test page. Check for unhandled form submits and link clicks.');
+
+      if (e = e || window.event) {
+        e.returnValue = "leaving";
+      }
+
+      return "leaving";
+    };
   </script>
   #{files.join("\n")}
   <script type="text/javascript">
@@ -40,7 +50,9 @@ HeadlessReporterResult.specLineNumbers = #{MultiJson.encode(spec_lines)};
 <body>
 
 <script type="text/javascript">
-  jasmine.getEnv().addReporter(new jasmine.HeadlessReporter());
+  jasmine.getEnv().addReporter(new jasmine.HeadlessReporter(function() {
+    window.onbeforeunload = null;
+  }));
   jasmine.getEnv().execute();
 </script>
 

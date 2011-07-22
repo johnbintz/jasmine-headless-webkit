@@ -83,7 +83,8 @@
     return parts;
   };
   jasmine.HeadlessReporter = (function() {
-    function HeadlessReporter() {
+    function HeadlessReporter(callback) {
+      this.callback = callback != null ? callback : null;
       this.results = [];
       this.failedCount = 0;
       this.length = 0;
@@ -97,6 +98,9 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         result = _ref[_i];
         _fn(result);
+      }
+      if (this.callback) {
+        this.callback();
       }
       return JHW.finishSuite((new Date() - this.startTime) / 1000.0, this.length, this.failedCount);
     };

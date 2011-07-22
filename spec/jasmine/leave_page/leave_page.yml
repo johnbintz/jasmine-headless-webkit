@@ -1,0 +1,9 @@
+src_files:
+  - spec/jasmine/leave_page/leave_page.js
+
+spec_files:
+  - spec/jasmine/leave_page/leave_page_spec.js
+
+src_dir: .
+spec_dir: .
+

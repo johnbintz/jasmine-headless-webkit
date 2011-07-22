@@ -50,7 +50,7 @@ jasmine.Spec.prototype.getSpecSplitName = ->
   parts
 
 class jasmine.HeadlessReporter
-  constructor: ->
+  constructor: (@callback = null) ->
     @results = []
     @failedCount = 0
     @length = 0
@@ -59,6 +59,7 @@ class jasmine.HeadlessReporter
       do (result) =>
         result.print()
 
+    this.callback() if @callback
     JHW.finishSuite((new Date() - @startTime) / 1000.0, @length, @failedCount)
   reportRunnerStarting: (runner) ->
     @startTime = new Date()
