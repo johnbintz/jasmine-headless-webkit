@@ -17,6 +17,8 @@ module Qt
         case platform
         when :linux
           "#{path} -spec linux-g++"
+        when :freebsd
+          "#{path} -spec freebsd-g++"
         when :mac_os_x
           "#{path} -spec macx-g++"
         end
@@ -37,17 +39,19 @@ module Qt
       # We need integration tests for these!
       #
       def path
-        get_exe_path('qmake')
+        get_exe_path('qmake-qt4') || get_exe_path('qmake')
       end
 
       def make_path
-        get_exe_path('make')
+         get_exe_path('gmake') || get_exe_path('make')
       end
 
       def platform
         case RbConfig::CONFIG['host_os']
         when /linux/
           :linux
+	when /freebsd/i
+	  :freebsd
         when /darwin/
           :mac_os_x
         end
@@ -77,6 +81,8 @@ module Qt
             case platform
             when :linux
               %{sudo apt-get install make or sudo yum install make}
+            when :freebsd
+              %{install /usr/ports/devel/gmake}
             when :darwin
               %{Install XCode, and/or sudo port install make}
             end
@@ -98,6 +104,10 @@ MSG
               <<-MSG
 sudo apt-get install libqt4-dev qt4-qmake on Debian-based systems, or downloading
 Nokia's prebuilt binary at http://qt.nokia.com/downloads/
+MSG
+            when :freebsd
+              <<-MSG
+Install /usr/ports/devel/qmake4.
 MSG
             when :darwin
               <<-MSG
@@ -122,6 +132,10 @@ MSG
               <<-MSG
 sudo apt-get install libqt4-dev qt4-qmake on Debian-based systems, or downloading
 Nokia's prebuilt binary at http://qt.nokia.com/downloads/
+MSG
+            when :freebsd
+              <<-MSG
+Install /usr/ports/www/qt4-webkit.
 MSG
             when :darwin
               <<-MSG
