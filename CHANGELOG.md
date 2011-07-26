@@ -2,6 +2,7 @@
 
 * Ensure YAML is loaded before use
 * Make sure specs can't break out of the page they're running in
+* Fix compilation on FreeBSD
 
 ## 0.6.0
 
