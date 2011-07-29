@@ -98,7 +98,7 @@ MSG
 
       def check_qmake!
         if !installed?
-          install_method = strip(
+          install_method = (
             case platform
             when :linux
               <<-MSG
@@ -115,7 +115,7 @@ sudo port install qt4-mac (for the patient) or downloading Nokia's pre-built bin
 at http://qt.nokia.com/downloads/
 MSG
             end
-          )
+          ).strip
 
           $stderr.puts <<-MSG
 qmake is not installed. You'll need to install it to build #{@name}.
@@ -126,7 +126,7 @@ MSG
 
       def check_qmake_version!
         if !qt_47_or_better?
-          install_method = strip(
+          install_method = (
             case platform
             when :linux
               <<-MSG
@@ -143,7 +143,7 @@ sudo port install qt4-mac (for the patient) or downloading Nokia's pre-built bin
 at http://qt.nokia.com/downloads/
 MSG
             end
-          )
+          ).strip
 
           $stderr.puts <<-MSG
 qmake is not version 4.7 or above (currently version #{qt_version}. You'll need to install version 4.7 or higher
