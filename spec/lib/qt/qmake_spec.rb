@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'qt/qmake'
 require 'rbconfig'
+require 'rubygems/version'
 
 describe Qt::Qmake do
   describe '.make_installed?' do
@@ -64,29 +65,75 @@ describe Qt::Qmake do
     end
   end
 
-  describe '.qt_47_or_better?' do
-    subject { described_class }
-
+  describe '.best_qmake' do
     before do
-      Qt::Qmake.stubs(:qt_version).returns(version)
-    end
-    
-    context 'no version' do
-      let(:version) { nil }
+      Qt::Qmake.stubs(:get_exe_path).with('qmake-qt4').returns(path_one)
+      Qt::Qmake.stubs(:get_exe_path).with('qmake').returns(path_two)
 
-      it { should_not be_qt_47_or_better }
+      Qt::Qmake.stubs(:qt_version_of).with(path_one).returns(Gem::Version.create(version_one))
+      Qt::Qmake.stubs(:qt_version_of).with(path_two).returns(Gem::Version.create(version_two))
     end
 
-    context 'not better' do
-      let(:version) { '4.6.0' }
+    subject { described_class.best_qmake }
 
-      it { should_not be_qt_47_or_better }
+    let(:path_one) { nil }
+    let(:path_two) { nil }
+    let(:version_one) { nil }
+    let(:version_two) { nil }
+
+    context 'nothing found' do
+      it { should be_nil }
     end
 
-    context 'better' do
-      let(:version) { '4.7.0' }
+    context 'one found' do
+      let(:path_one) { 'one' }
 
-      it { should be_qt_47_or_better }
+      context 'not good' do
+        let(:version_one) { '4.5' }
+
+        it { should be_nil }
+      end
+
+      context 'good' do
+        let(:version_one) { '4.7' }
+
+        it { should == path_one }
+      end
+    end
+
+    context 'two found' do
+      let(:path_one) { 'one' }
+      let(:path_two) { 'two' }
+
+      context 'neither good' do
+        let(:version_one) { '4.5' }
+        let(:version_two) { '4.5' }
+
+        it { should be_nil }
+      end
+
+      context 'one good' do
+        let(:version_one) { '4.7' }
+        let(:version_two) { '4.5' }
+
+        it { should == path_one }
+      end
+
+      context 'both good' do
+        context 'one better' do
+          let(:version_one) { '4.7' }
+          let(:version_two) { '4.8' }
+
+          it { should == path_two }
+        end
+
+        context 'both same' do
+          let(:version_one) { '4.7' }
+          let(:version_two) { '4.7' }
+
+          it { should == path_one }
+        end
+      end
     end
   end
 end

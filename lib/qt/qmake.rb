@@ -1,10 +1,13 @@
 require 'rbconfig'
+require 'rubygems/version'
 
 module Qt
   class NotInstalledError < StandardError; end
 
   class Qmake
     class << self
+      QMAKES = %w{qmake-qt4 qmake}
+
       def installed?
         path != nil
       end
@@ -29,7 +32,6 @@ module Qt
 
         check_make!
         check_qmake!
-        check_qmake_version!
 
         system command
         system %{make}
@@ -39,7 +41,7 @@ module Qt
       # We need integration tests for these!
       #
       def path
-        get_exe_path('qmake-qt4') || get_exe_path('qmake')
+        @path ||= best_qmake
       end
 
       def make_path
@@ -57,15 +59,24 @@ module Qt
         end
       end
 
-      def qt_version
-        @qt_version ||= %x{#{path} -v}.lines.to_a[1][%r{Using Qt version ([^ ]+) },1]
+      def qt_version_of(qmake_path)
+        Gem::Version.new(%x{#{qmake_path} -v}.lines.to_a[1][%r{Using Qt version ([^ ]+) },1])
       end
 
-      def qt_47_or_better?
-        return false if !qt_version
-        return true if (major = qt_version.split('.')[0].to_i) > 4
-        return false if major < 4
-        qt_version.split('.')[1].to_i >= 7
+      def best_qmake
+        if qmake_path = QMAKES.collect do |path|
+          result = nil
+          if qmake_path = get_exe_path(path)
+            if (qt_version = qt_version_of(qmake_path)) >= Gem::Version.create('4.7')
+              result = [ qmake_path, qt_version ]
+            end
+          end
+          result
+        end.compact.sort { |a, b| b.last <=> a.last }.first
+          qmake_path.first
+        else
+          nil
+        end
       end
 
       private
@@ -107,7 +118,7 @@ Nokia's prebuilt binary at http://qt.nokia.com/downloads/
 MSG
             when :freebsd
               <<-MSG
-Install /usr/ports/devel/qmake4.
+Install /usr/ports/www/qt4-webkit and /usr/ports/devel/qmake4.
 MSG
             when :darwin
               <<-MSG
@@ -118,36 +129,9 @@ MSG
           ).strip
 
           $stderr.puts <<-MSG
-qmake is not installed. You'll need to install it to build #{@name}.
+qmake is not installed or is not the right version (#{@name} needs Qt 4.7 or above). 
+You'll need to install it to build #{@name}.
 #{install_method} should do it for you.
-MSG
-        end
-      end
-
-      def check_qmake_version!
-        if !qt_47_or_better?
-          install_method = (
-            case platform
-            when :linux
-              <<-MSG
-sudo apt-get install libqt4-dev qt4-qmake on Debian-based systems, or downloading
-Nokia's prebuilt binary at http://qt.nokia.com/downloads/
-MSG
-            when :freebsd
-              <<-MSG
-Install /usr/ports/www/qt4-webkit.
-MSG
-            when :darwin
-              <<-MSG
-sudo port install qt4-mac (for the patient) or downloading Nokia's pre-built binary
-at http://qt.nokia.com/downloads/
-MSG
-            end
-          ).strip
-
-          $stderr.puts <<-MSG
-qmake is not version 4.7 or above (currently version #{qt_version}. You'll need to install version 4.7 or higher
-to build #{@name}. #{install_method} should do it for you.
 MSG
         end
       end
