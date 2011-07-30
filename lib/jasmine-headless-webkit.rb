@@ -5,5 +5,5 @@ module Jasmine
   end
 end
 
-require 'jasmine/headless/railtie' if defined?(Rails)
+require 'jasmine/headless/railtie' if defined?(Rails) && Rails::VERSION::MAJOR >= 3
 
