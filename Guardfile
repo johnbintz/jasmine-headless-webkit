@@ -4,7 +4,7 @@
 #
 
 guard 'shell' do
-  watch(%r{ext/jasmine-webkit-specrunner/specrunner.cpp}) { compile }
+  watch(%r{ext/jasmine-webkit-specrunner/.*\.(cpp|h)}) { compile }
 end
 # A sample Guardfile
 # More info at https://github.com/guard/guard#readme

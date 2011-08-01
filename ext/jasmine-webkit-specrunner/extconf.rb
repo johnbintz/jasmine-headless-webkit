@@ -1,3 +1,5 @@
+require 'fileutils'
+
 $: << File.expand_path("../../../lib", __FILE__)
 
 require 'qt/qmake'

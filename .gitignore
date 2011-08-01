@@ -6,3 +6,6 @@ Makefile
 specrunner.moc
 specrunner.o
 ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner
+*.o
+moc_*.*
+
