@@ -1,36 +1,43 @@
-#include <QtGui>
-#include <QtWebKit>
-#include <unit++.h>
+#include <QtTest/QtTest>
 
 #include "HeadlessSpecRunner/Page.h"
 #include "Test/Page_test.h"
 
-using namespace unitpp;
-
 namespace HeadlessSpecRunner {
-  PageTestHelper::PageTestHelper() : QObject(), internalLogCalled(false) {}
-
-  void PageTestHelper::addPage(HeadlessSpecRunner::Page &page) {
-    connect(&page, SIGNAL(internalLog(QString, QString)), this, SLOT(internalLog(QString, QString)));
+  PageTest::PageTest() : QObject(), internalLogCalled(false) {
   }
 
-  void PageTestHelper::internalLog(const QString &note, const QString &msg) {
+  void PageTest::internalLog(const QString &note, const QString &msg) {
     internalLogCalled = true;
   }
 
-  PageTest::PageTest() : suite("suite") {
-    add("test", testcase(this, "test", &HeadlessSpecRunner::PageTest::testJavaScriptConfirmWithLog));
-    suite::main().add("test", this);
+  void PageTest::consoleLog(const QString &message, int lineNumber, const QString &source) {
+    consoleLogCalled = true;
   }
 
   void PageTest::testJavaScriptConfirmWithLog() {
-    helper.addPage(page);
-    helper.internalLogCalled = false;
+    connect(&page, SIGNAL(internalLog(QString, QString)), this, SLOT(internalLog(QString, QString)));
+    internalLogCalled = false;
 
     page.mainFrame()->setHtml("<script>confirm('test')</script>");
-    assert_true("internal log called", helper.internalLogCalled);
+    QVERIFY(internalLogCalled);
+  }
+
+  void PageTest::testJavaScriptConfirmWithoutLog() {
+    connect(&page, SIGNAL(internalLog(QString, QString)), this, SLOT(internalLog(QString, QString)));
+    internalLogCalled = false;
+
+    page.oneFalseConfirm();
+    page.mainFrame()->setHtml("<script>confirm('test')</script>");
+    QVERIFY(!internalLogCalled);
+  }
+
+  void PageTest::testJavaScriptConsoleMessage() {
+    connect(&page, SIGNAL(consoleLog(QString, int, QString)), this, SLOT(consoleLog(QString, int, QString)));
+    consoleLogCalled = false;
+
+    page.mainFrame()->setHtml("<script>cats();</script>");
+    QVERIFY(consoleLogCalled);
   }
 }
-
-HeadlessSpecRunner::PageTest *one = new HeadlessSpecRunner::PageTest();
 

@@ -16,24 +16,29 @@ module Qt
         make_path != nil
       end
 
-      def command
-        case platform
+      def command(project_file = nil)
+
+        spec = (case platform
         when :linux
           "#{path} -spec linux-g++"
         when :freebsd
           "#{path} -spec freebsd-g++"
         when :mac_os_x
           "#{path} -spec macx-g++"
-        end
+        end)
+
+        command = "#{path} -spec #{spec}"
+        command << " #{project_file}" if project_file
+        command
       end
 
-      def make!(name)
+      def make!(name, project_file = nil)
         @name = name
 
         check_make!
         check_qmake!
 
-        system command
+        system command(project_file)
         system %{make}
       end
 

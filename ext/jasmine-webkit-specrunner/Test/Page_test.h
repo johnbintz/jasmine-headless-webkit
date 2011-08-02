@@ -1,34 +1,29 @@
 #ifndef JHW_TEST_PAGE
 #define JHW_TEST_PAGE
 
-#include <QtGui>
-#include <QtWebKit>
-#include <unit++.h>
+#include <QtTest/QtTest>
 
 #include "HeadlessSpecRunner/Page.h"
 
-using namespace unitpp;
-
 namespace HeadlessSpecRunner {
-  class PageTestHelper : public QObject {
+  class PageTest : public QObject {
     Q_OBJECT
     public:
-      PageTestHelper();
-      bool internalLogCalled;
-      void addPage(HeadlessSpecRunner::Page &page);
-
-    public slots:
-      void internalLog(const QString &note, const QString &msg);
-  };
-
-  class PageTest : public suite {
-    public:
       PageTest();
-      HeadlessSpecRunner::Page page;
-      HeadlessSpecRunner::PageTestHelper helper;
 
+    private:
+      bool internalLogCalled;
+      bool consoleLogCalled;
+      HeadlessSpecRunner::Page page;
+
+    private slots:
+      void internalLog(const QString &note, const QString &msg);
+      void consoleLog(const QString &message, int lineNumber, const QString &source);
       void testJavaScriptConfirmWithLog();
+      void testJavaScriptConfirmWithoutLog();
+      void testJavaScriptConsoleMessage();
   };
 }
 
 #endif
+
