@@ -3,7 +3,7 @@
 
 #include <QtTest/QtTest>
 
-#include "HeadlessSpecRunner/Page.h"
+#include "Page.h"
 
 namespace HeadlessSpecRunner {
   class PageTest : public QObject {

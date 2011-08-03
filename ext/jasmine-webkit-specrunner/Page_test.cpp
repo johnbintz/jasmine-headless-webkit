@@ -1,7 +1,7 @@
 #include <QtTest/QtTest>
 
-#include "HeadlessSpecRunner/Page.h"
-#include "Test/Page_test.h"
+#include "Page.h"
+#include "Page_test.h"
 
 namespace HeadlessSpecRunner {
   PageTest::PageTest() : QObject(), internalLogCalled(false) {
@@ -40,4 +40,6 @@ namespace HeadlessSpecRunner {
     QVERIFY(consoleLogCalled);
   }
 }
+
+QTEST_MAIN(HeadlessSpecRunner::PageTest);
 
