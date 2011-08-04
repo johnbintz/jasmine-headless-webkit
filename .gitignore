@@ -8,4 +8,4 @@ specrunner.o
 ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner
 *.o
 moc_*.*
-
+.DS_Store
