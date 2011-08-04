@@ -1,0 +1,5 @@
+<% Facter.loadfacts %>
+workers:
+  - type: local
+    runners: <%= Facter.sp_number_processors %>
+

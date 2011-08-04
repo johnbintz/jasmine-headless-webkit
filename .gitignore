@@ -9,3 +9,4 @@ ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner
 *.o
 moc_*.*
 .DS_Store
+hydra-runner.log
