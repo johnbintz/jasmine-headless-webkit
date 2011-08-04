@@ -1,4 +1,5 @@
 require 'jasmine-core'
+require 'iconv'
 
 module Jasmine
   class FilesList
@@ -14,7 +15,9 @@ module Jasmine
       def get_spec_line_numbers(file)
         line_numbers = {}
 
+        ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
         file.lines.each_with_index.each { |line, index|
+          line = ic.iconv(line + ' ')[0..-2]
           if description = line[%r{(describe|context|it)[( ]*(["'])(.*)\2}, 3]
             (line_numbers[description] ||= []) << (index + 1)
           end
