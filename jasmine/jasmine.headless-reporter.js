@@ -88,6 +88,9 @@
     }
     HeadlessReporter.prototype.reportRunnerResults = function(runner) {
       var result, _i, _len, _ref;
+      if (this.hasError()) {
+        return;
+      }
       _ref = this.results;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         result = _ref[_i];
@@ -103,6 +106,9 @@
     };
     HeadlessReporter.prototype.reportSpecResults = function(spec) {
       var failureResult, result, results, _i, _len, _ref;
+      if (this.hasError()) {
+        return;
+      }
       results = spec.results();
       this.length++;
       if (results.passed()) {
@@ -121,8 +127,16 @@
         return this.results.push(failureResult);
       }
     };
-    HeadlessReporter.prototype.reportSpecStarting = function(spec) {};
+    HeadlessReporter.prototype.reportSpecStarting = function(spec) {
+      if (this.hasError()) {
+        spec.finish();
+        return spec.suite.finish();
+      }
+    };
     HeadlessReporter.prototype.reportSuiteResults = function(suite) {};
+    HeadlessReporter.prototype.hasError = function() {
+      return JHW.hasError();
+    };
     return HeadlessReporter;
   })();
 }).call(this);

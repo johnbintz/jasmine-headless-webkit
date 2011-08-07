@@ -54,6 +54,8 @@ class jasmine.HeadlessReporter
     @failedCount = 0
     @length = 0
   reportRunnerResults: (runner) ->
+    return if this.hasError()
+
     for result in @results
       result.print()
 
@@ -62,6 +64,8 @@ class jasmine.HeadlessReporter
   reportRunnerStarting: (runner) ->
     @startTime = new Date()
   reportSpecResults: (spec) ->
+    return if this.hasError()
+
     results = spec.results()
     @length++
     if results.passed()
@@ -75,4 +79,10 @@ class jasmine.HeadlessReporter
           failureResult.addResult(result.message)
       @results.push(failureResult)
   reportSpecStarting: (spec) ->
+    if this.hasError()
+      spec.finish()
+      spec.suite.finish()
   reportSuiteResults: (suite) ->
+  hasError: ->
+    JHW.hasError()
+

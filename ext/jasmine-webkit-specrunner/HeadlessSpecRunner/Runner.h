@@ -21,6 +21,7 @@ namespace HeadlessSpecRunner {
       void go();
     public slots:
       void log(const QString &msg);
+      bool hasError();
       void leavePageAttempt(const QString &msg);
       void specPassed();
       void specFailed(const QString &specDetail);

@@ -83,6 +83,10 @@ namespace HeadlessSpecRunner {
     if (showColors) std::cout << "\033[0;32m";
   }
 
+  bool Runner::hasError() {
+    return hasErrors;
+  }
+
   void Runner::yellow()
   {
     if (showColors) std::cout << "\033[0;33m";
