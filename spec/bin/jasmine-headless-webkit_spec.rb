@@ -64,8 +64,6 @@ describe "jasmine-headless-webkit" do
     it "should not leave the page nor loop" do
       system %{bin/jasmine-headless-webkit -j spec/jasmine/leave_page/leave_page.yml --report #{report}}
       $?.exitstatus.should == 1
-
-      report.should be_a_report_containing(2, 0, false)
     end
   end
 
