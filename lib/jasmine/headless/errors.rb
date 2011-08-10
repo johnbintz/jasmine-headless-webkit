@@ -8,6 +8,8 @@ module Jasmine
 
     class TestFailure < StandardError; end
     class ConsoleLogUsage < StandardError ; end
+
+    class JasmineConfigNotFound < Errno::ENOENT ; end
   end
 end
 

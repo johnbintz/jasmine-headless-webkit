@@ -38,23 +38,42 @@ describe Jasmine::FilesList do
       end
     end
 
-    let(:config) { {
-      'src_dir' => src_dir,
-      'spec_dir' => spec_dir,
-      'src_files' => [ 'js/first_file.js', 'js/*.js' ],
-      'spec_files' => [ '*_spec.js' ],
-      'helpers' => [ 'helper/*.js' ],
-      'stylesheets' => [ 'stylesheet/*.css' ]
-    } }
+    shared_examples_for :reading_data do
+      it 'should read the data from the jasmine.yml file and add the files' do
+        files_list.files.should == Jasmine::FilesList::DEFAULT_FILES + [
+          File.expand_path(first_file),
+          File.expand_path(src_file),
+          File.expand_path(stylesheet_file),
+          File.expand_path(helper_file),
+          File.expand_path(spec_file)
+        ]
+      end
+    end
 
-    it 'should read the data from the jasmine.yml file and add the files' do
-      files_list.files.should == Jasmine::FilesList::DEFAULT_FILES + [
-        File.expand_path(first_file),
-        File.expand_path(src_file),
-        File.expand_path(stylesheet_file),
-        File.expand_path(helper_file),
-        File.expand_path(spec_file)
-      ]
+    context 'with normal list' do
+      let(:config) { {
+        'src_dir' => src_dir,
+        'spec_dir' => spec_dir,
+        'src_files' => [ 'js/first_file.js', 'js/*.js' ],
+        'spec_files' => [ '*_spec.js' ],
+        'helpers' => [ 'helper/*.js' ],
+        'stylesheets' => [ 'stylesheet/*.css' ]
+      } }
+
+      it_should_behave_like :reading_data
+    end
+
+    context 'with multidimensional list' do
+      let(:config) { {
+        'src_dir' => src_dir,
+        'spec_dir' => spec_dir,
+        'src_files' => [ [ 'js/first_file.js', 'js/*.js' ] ],
+        'spec_files' => [ '*_spec.js' ],
+        'helpers' => [ 'helper/*.js' ],
+        'stylesheets' => [ 'stylesheet/*.css' ]
+      } }
+
+      it_should_behave_like :reading_data
     end
   end
 

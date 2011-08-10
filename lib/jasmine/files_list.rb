@@ -123,7 +123,7 @@ module Jasmine
       data = @options[:config].dup
       [ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'helpers', 'spec_dir' ], [ 'spec_files', 'spec_dir' ] ].each do |searches, root|
         if data[searches]
-          data[searches].collect do |search|
+          data[searches].flatten.collect do |search|
             path = search
             path = File.join(data[root], path) if data[root]
             found_files = Dir[path] - @files

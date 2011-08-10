@@ -18,16 +18,29 @@ describe Jasmine::Headless::Runner do
   describe '#load_config' do
     include FakeFS::SpecHelpers
 
-    let(:opts) { { :jasmine_config => 'test.yml' } }
-
     before do
-      File.open(Jasmine::Headless::Runner::RUNNER, 'w')
-      File.open('test.yml', 'w') { |fh| fh.print YAML.dump('test' => 'hello') }
+      File.open('ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner', 'w')
     end
 
-    it 'should load the jasmine config' do
-      runner.jasmine_config['test'].should == 'hello'
-      runner.jasmine_config['spec_dir'].should == 'spec/javascripts'
+    let(:config_filename) { 'test.yml' }
+    let(:opts) { { :jasmine_config => config_filename } }
+
+    context 'file exists' do
+      before do
+        File.open(Jasmine::Headless::Runner::RUNNER, 'w')
+        File.open(config_filename, 'w') { |fh| fh.print YAML.dump('test' => 'hello') }
+      end
+
+      it 'should load the jasmine config' do
+        runner.jasmine_config['test'].should == 'hello'
+        runner.jasmine_config['spec_dir'].should == 'spec/javascripts'
+      end
+    end
+
+    context 'file does not exist' do
+      it 'should raise an exception' do
+        expect { runner.jasmine_config }.to raise_error(Jasmine::Headless::JasmineConfigNotFound, /#{config_filename}/)
+      end
     end
   end
 

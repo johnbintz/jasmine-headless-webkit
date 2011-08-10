@@ -46,6 +46,8 @@ module Jasmine
       end
 
       def jasmine_config
+        raise JasmineConfigNotFound.new("Jasmine config not found. I tried #{@options[:jasmine_config]}.") if !File.file?(@options[:jasmine_config])
+
         @jasmine_config ||= JASMINE_DEFAULTS.dup.merge(YAML.load_file(@options[:jasmine_config]))
       end
 
