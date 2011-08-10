@@ -25,8 +25,8 @@ end
 task :default => [ 'spec:platforms', 'jasmine:headless' ]
 
 desc "Build the runner"
-task :build do
-  Dir.chdir 'ext/jasmine-headless-specrunner' do
+task :build_runner do
+  Dir.chdir 'ext/jasmine-webkit-specrunner' do
     system %{ruby extconf.rb}
   end
 end
