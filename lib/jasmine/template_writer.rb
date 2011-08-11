@@ -28,7 +28,11 @@ module Jasmine
   <title>Jasmine Test Runner</title>
   <script type="text/javascript">
     window.console = { log: function(data) { 
-      JHW.log(JSON.stringify(data));
+      if (typeof(jQuery) !== 'undefined' && data instanceof jQuery) {
+        JHW.log($("<div />").append(data).html());
+      } else {
+        JHW.log(JSON.stringify(data));
+      }
     }, pp: function(data) {
       JHW.log(jasmine ? jasmine.pp(data) : JSON.stringify(data));
     } };
