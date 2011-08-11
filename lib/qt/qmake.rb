@@ -1,4 +1,5 @@
 require 'rbconfig'
+require 'rubygems'
 require 'rubygems/version'
 
 module Qt
