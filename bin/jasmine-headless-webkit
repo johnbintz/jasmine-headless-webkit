@@ -13,8 +13,19 @@ require 'jasmine/headless/runner'
 require 'jasmine/headless/options'
 
 begin
-  puts "Running Jasmine specs...".color(:white)
-  exit Jasmine::Headless::Runner.run(Jasmine::Headless::Options.from_command_line)
+  options = Jasmine::Headless::Options.from_command_line
+  runner = Jasmine::Headless::Runner.new(options)
+
+  if options[:do_list]
+    files_list = Jasmine::FilesList.new(
+      :config => runner.jasmine_config
+    )
+
+    files_list.files.each { |file| puts file }
+  else
+    puts "Running Jasmine specs...".color(:white)
+    exit runner.run
+  end
 rescue CoffeeScript::CompilationError
   exit 1
 rescue StandardError => e

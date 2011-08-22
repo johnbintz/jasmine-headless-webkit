@@ -118,5 +118,16 @@ describe "jasmine-headless-webkit" do
       end
     end
   end
+
+  describe 'files' do
+    it 'should list all the files that will be found' do
+      files = %x{bin/jasmine-headless-webkit -l -j spec/jasmine/success/success.yml}
+      p files
+      $?.exitstatus.should == 0
+
+      files.lines.to_a.should include("./spec/jasmine/success/success.js\n")
+      files.lines.to_a.should include("./spec/jasmine/success/success_spec.js\n")
+    end
+  end
 end
 
