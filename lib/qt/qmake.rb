@@ -53,8 +53,8 @@ module Qt
         case RbConfig::CONFIG['host_os']
         when /linux/
           :linux
-	when /freebsd/i
-	  :freebsd
+        when /freebsd/i
+          :freebsd
         when /darwin/
           :mac_os_x
         end
@@ -95,7 +95,7 @@ module Qt
               %{sudo apt-get install make or sudo yum install make}
             when :freebsd
               %{install /usr/ports/devel/gmake}
-            when :darwin
+            when :mac_os_x
               %{Install XCode, and/or sudo port install make}
             end
           )
@@ -121,7 +121,7 @@ MSG
               <<-MSG
 Install /usr/ports/www/qt4-webkit and /usr/ports/devel/qmake4.
 MSG
-            when :darwin
+            when :mac_os_x
               <<-MSG
 sudo port install qt4-mac (for the patient) or downloading Nokia's pre-built binary
 at http://qt.nokia.com/downloads/
