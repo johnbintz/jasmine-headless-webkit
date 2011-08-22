@@ -13,6 +13,7 @@ module Jasmine
         :remove_html_file => true,
         :jasmine_config => 'spec/javascripts/support/jasmine.yml',
         :report => false,
+        :do_list => false,
         :full_run => true,
         :files => []
       }
@@ -48,6 +49,8 @@ module Jasmine
           @options[:jasmine_config] = arg
         when '--no-full-run'
           @options[:full_run] = false
+        when '--list', '-l'
+          @options[:do_list] = true
         end
       end
 
@@ -66,7 +69,8 @@ module Jasmine
           [ '--keep', GetoptLong::NO_ARGUMENT ],
           [ '--report', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--jasmine-config', '-j', GetoptLong::REQUIRED_ARGUMENT ],
-          [ '--no-full-run', GetoptLong::NO_ARGUMENT ]
+          [ '--no-full-run', GetoptLong::NO_ARGUMENT ],
+          [ '--list', '-l', GetoptLong::NO_ARGUMENT ]
         )
 
         command_line_args.each { |*args| process_option(*args) }
