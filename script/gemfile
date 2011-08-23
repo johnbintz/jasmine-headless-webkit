@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'penchant'
+
+if Penchant::Gemfile.do_full_env_switch!(ARGV[0])
+  puts "Gemfile switched to #{ARGV[0]}"
+else
+  exit 0
+end
+

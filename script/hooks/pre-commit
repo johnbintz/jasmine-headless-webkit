@@ -1,0 +1,15 @@
+#!/bin/bash
+
+OLD_GIT_DIR=$GIT_DIR
+
+if [ "$(penchant gemfile-env)" != "remote" ]; then
+  unset GIT_DIR
+  penchant gemfile remote
+  GIT_DIR=$OLD_GIT_DIR
+  git add Gemfile*
+fi
+
+bundle exec rake
+R=$?
+if [ $R -ne 0 ]; then exit $R; fi
+
