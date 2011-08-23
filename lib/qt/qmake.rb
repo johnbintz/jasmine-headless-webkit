@@ -3,7 +3,6 @@ require 'rubygems/version'
 
 module Qt
   class NotInstalledError < StandardError; end
-
   class Qmake
     class << self
       QMAKES = %w{qmake-qt4 qmake}
@@ -17,14 +16,13 @@ module Qt
       end
 
       def command(project_file = nil)
-
         spec = (case platform
         when :linux
-          "#{path} -spec linux-g++"
+          "linux-g++"
         when :freebsd
-          "#{path} -spec freebsd-g++"
+          "freebsd-g++"
         when :mac_os_x
-          "#{path} -spec macx-g++"
+          "macx-g++"
         end)
 
         command = "#{path} -spec #{spec}"
@@ -50,15 +48,15 @@ module Qt
       end
 
       def make_path
-         get_exe_path('gmake') || get_exe_path('make')
+        get_exe_path('gmake') || get_exe_path('make')
       end
 
       def platform
         case RbConfig::CONFIG['host_os']
         when /linux/
           :linux
-	when /freebsd/i
-	  :freebsd
+        when /freebsd/i
+          :freebsd
         when /darwin/
           :mac_os_x
         end
@@ -78,7 +76,7 @@ module Qt
           end
           result
         end.compact.sort { |a, b| b.last <=> a.last }.first
-          qmake_path.first
+        qmake_path.first
         else
           nil
         end
@@ -99,15 +97,15 @@ module Qt
               %{sudo apt-get install make or sudo yum install make}
             when :freebsd
               %{install /usr/ports/devel/gmake}
-            when :darwin
+            when :mac_os_x
               %{Install XCode, and/or sudo port install make}
             end
           )
 
           $stderr.puts <<-MSG
-make is not installed. You'll need to install it to build #{@name}.
-#{install_method} should do it for you.
-MSG
+  make is not installed. You'll need to install it to build #{@name}.
+          #{install_method} should do it for you.
+          MSG
           raise NotInstalledError
         end
       end
@@ -118,26 +116,26 @@ MSG
             case platform
             when :linux
               <<-MSG
-sudo apt-get install libqt4-dev qt4-qmake on Debian-based systems, or downloading
-Nokia's prebuilt binary at http://qt.nokia.com/downloads/
-MSG
+  sudo apt-get install libqt4-dev qt4-qmake on Debian-based systems, or downloading
+  Nokia's prebuilt binary at http://qt.nokia.com/downloads/
+              MSG
             when :freebsd
               <<-MSG
-Install /usr/ports/www/qt4-webkit and /usr/ports/devel/qmake4.
-MSG
-            when :darwin
+  Install /usr/ports/www/qt4-webkit and /usr/ports/devel/qmake4.
+              MSG
+            when :mac_os_x
               <<-MSG
-sudo port install qt4-mac (for the patient) or downloading Nokia's pre-built binary
-at http://qt.nokia.com/downloads/
-MSG
+  sudo port install qt4-mac (for the patient) or downloading Nokia's pre-built binary
+  at http://qt.nokia.com/downloads/
+              MSG
             end
           ).strip
 
           $stderr.puts <<-MSG
-qmake is not installed or is not the right version (#{@name} needs Qt 4.7 or above). 
-You'll need to install it to build #{@name}.
-#{install_method} should do it for you.
-MSG
+  qmake is not installed or is not the right version (#{@name} needs Qt 4.7 or above).
+  You'll need to install it to build #{@name}.
+          #{install_method} should do it for you.
+          MSG
         end
       end
     end
