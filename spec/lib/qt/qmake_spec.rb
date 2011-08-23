@@ -136,5 +136,16 @@ describe Qt::Qmake do
       end
     end
   end
+
+  describe '.make_options' do
+    let(:cpu_count) { 3 }
+    subject { Qt::Qmake.make_options }
+
+    before do
+      Qt::Qmake.stubs(:number_of_cpus).returns(cpu_count)
+    end
+
+    it { should == "-j#{cpu_count}" }
+  end
 end
 

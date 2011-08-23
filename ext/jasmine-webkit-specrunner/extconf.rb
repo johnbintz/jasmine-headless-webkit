@@ -4,5 +4,6 @@ $: << File.expand_path("../../../lib", __FILE__)
 
 require 'qt/qmake'
 
-Qt::Qmake.make!('jasmine-headless-webkit')
+system %{make clean}
+Qt::Qmake.make!('jasmine-headless-webkit', 'specrunner.pro')
 

@@ -66,6 +66,7 @@ namespace HeadlessSpecRunner {
   void Runner::setColors(bool colors)
   {
     showColors = colors;
+    consoleOutput.showColors = colors;
   }
 
   void Runner::reportFile(const QString &file)
@@ -100,21 +101,15 @@ namespace HeadlessSpecRunner {
   void Runner::specPassed()
   {
     consoleNotUsedThisRun = true;
-    green();
-    std::cout << '.';
-    clear();
-    fflush(stdout);
+    consoleOutput.passed("");
   }
 
   void Runner::specFailed(const QString &specDetail)
   {
     consoleNotUsedThisRun = true;
+    consoleOutput.failed("");
     didFail = true;
-    red();
-    std::cout << 'F';
     failedSpecs.push(specDetail);
-    clear();
-    fflush(stdout);
   }
 
   void Runner::errorLog(const QString &msg, int lineNumber, const QString &sourceID)

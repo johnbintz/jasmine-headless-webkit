@@ -2,9 +2,14 @@ require 'rbconfig'
 require 'rubygems'
 require 'rubygems/version'
 
+begin
+  require 'facter'
+rescue LoadError
+  warn 'Including Facter allows for detection of # of cpus, resulting in faster compilations.'
+end
+
 module Qt
   class NotInstalledError < StandardError; end
-
   class Qmake
     class << self
       QMAKES = %w{qmake-qt4 qmake}
@@ -17,25 +22,34 @@ module Qt
         make_path != nil
       end
 
-      def command
-        case platform
+      def command(project_file = nil)
+        spec = (case platform
         when :linux
-          "#{path} -spec linux-g++"
+          "linux-g++"
         when :freebsd
-          "#{path} -spec freebsd-g++"
+          "freebsd-g++"
         when :mac_os_x
-          "#{path} -spec macx-g++"
-        end
+          "macx-g++"
+        end)
+
+        command = "#{path} -spec #{spec}"
+        command << " #{project_file}" if project_file
+        command
       end
 
-      def make!(name)
+      def make!(name, project_file = nil)
         @name = name
 
         check_make!
         check_qmake!
 
-        system command
-        system %{make}
+        system command(project_file)
+
+        system %{make #{make_options}}
+      end
+
+      def make_options
+        "-j#{number_of_cpus}"
       end
 
       #
@@ -46,7 +60,7 @@ module Qt
       end
 
       def make_path
-         get_exe_path('gmake') || get_exe_path('make')
+        get_exe_path('gmake') || get_exe_path('make')
       end
 
       def platform
@@ -74,13 +88,21 @@ module Qt
           end
           result
         end.compact.sort { |a, b| b.last <=> a.last }.first
-          qmake_path.first
+        qmake_path.first
         else
           nil
         end
       end
 
       private
+      def number_of_cpus
+        if defined?(Facter)
+          Facter.sp_number_processors rescue Facter.processorcount
+        else
+          1
+        end
+      end
+
       def get_exe_path(command)
         path = %x{which #{command}}.strip
         path = nil if path == ''
@@ -101,9 +123,9 @@ module Qt
           )
 
           $stderr.puts <<-MSG
-make is not installed. You'll need to install it to build #{@name}.
-#{install_method} should do it for you.
-MSG
+  make is not installed. You'll need to install it to build #{@name}.
+          #{install_method} should do it for you.
+          MSG
           raise NotInstalledError
         end
       end
@@ -114,26 +136,27 @@ MSG
             case platform
             when :linux
               <<-MSG
-sudo apt-get install libqt4-dev qt4-qmake on Debian-based systems, or downloading
-Nokia's prebuilt binary at http://qt.nokia.com/downloads/
-MSG
+  sudo apt-get install libqt4-dev qt4-qmake on Debian-based systems, or downloading
+  Nokia's prebuilt binary at http://qt.nokia.com/downloads/
+              MSG
             when :freebsd
               <<-MSG
-Install /usr/ports/www/qt4-webkit and /usr/ports/devel/qmake4.
+  Install /usr/ports/www/qt4-webkit and /usr/ports/devel/qmake4.
 MSG
+              MSG
             when :mac_os_x
               <<-MSG
-sudo port install qt4-mac (for the patient) or downloading Nokia's pre-built binary
-at http://qt.nokia.com/downloads/
-MSG
+  sudo port install qt4-mac (for the patient) or downloading Nokia's pre-built binary
+  at http://qt.nokia.com/downloads/
+              MSG
             end
           ).strip
 
           $stderr.puts <<-MSG
-qmake is not installed or is not the right version (#{@name} needs Qt 4.7 or above). 
-You'll need to install it to build #{@name}.
-#{install_method} should do it for you.
-MSG
+  qmake is not installed or is not the right version (#{@name} needs Qt 4.7 or above).
+  You'll need to install it to build #{@name}.
+          #{install_method} should do it for you.
+          MSG
         end
       end
     end

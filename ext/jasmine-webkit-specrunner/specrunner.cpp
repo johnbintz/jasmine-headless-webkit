@@ -21,8 +21,8 @@
    THE SOFTWARE.
    */
 
-#include "HeadlessSpecRunner/Page.h"
-#include "HeadlessSpecRunner/Runner.h"
+#include "Page.h"
+#include "Runner.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(4, 7, 0)
 #error Use Qt 4.7 or later version

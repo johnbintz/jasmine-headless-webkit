@@ -4,7 +4,11 @@
 #
 
 guard 'shell' do
-  watch(%r{ext/jasmine-webkit-specrunner/.*\.(cpp|h)}) { compile }
+  watch(%r{ext/jasmine-webkit-specrunner/.*\.(cpp|h|pro|pri)}) { |m|
+    if !m[0]['moc_']
+      compile 
+    end
+  }
 end
 # A sample Guardfile
 # More info at https://github.com/guard/guard#readme
@@ -22,7 +26,7 @@ guard 'jasmine-headless-webkit', :all_on_start => false do
 end
 
 def compile
-  system %{cd ext/jasmine-webkit-specrunner && ruby extconf.rb}
+  system %{cd ext/jasmine-webkit-specrunner && ruby test.rb && ruby extconf.rb}
 end
 
 compile

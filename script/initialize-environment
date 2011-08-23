@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+if File.file?('Gemfile.erb')
+  pwd = Dir.pwd
+
+  Dir.chdir '..' do
+    File.readlines(File.join(pwd, 'Gemfile.erb')).find_all { |line| line[':git'] }.each do |line|
+      repo = line[%r{:git => (['"])(.*)\1}, 2]
+
+      puts "Installing #{repo}"
+      system %{git clone #{repo}}
+    end
+  end
+
+  puts "Bundling for local environment"
+  system %{script/gemfile local}
+else
+  puts "Bundling..."
+  system %{bundle}
+end
+
+puts "Installing git hooks"
+system %{script/install-git-hooks}
+
+bundle = File.file?('Gemfile') ? 'bundle exec' : ''
+
+command = [ bundle, 'rake', '-s', '-T', 'bootstrap' ]
+
+if !(%x{#{command.join(' ')}}).empty?
+  puts "Trying to run rake bootstrap..."
+  system %{#{bundle} rake bootstrap}
+end
+
+puts "Done!"
+

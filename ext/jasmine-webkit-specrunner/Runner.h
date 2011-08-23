@@ -9,6 +9,7 @@
 #include <QQueue>
 
 #include "Page.h"
+#include "ConsoleOutput.h"
 
 namespace HeadlessSpecRunner {
   class Runner: public QObject {
@@ -49,6 +50,8 @@ namespace HeadlessSpecRunner {
       QQueue<QString> runnerFiles;
       QString reportFilename;
       QStack<QString> failedSpecs;
+
+      HeadlessSpecRunner::ConsoleOutput consoleOutput;
 
       void red();
       void green();
