@@ -66,6 +66,7 @@ namespace HeadlessSpecRunner {
   void Runner::setColors(bool colors)
   {
     showColors = colors;
+    consoleOutput.showColors = colors;
   }
 
   void Runner::reportFile(const QString &file)

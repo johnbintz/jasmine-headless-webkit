@@ -15,8 +15,8 @@ namespace HeadlessSpecRunner {
       std::ostream *outputIO;
       QStack<QString> successes;
       QStack<QString> failures;
-    private:
       bool showColors;
+    private:
       void green();
       void clear();
       void red();
