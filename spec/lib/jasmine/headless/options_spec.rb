@@ -57,11 +57,6 @@ describe Jasmine::Headless::Options do
     end
 
     it "should read the options" do
-      options[:colors].should be_false
-      options[:jasmine_config].should == 'spec/javascripts/support/jasmine.yml'
-
-      options.read_defaults_files
-
       options[:colors].should be_true
       options[:jasmine_config].should == 'test'
     end

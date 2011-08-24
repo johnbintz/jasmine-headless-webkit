@@ -18,7 +18,7 @@ module Jasmine
         :files => []
       }
 
-      DEFAULTS_FILE = '.jasmine-headless-webkit'
+      DEFAULTS_FILE = File.join(Dir.pwd, '.jasmine-headless-webkit')
       GLOBAL_DEFAULTS_FILE = File.expand_path("~/#{DEFAULTS_FILE}")
 
       def self.from_command_line
@@ -30,6 +30,7 @@ module Jasmine
 
       def initialize(opts = {})
         @options = DEFAULT_OPTIONS.dup
+        read_defaults_files
         opts.each { |k, v| @options[k] = v if v }
       end
 
