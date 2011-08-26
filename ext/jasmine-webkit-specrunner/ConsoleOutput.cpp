@@ -36,4 +36,12 @@ namespace HeadlessSpecRunner {
   void ConsoleOutput::red() {
     if (showColors) std::cout << "\033[0;31m";
   }
+
+  void ConsoleOutput::errorLog(const QString &msg, int lineNumber, const QString &sourceID) {
+    red();
+    *outputIO << "[error] ";
+    clear();
+    *outputIO << qPrintable(sourceID) << ":" << lineNumber << " : " << qPrintable(msg);
+    *outputIO << std::endl;
+  }
 }

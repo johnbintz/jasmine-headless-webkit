@@ -114,11 +114,7 @@ namespace HeadlessSpecRunner {
 
   void Runner::errorLog(const QString &msg, int lineNumber, const QString &sourceID)
   {
-    red();
-    std::cout << "[error] ";
-    clear();
-    std::cout << qPrintable(sourceID) << ":" << lineNumber << " : " << qPrintable(msg);
-    std::cout << std::endl;
+    consoleOutput.errorLog(msg, lineNumber, sourceID);
 
     hasErrors = true;
     m_runs = 0;

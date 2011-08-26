@@ -12,6 +12,7 @@ namespace HeadlessSpecRunner {
       ConsoleOutput();
       void passed(const QString &specDetail);
       void failed(const QString &specDetail);
+      void errorLog(const QString &msg, int lineNumber, const QString &sourceID);
       std::ostream *outputIO;
       QStack<QString> successes;
       QStack<QString> failures;

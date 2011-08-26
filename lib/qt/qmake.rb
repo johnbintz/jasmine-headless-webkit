@@ -32,7 +32,7 @@ module Qt
           "macx-g++"
         end)
 
-        command = "#{path} -spec #{spec}"
+        command = "#{path} #{envs} -spec #{spec}"
         command << " #{project_file}" if project_file
         command
       end
@@ -95,6 +95,14 @@ module Qt
       end
 
       private
+      def envs
+        %w{QMAKE_CC QMAKE_CXX}.collect do |env|
+          if ENV[env]
+            "#{env}=#{ENV[env]}"
+          end
+        end.compact.join(" ")
+      end
+
       def number_of_cpus
         if defined?(Facter)
           Facter.sp_number_processors rescue Facter.processorcount

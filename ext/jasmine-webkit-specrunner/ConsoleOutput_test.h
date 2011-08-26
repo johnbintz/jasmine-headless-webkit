@@ -17,6 +17,7 @@ namespace HeadlessSpecRunner {
     private slots:
       void testPassed();
       void testFailed();
+      void testErrorLog();
   };
 }
 

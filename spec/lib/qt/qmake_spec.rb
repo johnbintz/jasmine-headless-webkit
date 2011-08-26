@@ -55,13 +55,15 @@ describe Qt::Qmake do
     context 'linux' do
       let(:platform) { :linux }
 
-      it { should == "qmake -spec linux-g++" }
+      it { should =~ /^qmake/ }
+      it { should =~ /-spec linux-g\+\+$/ }
     end
 
     context 'mac os x' do
       let(:platform) { :mac_os_x }
 
-      it { should == "qmake -spec macx-g++" }
+      it { should =~ /^qmake/ }
+      it { should =~ /-spec macx-g\+\+$/ }
     end
   end
 

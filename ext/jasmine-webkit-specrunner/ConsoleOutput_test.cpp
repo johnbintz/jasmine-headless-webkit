@@ -30,6 +30,15 @@ namespace HeadlessSpecRunner {
     QVERIFY(output.successes.size() == 0);
     QVERIFY(output.failures.size() == 1);
   }
+
+  void ConsoleOutputTest::testErrorLog() {
+    stringstream buffer;
+    HeadlessSpecRunner::ConsoleOutput output;
+
+    output.outputIO = &buffer;
+    output.errorLog("message", 1, "source");
+    QVERIFY(buffer.str() == "[error] source:1 : message\n");
+  }
 }
 
 QTEST_MAIN(HeadlessSpecRunner::ConsoleOutputTest);
