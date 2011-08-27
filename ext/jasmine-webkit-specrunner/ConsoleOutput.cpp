@@ -10,7 +10,7 @@ namespace HeadlessSpecRunner {
     green();
     *outputIO << '.';
     clear();
-    fflush(stdout);
+    outputIO->flush();
 
     successes.push(specDetail);
   }
@@ -20,7 +20,7 @@ namespace HeadlessSpecRunner {
     red();
     *outputIO << 'F';
     clear();
-    fflush(stdout);
+    outputIO->flush();
 
     failures.push(specDetail);
   }
