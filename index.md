@@ -81,7 +81,7 @@ sudo apt-get install libqt4-dev
 sudo apt-get install qt4-qmake
 {% endhighlight %}
 
-### Mac OS X 10.6
+### Mac OS X 10.6 & 10.7
 
 #### MacPorts
 
