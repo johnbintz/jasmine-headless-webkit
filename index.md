@@ -81,6 +81,18 @@ sudo apt-get install libqt4-dev
 sudo apt-get install qt4-qmake
 {% endhighlight %}
 
+### Ubuntu 9.10
+
+Running `sudo apt-get install libqt4-dev` and `sudo apt-get install qt4-qmake` will install qt4,
+but it installs **version 4.5.2**, which will not be able to compile 
+**jasmine-headless-webkit**, as it requires Qt 4.7.X or greater.
+
+You will need to compile qt4-qmake from source
+[Qt version 4.7.0](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.0.tar.gz).
+There are excellent [directions](http://doc.qt.nokia.com/latest/install-x11.html) on how to compile
+the source code. You will need to ensure Qt is exported to your $PATH before using qmake, as the source code will
+install to /usr/local/Trolltech/.
+
 ### Mac OS X 10.6 & 10.7
 
 #### MacPorts
@@ -96,18 +108,6 @@ brew install qt
 {% endhighlight %}
 
 __(you may need to use `--build-from-source` on Lion)__
-
-### Ubuntu 9.10
-
-Running `sudo apt-get install libqt4-dev` and `sudo apt-get install qt4-qmake` will install qt4,
-but it installs **version 4.5.2**, which will not be able to compile 
-**jasmine-headless-webkit**, as it requires Qt 4.7.X or greater.
-
-You will need to compile qt4-qmake from source
-[Qt version 4.7.0](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.0.tar.gz).
-There are excellent [directions](http://doc.qt.nokia.com/latest/install-x11.html) on how to compile
-the source code. You will need to ensure Qt is exported to your $PATH before using qmake, as the source code will
-install to /usr/local/Trolltech/.
 
 ### My OS isn't on here!
 [`capybara-webkit`](https://github.com/thoughtbot/capybara-webkit) has the best instructions for installing Qt on various other
