@@ -49,7 +49,7 @@ to use the Jasmine gem:
 
 Installation requires Qt 4.7. `jasmine-headless-webkit` has been tested in the following environments:
 
-* Mac OS X 10.6, with MacPorts Qt and Nokia Qt.mpkg
+* Mac OS X 10.6, with MacPorts Qt, Homebrew Qt and Nokia Qt.mpkg
 * Kubuntu 10.10 and 10.04
 * Ubuntu 11.04 9.10
 * Arch Linux
@@ -83,9 +83,19 @@ sudo apt-get install qt4-qmake
 
 ### Mac OS X 10.6
 
+#### MacPorts
+
 ``` bash
 sudo port install qt4-mac
 ```
+
+#### Homebrew
+
+``` bash
+brew install qt
+```
+
+__(you may need to use `--build-from-source` on Lion)__
 
 ### Ubuntu 9.10
 
