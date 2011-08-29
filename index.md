@@ -76,24 +76,24 @@ If you receive a different message, you can install qt4-qmake using one of the f
 
 ### Ubuntu 11.04
 
-``` bash
+{% highlight bash %}
 sudo apt-get install libqt4-dev
 sudo apt-get install qt4-qmake
-```
+{% endhighlight %}
 
 ### Mac OS X 10.6
 
 #### MacPorts
 
-``` bash
+{% highlight bash %}
 sudo port install qt4-mac
-```
+{% endhighlight %}
 
 #### Homebrew
 
-``` bash
+{% highlight bash %}
 brew install qt
-```
+{% endhighlight %}
 
 __(you may need to use `--build-from-source` on Lion)__
 
