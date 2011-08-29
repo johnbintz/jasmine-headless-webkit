@@ -18,9 +18,12 @@ namespace HeadlessSpecRunner {
       void testPassed();
       void testFailed();
       void testErrorLog();
+      void testInternalLog();
+      void testConsoleLog();
+      void testConsoleLogUsed();
+      void testLogSpecFilename();
   };
 }
 
 #endif
-
 

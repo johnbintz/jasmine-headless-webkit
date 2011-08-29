@@ -10,3 +10,4 @@ ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner
 moc_*.*
 .DS_Store
 hydra-runner.log
+jhw-test

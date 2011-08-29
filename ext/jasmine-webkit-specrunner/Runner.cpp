@@ -14,8 +14,7 @@ namespace HeadlessSpecRunner {
     , usedConsole(false)
     , showColors(false)
     , isFinished(false)
-    , didFail(false)
-    , consoleNotUsedThisRun(false) {
+    , didFail(false) {
     m_page.settings()->enablePersistentStorage();
     connect(&m_page, SIGNAL(loadFinished(bool)), this, SLOT(watch(bool)));
     connect(&m_page, SIGNAL(consoleLog(QString, int, QString)), this, SLOT(errorLog(QString, int, QString)));
@@ -100,13 +99,11 @@ namespace HeadlessSpecRunner {
 
   void Runner::specPassed()
   {
-    consoleNotUsedThisRun = true;
     consoleOutput.passed("");
   }
 
   void Runner::specFailed(const QString &specDetail)
   {
-    consoleNotUsedThisRun = true;
     consoleOutput.failed("");
     didFail = true;
     failedSpecs.push(specDetail);
@@ -122,45 +119,25 @@ namespace HeadlessSpecRunner {
   }
 
   void Runner::internalLog(const QString &note, const QString &msg) {
-    red();
-    std::cout << "[" << qPrintable(note) << "] ";
-    clear();
-    std::cout << qPrintable(msg);
-    std::cout << std::endl;
+    consoleOutput.internalLog(note, msg);
   }
 
   void Runner::log(const QString &msg)
   {
     usedConsole = true;
-    green();
-    if (consoleNotUsedThisRun) {
-      std::cout << std::endl;
-      consoleNotUsedThisRun = false;
-    }
-    std::cout << "[console] ";
-    clear();
-    if (msg.contains("\n"))
-      std::cout << std::endl;
-    std::cout << qPrintable(msg);
-    std::cout << std::endl;
+    consoleOutput.consoleLog(msg);
   }
 
   void Runner::leavePageAttempt(const QString &msg)
   {
-    red();
-    std::cout << "[error] ";
-    clear();
-    std::cout << qPrintable(msg) << std::endl;
+    consoleOutput.internalLog("error", msg);
     m_page.oneFalseConfirm();
     hasErrors = true;
   }
 
   void Runner::printName(const QString &name)
   {
-    std::cout << std::endl << std::endl;
-    red();
-    std::cout << qPrintable(name) << std::endl;
-    clear();
+    consoleOutput.logSpecFilename(name);
   }
 
   void Runner::printResult(const QString &result)

@@ -11,7 +11,7 @@ namespace HeadlessSpecRunner {
     emit consoleLog(message, lineNumber, sourceID);
   }
 
-  bool Page::javaScriptConfirm(QWebFrame *frame, const QString &msg) {
+  bool Page::javaScriptConfirm(QWebFrame*, const QString&) {
     if (confirmResult) {
       emit internalLog("TODO", "jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm for now. Returning true.");
       return true;
@@ -21,7 +21,7 @@ namespace HeadlessSpecRunner {
     }
   }
 
-  void Page::javaScriptAlert(QWebFrame *frame, const QString &msg) {
+  void Page::javaScriptAlert(QWebFrame*, const QString &msg) {
     emit internalLog("alert", msg);
   }
 

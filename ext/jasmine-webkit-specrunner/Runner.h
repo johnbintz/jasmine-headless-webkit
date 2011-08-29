@@ -46,7 +46,6 @@ namespace HeadlessSpecRunner {
       bool showColors;
       bool isFinished;
       bool didFail;
-      bool consoleNotUsedThisRun;
       QQueue<QString> runnerFiles;
       QString reportFilename;
       QStack<QString> failedSpecs;
