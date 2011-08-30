@@ -7,11 +7,11 @@ namespace HeadlessSpecRunner {
   PageTest::PageTest() : QObject(), internalLogCalled(false) {
   }
 
-  void PageTest::internalLog(const QString &note, const QString &msg) {
+  void PageTest::internalLog(const QString &, const QString &) {
     internalLogCalled = true;
   }
 
-  void PageTest::consoleLog(const QString &message, int lineNumber, const QString &source) {
+  void PageTest::consoleLog(const QString &, int, const QString &) {
     consoleLogCalled = true;
   }
 

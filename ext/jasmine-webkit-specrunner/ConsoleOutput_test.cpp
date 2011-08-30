@@ -81,6 +81,51 @@ namespace HeadlessSpecRunner {
     output.logSpecFilename("whatever");
     QVERIFY(buffer.str() == "\n\nwhatever\n");
   }
+
+  void ConsoleOutputTest::testLogSpecResult() {
+    stringstream buffer;
+    HeadlessSpecRunner::ConsoleOutput output;
+
+    output.outputIO = &buffer;
+    output.logSpecResult("whatever");
+    QVERIFY(buffer.str() == "  whatever\n");
+  }
+
+  void ConsoleOutputTest::testReportResultsFailedSingular() {
+    stringstream buffer;
+    HeadlessSpecRunner::ConsoleOutput output;
+
+    output.outputIO = &buffer;
+    output.reportFailure("1", "1", "1");
+    QVERIFY(buffer.str() == "\nFAIL: 1 test, 1 failure, 1 sec.\n");
+  }
+
+  void ConsoleOutputTest::testReportResultsFailedPlural() {
+    stringstream buffer;
+    HeadlessSpecRunner::ConsoleOutput output;
+
+    output.outputIO = &buffer;
+    output.reportFailure("2", "2", "2");
+    QVERIFY(buffer.str() == "\nFAIL: 2 tests, 2 failures, 2 secs.\n");
+  }
+
+  void ConsoleOutputTest::testReportResultsSucceeded() {
+    stringstream buffer;
+    HeadlessSpecRunner::ConsoleOutput output;
+
+    output.outputIO = &buffer;
+    output.reportSuccess("2", "2", "2");
+    QVERIFY(buffer.str() == "\nPASS: 2 tests, 2 failures, 2 secs.\n");
+  }
+
+  void ConsoleOutputTest::testReportResultsSucceededWithJSErrors() {
+    stringstream buffer;
+    HeadlessSpecRunner::ConsoleOutput output;
+
+    output.outputIO = &buffer;
+    output.reportSuccessWithJSErrors("2", "2", "2");
+    QVERIFY(buffer.str() == "\nPASS with JS errors: 2 tests, 2 failures, 2 secs.\n");
+  }
 }
 
 QTEST_MAIN(HeadlessSpecRunner::ConsoleOutputTest);

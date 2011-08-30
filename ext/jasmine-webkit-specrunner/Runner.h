@@ -43,7 +43,6 @@ namespace HeadlessSpecRunner {
       int m_runs;
       bool hasErrors;
       bool usedConsole;
-      bool showColors;
       bool isFinished;
       bool didFail;
       QQueue<QString> runnerFiles;
@@ -52,10 +51,6 @@ namespace HeadlessSpecRunner {
 
       HeadlessSpecRunner::ConsoleOutput consoleOutput;
 
-      void red();
-      void green();
-      void yellow();
-      void clear();
       void loadSpec();
   };
 }

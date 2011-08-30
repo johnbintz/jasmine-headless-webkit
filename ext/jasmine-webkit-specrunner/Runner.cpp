@@ -12,7 +12,6 @@ namespace HeadlessSpecRunner {
     , m_runs(0)
     , hasErrors(false)
     , usedConsole(false)
-    , showColors(false)
     , isFinished(false)
     , didFail(false) {
     m_page.settings()->enablePersistentStorage();
@@ -64,7 +63,6 @@ namespace HeadlessSpecRunner {
 
   void Runner::setColors(bool colors)
   {
-    showColors = colors;
     consoleOutput.showColors = colors;
   }
 
@@ -73,28 +71,8 @@ namespace HeadlessSpecRunner {
     reportFilename = file;
   }
 
-  void Runner::red()
-  {
-    if (showColors) std::cout << "\033[0;31m";
-  }
-
-  void Runner::green()
-  {
-    if (showColors) std::cout << "\033[0;32m";
-  }
-
   bool Runner::hasError() {
     return hasErrors;
-  }
-
-  void Runner::yellow()
-  {
-    if (showColors) std::cout << "\033[0;33m";
-  }
-
-  void Runner::clear()
-  {
-    if (showColors) std::cout << "\033[m";
   }
 
   void Runner::specPassed()
@@ -142,31 +120,20 @@ namespace HeadlessSpecRunner {
 
   void Runner::printResult(const QString &result)
   {
-    red();
-    std::cout << "  " << qPrintable(result) << std::endl;
-    clear();
+    consoleOutput.logSpecResult(result);
   }
 
   void Runner::finishSuite(const QString &duration, const QString &total, const QString& failed)
   {
-    std::cout << std::endl;
     if (didFail) {
-      red();
-      std::cout << "FAIL: ";
+      consoleOutput.reportFailure(total, failed, duration);
     } else {
-      green();
-      std::cout << "PASS";
-
       if (hasErrors) {
-        std::cout << " with JS errors";
+        consoleOutput.reportSuccessWithJSErrors(total, failed, duration);
+      } else {
+        consoleOutput.reportSuccess(total, failed, duration);
       }
-
-      std::cout << ": ";
     }
-
-    std::cout << qPrintable(total) << " tests, " << qPrintable(failed) << " failures, " << qPrintable(duration) << " secs.";
-    clear();
-    std::cout << std::endl;
 
     if (!reportFilename.isEmpty()) {
       QFile reportFH(reportFilename);

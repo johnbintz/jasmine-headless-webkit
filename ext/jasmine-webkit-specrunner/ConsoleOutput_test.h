@@ -22,6 +22,12 @@ namespace HeadlessSpecRunner {
       void testConsoleLog();
       void testConsoleLogUsed();
       void testLogSpecFilename();
+      void testLogSpecResult();
+
+      void testReportResultsFailedSingular();
+      void testReportResultsFailedPlural();
+      void testReportResultsSucceeded();
+      void testReportResultsSucceededWithJSErrors();
   };
 }
 

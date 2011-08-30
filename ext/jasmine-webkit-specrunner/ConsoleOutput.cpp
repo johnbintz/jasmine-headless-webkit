@@ -17,8 +17,7 @@ namespace HeadlessSpecRunner {
     successes.push(specDetail);
   }
 
-  void ConsoleOutput::failed(const QString &specDetail)
-  {
+  void ConsoleOutput::failed(const QString &specDetail) {
     red();
     *outputIO << 'F';
     clear();
@@ -38,6 +37,11 @@ namespace HeadlessSpecRunner {
 
   void ConsoleOutput::red() {
     if (showColors) std::cout << "\033[0;31m";
+  }
+
+  void ConsoleOutput::yellow()
+  {
+    if (showColors) std::cout << "\033[0;33m";
   }
 
   void ConsoleOutput::errorLog(const QString &msg, int lineNumber, const QString &sourceID) {
@@ -76,6 +80,63 @@ namespace HeadlessSpecRunner {
     red();
     *outputIO << qPrintable(name) << std::endl;
     clear();
+  }
+
+  void ConsoleOutput::logSpecResult(const QString &result) {
+    red();
+    *outputIO << "  " << qPrintable(result) << std::endl;
+    clear();
+  }
+
+  void ConsoleOutput::reportFailure(const QString &totalTests, const QString &failedTests, const QString &duration) {
+    red();
+    *outputIO << std::endl << "FAIL: ";
+    formatTestResults(totalTests, failedTests, duration);
+    *outputIO << std::endl;
+    clear();
+  }
+
+  void ConsoleOutput::reportSuccess(const QString &totalTests, const QString &failedTests, const QString &duration) {
+    green();
+    *outputIO << std::endl << "PASS: ";
+    formatTestResults(totalTests, failedTests, duration);
+    *outputIO << std::endl;
+    clear();
+  }
+
+  void ConsoleOutput::reportSuccessWithJSErrors(const QString &totalTests, const QString &failedTests, const QString &duration) {
+    yellow();
+    *outputIO << std::endl << "PASS with JS errors: ";
+    formatTestResults(totalTests, failedTests, duration);
+    *outputIO << std::endl;
+    clear();
+  }
+
+  void ConsoleOutput::formatTestResults(const QString &totalTests, const QString &failedTests, const QString &duration) {
+    *outputIO << qPrintable(totalTests) << " ";
+    if (totalTests == "1") {
+      *outputIO << "test";
+    } else {
+      *outputIO << "tests";
+    }
+
+    *outputIO << ", ";
+
+    *outputIO << qPrintable(failedTests) << " ";
+    if (failedTests == "1") {
+      *outputIO << "failure";
+    } else {
+      *outputIO << "failures";
+    }
+
+    *outputIO << ", ";
+
+    *outputIO << qPrintable(duration) << " ";
+    if (duration == "1") {
+      *outputIO << "sec.";
+    } else {
+      *outputIO << "secs.";
+    }
   }
 }
 
