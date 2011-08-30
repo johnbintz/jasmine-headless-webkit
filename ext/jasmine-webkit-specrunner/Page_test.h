@@ -5,7 +5,6 @@
 
 #include "Page.h"
 
-namespace HeadlessSpecRunner {
   class PageTest : public QObject {
     Q_OBJECT
     public:
@@ -14,7 +13,7 @@ namespace HeadlessSpecRunner {
     private:
       bool internalLogCalled;
       bool consoleLogCalled;
-      HeadlessSpecRunner::Page page;
+      Page page;
 
     private slots:
       void internalLog(const QString &note, const QString &msg);
@@ -23,7 +22,6 @@ namespace HeadlessSpecRunner {
       void testJavaScriptConfirmWithoutLog();
       void testJavaScriptConsoleMessage();
   };
-}
 
 #endif
 

@@ -1,13 +1,13 @@
-#ifndef JHW_CONSOLE_OUTPUT
-#define JHW_CONSOLE_OUTPUT
+#ifndef JHW_REPORT_FILE_OUTPUT
+#define JHW_REPORT_FILE_OUTPUT
 
 #include <QObject>
 #include <iostream>
 #include <QStack>
 
-class ConsoleOutput : public QObject {
+class ReportFileOutput : public QObject {
   public:
-    ConsoleOutput();
+    ReportFileOutput();
 
     void passed(const QString &specDetail);
     void failed(const QString &specDetail);
@@ -24,15 +24,6 @@ class ConsoleOutput : public QObject {
     std::ostream *outputIO;
     QStack<QString> successes;
     QStack<QString> failures;
-
-    bool showColors;
-    bool consoleLogUsed;
-  private:
-    void green();
-    void clear();
-    void red();
-    void yellow();
-    void formatTestResults(const QString &totalTests, const QString &failedTests, const QString &duration);
 };
 
 #endif

@@ -4,7 +4,6 @@
 #include <QtGui>
 #include <QtWebKit>
 
-namespace HeadlessSpecRunner {
   class Page: public QWebPage {
     Q_OBJECT
     public:
@@ -20,6 +19,5 @@ namespace HeadlessSpecRunner {
     private:
       bool confirmResult;
   };
-}
 
 #endif

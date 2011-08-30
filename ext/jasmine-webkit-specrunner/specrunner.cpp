@@ -54,7 +54,7 @@ int main(int argc, char** argv)
 
   QApplication app(argc, argv);
   app.setApplicationName("jasmine-headless-webkit");
-  HeadlessSpecRunner::Runner runner;
+  Runner runner;
   runner.setColors(showColors);
   runner.reportFile(reporter);
 

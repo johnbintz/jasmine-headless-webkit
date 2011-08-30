@@ -5,13 +5,11 @@
 
 using namespace std;
 
-namespace HeadlessSpecRunner {
-  ConsoleOutputTest::ConsoleOutputTest() : QObject() {
-  }
+  ConsoleOutputTest::ConsoleOutputTest() : QObject() {}
 
   void ConsoleOutputTest::testPassed() {
     stringstream buffer;
-    HeadlessSpecRunner::ConsoleOutput output;
+    ConsoleOutput output;
 
     output.consoleLogUsed = true;
     output.outputIO = &buffer;
@@ -24,7 +22,7 @@ namespace HeadlessSpecRunner {
 
   void ConsoleOutputTest::testFailed() {
     stringstream buffer;
-    HeadlessSpecRunner::ConsoleOutput output;
+    ConsoleOutput output;
 
     output.consoleLogUsed = true;
     output.outputIO = &buffer;
@@ -37,7 +35,7 @@ namespace HeadlessSpecRunner {
 
   void ConsoleOutputTest::testErrorLog() {
     stringstream buffer;
-    HeadlessSpecRunner::ConsoleOutput output;
+    ConsoleOutput output;
 
     output.outputIO = &buffer;
     output.errorLog("message", 1, "source");
@@ -46,7 +44,7 @@ namespace HeadlessSpecRunner {
 
   void ConsoleOutputTest::testInternalLog() {
     stringstream buffer;
-    HeadlessSpecRunner::ConsoleOutput output;
+    ConsoleOutput output;
 
     output.outputIO = &buffer;
     output.internalLog("note", "message");
@@ -55,7 +53,7 @@ namespace HeadlessSpecRunner {
 
   void ConsoleOutputTest::testConsoleLog() {
     stringstream buffer;
-    HeadlessSpecRunner::ConsoleOutput output;
+    ConsoleOutput output;
 
     output.consoleLogUsed = false;
     output.outputIO = &buffer;
@@ -65,7 +63,7 @@ namespace HeadlessSpecRunner {
 
   void ConsoleOutputTest::testConsoleLogUsed() {
     stringstream buffer;
-    HeadlessSpecRunner::ConsoleOutput output;
+    ConsoleOutput output;
 
     output.consoleLogUsed = true;
     output.outputIO = &buffer;
@@ -75,7 +73,7 @@ namespace HeadlessSpecRunner {
 
   void ConsoleOutputTest::testLogSpecFilename() {
     stringstream buffer;
-    HeadlessSpecRunner::ConsoleOutput output;
+    ConsoleOutput output;
 
     output.outputIO = &buffer;
     output.logSpecFilename("whatever");
@@ -84,7 +82,7 @@ namespace HeadlessSpecRunner {
 
   void ConsoleOutputTest::testLogSpecResult() {
     stringstream buffer;
-    HeadlessSpecRunner::ConsoleOutput output;
+    ConsoleOutput output;
 
     output.outputIO = &buffer;
     output.logSpecResult("whatever");
@@ -93,7 +91,7 @@ namespace HeadlessSpecRunner {
 
   void ConsoleOutputTest::testReportResultsFailedSingular() {
     stringstream buffer;
-    HeadlessSpecRunner::ConsoleOutput output;
+    ConsoleOutput output;
 
     output.outputIO = &buffer;
     output.reportFailure("1", "1", "1");
@@ -102,7 +100,7 @@ namespace HeadlessSpecRunner {
 
   void ConsoleOutputTest::testReportResultsFailedPlural() {
     stringstream buffer;
-    HeadlessSpecRunner::ConsoleOutput output;
+    ConsoleOutput output;
 
     output.outputIO = &buffer;
     output.reportFailure("2", "2", "2");
@@ -111,7 +109,7 @@ namespace HeadlessSpecRunner {
 
   void ConsoleOutputTest::testReportResultsSucceeded() {
     stringstream buffer;
-    HeadlessSpecRunner::ConsoleOutput output;
+    ConsoleOutput output;
 
     output.outputIO = &buffer;
     output.reportSuccess("2", "2", "2");
@@ -120,13 +118,12 @@ namespace HeadlessSpecRunner {
 
   void ConsoleOutputTest::testReportResultsSucceededWithJSErrors() {
     stringstream buffer;
-    HeadlessSpecRunner::ConsoleOutput output;
+    ConsoleOutput output;
 
     output.outputIO = &buffer;
     output.reportSuccessWithJSErrors("2", "2", "2");
     QVERIFY(buffer.str() == "\nPASS with JS errors: 2 tests, 2 failures, 2 secs.\n");
   }
-}
 
-QTEST_MAIN(HeadlessSpecRunner::ConsoleOutputTest);
+QTEST_MAIN(ConsoleOutputTest);
 

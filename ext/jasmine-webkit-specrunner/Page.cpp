@@ -4,7 +4,6 @@
 
 #include "Page.h"
 
-namespace HeadlessSpecRunner {
   Page::Page() : QWebPage(), confirmResult(true) {}
 
   void Page::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID) {
@@ -28,4 +27,3 @@ namespace HeadlessSpecRunner {
   void Page::oneFalseConfirm() {
     confirmResult = false;
   }
-}

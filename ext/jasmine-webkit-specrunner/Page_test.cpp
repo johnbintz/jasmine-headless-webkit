@@ -3,7 +3,6 @@
 #include "Page.h"
 #include "Page_test.h"
 
-namespace HeadlessSpecRunner {
   PageTest::PageTest() : QObject(), internalLogCalled(false) {
   }
 
@@ -39,7 +38,6 @@ namespace HeadlessSpecRunner {
     page.mainFrame()->setHtml("<script>cats();</script>");
     QVERIFY(consoleLogCalled);
   }
-}
 
-QTEST_MAIN(HeadlessSpecRunner::PageTest);
+QTEST_MAIN(PageTest);
 

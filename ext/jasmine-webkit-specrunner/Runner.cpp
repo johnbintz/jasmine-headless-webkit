@@ -7,7 +7,6 @@
 
 #include "Runner.h"
 
-namespace HeadlessSpecRunner {
   Runner::Runner() : QObject()
     , m_runs(0)
     , hasErrors(false)
@@ -201,5 +200,4 @@ namespace HeadlessSpecRunner {
       QApplication::instance()->exit(1);
     }
   }
-}
 

@@ -10,8 +10,8 @@
 
 #include "Page.h"
 #include "ConsoleOutput.h"
+#include "ReportFileOutput.h"
 
-namespace HeadlessSpecRunner {
   class Runner: public QObject {
     Q_OBJECT
     public:
@@ -38,7 +38,7 @@ namespace HeadlessSpecRunner {
       bool hasElement(const char *select);
       void timerEvent(QTimerEvent *event);
     private:
-      HeadlessSpecRunner::Page m_page;
+      Page m_page;
       QBasicTimer m_ticker;
       int m_runs;
       bool hasErrors;
@@ -49,10 +49,10 @@ namespace HeadlessSpecRunner {
       QString reportFilename;
       QStack<QString> failedSpecs;
 
-      HeadlessSpecRunner::ConsoleOutput consoleOutput;
+      ConsoleOutput consoleOutput;
+      ReportFileOutput reportFileOutput;
 
       void loadSpec();
   };
-}
 
 #endif
