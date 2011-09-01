@@ -1,7 +1,6 @@
 module Jasmine
   module Headless
-    module Webkit
-    end
+    autoload :CoffeeScriptCache, 'jasmine/headless/coffee_script_cache'
   end
 end
 

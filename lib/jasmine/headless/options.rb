@@ -15,6 +15,7 @@ module Jasmine
         :report => false,
         :do_list => false,
         :full_run => true,
+        :enable_cache => true,
         :files => []
       }
 
@@ -42,6 +43,10 @@ module Jasmine
           @options[:colors] = true
         when '--no-colors', '-nc'
           @options[:colors] = false
+        when '--cache'
+          @options[:enable_cache] = true
+        when '--no-cache'
+          @options[:enable_cache] = false
         when '--keep'
           @options[:remove_html_file] = false
         when '--report'
@@ -67,6 +72,8 @@ module Jasmine
         command_line_args = GetoptLong.new(
           [ '--colors', '-c', GetoptLong::NO_ARGUMENT ],
           [ '--no-colors', GetoptLong::NO_ARGUMENT ],
+          [ '--cache', GetoptLong::NO_ARGUMENT ],
+          [ '--no-t stcache', GetoptLong::NO_ARGUMENT ],
           [ '--keep', GetoptLong::NO_ARGUMENT ],
           [ '--report', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--jasmine-config', '-j', GetoptLong::REQUIRED_ARGUMENT ],

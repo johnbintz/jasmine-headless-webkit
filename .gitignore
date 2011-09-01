@@ -11,3 +11,4 @@ moc_*.*
 .DS_Store
 hydra-runner.log
 jhw-test
+.jhw-cache/

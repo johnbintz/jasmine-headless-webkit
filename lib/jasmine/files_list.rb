@@ -1,3 +1,4 @@
+require 'jasmine/headless/coffee_script_cache'
 require 'jasmine-core'
 require 'iconv'
 
@@ -66,51 +67,24 @@ module Jasmine
 
     private
     def to_html(files)
-      coffeescript_run = []
-
       files.collect { |file|
-        coffeescript_run << file if (ext = File.extname(file)) == '.coffee'
-          
-        output = []
-        if (files.last == file or ext != '.coffee') and !coffeescript_run.empty?
-          output << ensure_coffeescript_run!(coffeescript_run)
-        end
-
-        if ext != '.coffee'
-          output << case File.extname(file)
-          when '.js'
-            %{<script type="text/javascript" src="#{file}"></script>}
-          when '.css'
-            %{<link rel="stylesheet" href="#{file}" type="text/css" />}
+        case File.extname(file)
+        when '.coffee'
+          begin
+            %{<script type="text/javascript">#{Jasmine::Headless::CoffeeScriptCache.for(file)}</script>}
+          rescue CoffeeScript::CompilationError => ne
+            puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), file.color(:yellow), ne.message.to_s.color(:white) ]
+            raise ne
+          rescue StandardError => e
+            puts "[%s] Error in compiling one of the followng: %s" % [ 'coffeescript'.color(:red), files.join(' ').color(:yellow) ]
+            raise e
           end
+        when '.js'
+          %{<script type="text/javascript" src="#{file}"></script>}
+        when '.css'
+          %{<link rel="stylesheet" href="#{file}" type="text/css" />}
         end
-
-        output
       }.flatten.reject(&:empty?)
-    end
-
-    def ensure_coffeescript_run!(files)
-      data = StringIO.new
-      files.each { |file| data << File.read(file) << "\n" }
-      data.rewind
-
-      %{<script type="text/javascript">#{CoffeeScript.compile(data)}</script>}
-    rescue CoffeeScript::CompilationError => e
-      files.each do |file|
-        begin
-          CoffeeScript.compile(fh = File.open(file))
-        rescue CoffeeScript::CompilationError => ne
-          puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), file.color(:yellow), ne.message.to_s.color(:white) ]
-          raise ne
-        ensure
-          fh.close
-        end
-      end
-    rescue StandardError => e
-      puts "[%s] Error in compiling one of the followng: %s" % [ 'coffeescript'.color(:red), files.join(' ').color(:yellow) ]
-      raise e
-    ensure
-      files.clear
     end
 
     def spec_filter

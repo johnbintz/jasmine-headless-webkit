@@ -61,6 +61,8 @@ module Jasmine
       end
 
       def run
+        Jasmine::Headless::CoffeeScriptCache.enabled = @options[:enable_cache]
+
         files_list = Jasmine::FilesList.new(
           :config => jasmine_config,
           :only => @options[:files]

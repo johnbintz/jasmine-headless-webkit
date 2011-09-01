@@ -147,83 +147,37 @@ describe Jasmine::FilesList do
   describe '#.*files_to_html' do
     include FakeFS::SpecHelpers
 
-    context 'one coffeescript file' do
-      before do
-        files_list.instance_variable_set(:@files, [
-                                         'test.js',
-                                         'test.coffee',
-                                         'test.css'
-        ])
+    before do
+      files_list.instance_variable_set(:@files, [
+                                       'test.js',
+                                       'test.coffee',
+                                       'test.css'
+      ])
 
-        files_list.instance_variable_set(:@filtered_files, [
-                                         'test.js',
-                                         'test.coffee'
-        ])
+      files_list.instance_variable_set(:@filtered_files, [
+                                       'test.js',
+                                       'test.coffee'
+      ])
 
-        File.open('test.coffee', 'w') { |fh| fh.print "first" }
+      Jasmine::Headless::CoffeeScriptCache.stubs(:for).with('test.coffee').returns("i compiled")
+    end
 
-        CoffeeScript.stubs(:compile).with() { |field| field.read == "first\n" }.returns("i compiled")
-      end
-
-      context '#files_to_html' do
-        it "should create the right HTML" do
-          files_list.files_to_html.should == [
-            %{<script type="text/javascript" src="test.js"></script>},
-            %{<script type="text/javascript">i compiled</script>},
-            %{<link rel="stylesheet" href="test.css" type="text/css" />}
-          ]
-        end
-      end
-
-      context '#filtered_files_to_html' do
-        it "should create the right HTML" do
-          files_list.filtered_files_to_html.should == [
-            %{<script type="text/javascript" src="test.js"></script>},
-            %{<script type="text/javascript">i compiled</script>}
-          ]
-        end
+    context '#files_to_html' do
+      it "should create the right HTML" do
+        files_list.files_to_html.should == [
+          %{<script type="text/javascript" src="test.js"></script>},
+          %{<script type="text/javascript">i compiled</script>},
+          %{<link rel="stylesheet" href="test.css" type="text/css" />}
+        ]
       end
     end
 
-    context 'two coffeescript files' do
-      before do
-        files_list.instance_variable_set(:@files, [
-                                         'test.js',
-                                         'test.coffee',
-                                         'test2.coffee',
-                                         'test.css'
-        ])
-
-        files_list.instance_variable_set(:@filtered_files, [
-                                         'test.js',
-                                         'test.coffee'
-        ])
-
-        File.open('test.coffee', 'w') { |fh| fh.print "first" }
-        File.open('test2.coffee', 'w') { |fh| fh.print "second" }
-      end
-
-      context '#files_to_html' do
-        it "should create the right HTML" do
-          CoffeeScript.stubs(:compile).with() { |field| field.read == "first\nsecond\n" }.returns("i compiled")
-
-          files_list.files_to_html.should == [
-            %{<script type="text/javascript" src="test.js"></script>},
-            %{<script type="text/javascript">i compiled</script>},
-            %{<link rel="stylesheet" href="test.css" type="text/css" />}
-          ]
-        end
-      end
-
-      context '#filtered_files_to_html' do
-        it "should create the right HTML" do
-          CoffeeScript.stubs(:compile).with() { |field| field.read == "first\n" }.returns("i compiled")
-
-          files_list.filtered_files_to_html.should == [
-            %{<script type="text/javascript" src="test.js"></script>},
-            %{<script type="text/javascript">i compiled</script>}
-          ]
-        end
+    context '#filtered_files_to_html' do
+      it "should create the right HTML" do
+        files_list.filtered_files_to_html.should == [
+          %{<script type="text/javascript" src="test.js"></script>},
+          %{<script type="text/javascript">i compiled</script>}
+        ]
       end
     end
   end
