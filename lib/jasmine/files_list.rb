@@ -12,22 +12,6 @@ module Jasmine
       File.expand_path('../../../jasmine/jasmine.headless-reporter.js', __FILE__)
     ]
 
-    class << self
-      def get_spec_line_numbers(file)
-        line_numbers = {}
-
-        ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
-        file.lines.each_with_index.each { |line, index|
-          line = ic.iconv(line + ' ')[0..-2]
-          if description = line[%r{(describe|context|it)[( ]*(["'])(.*)\2}, 3]
-            (line_numbers[description] ||= []) << (index + 1)
-          end
-        }
-
-        line_numbers
-      end
-    end
-
     def initialize(options = {})
       @options = options
       @files = DEFAULT_FILES.dup
@@ -56,7 +40,7 @@ module Jasmine
     def spec_file_line_numbers
       @spec_file_line_numbers ||= Hash[@spec_files.collect { |file|
         if File.exist?(file)
-          if !(lines = self.class.get_spec_line_numbers(File.read(file))).empty?
+          if !(lines = Jasmine::Headless::SpecFileAnalyzer.for(file)).empty?
             [ file, lines ]
           end
         else
@@ -105,7 +89,7 @@ module Jasmine
             @files += found_files
 
             if searches == 'spec_files'
-              @spec_files = @files + spec_filter
+              @spec_files += spec_filter
             end
 
             @filtered_files += (if searches == 'spec_files'

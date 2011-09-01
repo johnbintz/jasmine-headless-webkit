@@ -3,6 +3,10 @@ require 'fakefs/spec_helpers'
 
 RSpec.configure do |c|
   c.mock_with :mocha
+  
+  c.before(:each) do
+    Jasmine::Headless::CacheableAction.enabled = false
+  end
 end
 
 specrunner = 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner'
