@@ -1,4 +1,3 @@
-require 'jasmine/headless/coffee_script_cache'
 require 'jasmine-core'
 require 'iconv'
 

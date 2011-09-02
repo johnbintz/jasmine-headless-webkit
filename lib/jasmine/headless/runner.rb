@@ -1,13 +1,7 @@
-require 'jasmine/headless/errors'
-require 'jasmine/headless/options'
-
 require 'fileutils'
 
 require 'coffee-script'
 require 'rainbow'
-
-require 'jasmine/files_list'
-require 'jasmine/template_writer'
 
 require 'yaml'
 

@@ -9,6 +9,7 @@ end
 
 $:.unshift(File.join(gem_dir, 'lib'))
 require 'jasmine-headless-webkit'
+
 require 'jasmine/headless/errors'
 require 'jasmine/headless/runner'
 require 'jasmine/headless/options'
