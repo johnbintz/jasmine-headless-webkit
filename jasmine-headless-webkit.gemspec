@@ -1,10 +1,10 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "jasmine-headless-webkit/version"
+require "jasmine/headless/version"
 
 Gem::Specification.new do |s|
   s.name        = "jasmine-headless-webkit"
-  s.version     = Jasmine::Headless::Webkit::VERSION
+  s.version     = Jasmine::Headless::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["John Bintz", "Sencha Inc.", "Pivotal Labs"]
   s.email       = ["john@coswellproductions.com"]

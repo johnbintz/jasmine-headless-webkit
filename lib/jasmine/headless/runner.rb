@@ -1,13 +1,7 @@
-require 'jasmine/headless/errors'
-require 'jasmine/headless/options'
-
 require 'fileutils'
 
 require 'coffee-script'
 require 'rainbow'
-
-require 'jasmine/files_list'
-require 'jasmine/template_writer'
 
 require 'yaml'
 
@@ -61,6 +55,8 @@ module Jasmine
       end
 
       def run
+        Jasmine::Headless::CacheableAction.enabled = @options[:enable_cache]
+
         files_list = Jasmine::FilesList.new(
           :config => jasmine_config,
           :only => @options[:files]

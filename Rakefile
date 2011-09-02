@@ -9,6 +9,7 @@ RSpec::Core::RakeTask.new(:spec)
 
 $: << File.expand_path('../lib', __FILE__)
 
+require 'jasmine-headless-webkit'
 require 'jasmine/headless/task'
 
 Jasmine::Headless::Task.new

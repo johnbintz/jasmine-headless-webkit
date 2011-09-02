@@ -1,5 +1,3 @@
-require 'jasmine/headless/runner'
-
 module Digest
   class JasmineTest
     def self.file(file)

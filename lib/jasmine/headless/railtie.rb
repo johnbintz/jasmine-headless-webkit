@@ -1,5 +1,3 @@
-require 'jasmine/headless/task'
-
 module Jasmine
   module Headless
     class Railtie < Rails::Railtie

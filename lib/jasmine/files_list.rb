@@ -1,5 +1,6 @@
 require 'jasmine-core'
 require 'iconv'
+require 'time'
 
 module Jasmine
   class FilesList
@@ -11,21 +12,7 @@ module Jasmine
       File.expand_path('../../../jasmine/jasmine.headless-reporter.js', __FILE__)
     ]
 
-    class << self
-      def get_spec_line_numbers(file)
-        line_numbers = {}
-
-        ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
-        file.lines.each_with_index.each { |line, index|
-          line = ic.iconv(line + ' ')[0..-2]
-          if description = line[%r{(describe|context|it)[( ]*(["'])(.*)\2}, 3]
-            (line_numbers[description] ||= []) << (index + 1)
-          end
-        }
-
-        line_numbers
-      end
-    end
+    PLEASE_WAIT_IM_WORKING_TIME = 2
 
     def initialize(options = {})
       @options = options
@@ -55,7 +42,7 @@ module Jasmine
     def spec_file_line_numbers
       @spec_file_line_numbers ||= Hash[@spec_files.collect { |file|
         if File.exist?(file)
-          if !(lines = self.class.get_spec_line_numbers(File.read(file))).empty?
+          if !(lines = Jasmine::Headless::SpecFileAnalyzer.for(file)).empty?
             [ file, lines ]
           end
         else
@@ -66,51 +53,31 @@ module Jasmine
 
     private
     def to_html(files)
-      coffeescript_run = []
+      alert_time = Time.now + PLEASE_WAIT_IM_WORKING_TIME
 
       files.collect { |file|
-        coffeescript_run << file if (ext = File.extname(file)) == '.coffee'
-          
-        output = []
-        if (files.last == file or ext != '.coffee') and !coffeescript_run.empty?
-          output << ensure_coffeescript_run!(coffeescript_run)
+        if alert_time && alert_time < Time.now
+          puts "Rebuilding cache, please wait..."
+          alert_time = nil
         end
 
-        if ext != '.coffee'
-          output << case File.extname(file)
-          when '.js'
-            %{<script type="text/javascript" src="#{file}"></script>}
-          when '.css'
-            %{<link rel="stylesheet" href="#{file}" type="text/css" />}
+        case File.extname(file)
+        when '.coffee'
+          begin
+            %{<script type="text/javascript">#{Jasmine::Headless::CoffeeScriptCache.for(file)}</script>}
+          rescue CoffeeScript::CompilationError => ne
+            puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), file.color(:yellow), ne.message.to_s.color(:white) ]
+            raise ne
+          rescue StandardError => e
+            puts "[%s] Error in compiling one of the followng: %s" % [ 'coffeescript'.color(:red), files.join(' ').color(:yellow) ]
+            raise e
           end
+        when '.js'
+          %{<script type="text/javascript" src="#{file}"></script>}
+        when '.css'
+          %{<link rel="stylesheet" href="#{file}" type="text/css" />}
         end
-
-        output
-      }.flatten.reject(&:empty?)
-    end
-
-    def ensure_coffeescript_run!(files)
-      data = StringIO.new
-      files.each { |file| data << File.read(file) << "\n" }
-      data.rewind
-
-      %{<script type="text/javascript">#{CoffeeScript.compile(data)}</script>}
-    rescue CoffeeScript::CompilationError => e
-      files.each do |file|
-        begin
-          CoffeeScript.compile(fh = File.open(file))
-        rescue CoffeeScript::CompilationError => ne
-          puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), file.color(:yellow), ne.message.to_s.color(:white) ]
-          raise ne
-        ensure
-          fh.close
-        end
-      end
-    rescue StandardError => e
-      puts "[%s] Error in compiling one of the followng: %s" % [ 'coffeescript'.color(:red), files.join(' ').color(:yellow) ]
-      raise e
-    ensure
-      files.clear
+      }.flatten.compact.reject(&:empty?)
     end
 
     def spec_filter
@@ -131,7 +98,7 @@ module Jasmine
             @files += found_files
 
             if searches == 'spec_files'
-              @spec_files = @files + spec_filter
+              @spec_files += spec_filter
             end
 
             @filtered_files += (if searches == 'spec_files'
