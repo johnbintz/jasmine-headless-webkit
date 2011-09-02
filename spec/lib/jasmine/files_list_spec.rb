@@ -151,6 +151,7 @@ describe Jasmine::FilesList do
       files_list.instance_variable_set(:@files, [
                                        'test.js',
                                        'test.coffee',
+                                       'test.whatever',
                                        'test.css'
       ])
 

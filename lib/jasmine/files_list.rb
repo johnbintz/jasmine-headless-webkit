@@ -1,5 +1,6 @@
 require 'jasmine-core'
 require 'iconv'
+require 'time'
 
 module Jasmine
   class FilesList
@@ -10,6 +11,8 @@ module Jasmine
       File.join(Jasmine::Core.path, "jasmine-html.js"),
       File.expand_path('../../../jasmine/jasmine.headless-reporter.js', __FILE__)
     ]
+
+    PLEASE_WAIT_IM_WORKING_TIME = 2
 
     def initialize(options = {})
       @options = options
@@ -50,7 +53,14 @@ module Jasmine
 
     private
     def to_html(files)
+      alert_time = Time.now + PLEASE_WAIT_IM_WORKING_TIME
+
       files.collect { |file|
+        if alert_time && alert_time < Time.now
+          puts "Rebuilding cache, please wait..."
+          alert_time = nil
+        end
+
         case File.extname(file)
         when '.coffee'
           begin
@@ -67,7 +77,7 @@ module Jasmine
         when '.css'
           %{<link rel="stylesheet" href="#{file}" type="text/css" />}
         end
-      }.flatten.reject(&:empty?)
+      }.flatten.compact.reject(&:empty?)
     end
 
     def spec_filter
