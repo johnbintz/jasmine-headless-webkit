@@ -18,32 +18,31 @@ if !File.file?(specrunner)
 end
 
 module RSpec::Matchers
-  define :be_a_report_containing do |total, fails, used_console|
+  define :be_a_report_containing do |total, failed, used_console|
     match do |filename|
-      parts(filename).length.should == 4
-      parts[0].should == total.to_s
-      parts[1].should == fails.to_s
-      parts[2].should == (used_console ? "T" : "F")
+      report(filename)
+      report.total.should == total
+      report.failed.should == failed
+      report.has_used_console?.should == used_console
       true
     end
 
     failure_message_for_should do |filename|
-      parts(filename)
-      "expected #{filename} to be a report containing (#{total}, #{fails}, #{used_console.inspect}), instead it contained (#{parts[0]}, #{parts[1]}, #{(parts[2] == "T").inspect})"
+      "expected #{filename} to be a report containing (#{total}, #{failed}, #{used_console.inspect})"
     end
 
-    def parts(filename = nil)
-      @parts ||= File.readlines(filename).first.strip.split('/')
+    def report(filename = nil)
+      @report ||= Jasmine::Headless::Report.load(filename)
     end
   end
 
   define :contain_a_failing_spec do |*parts|
     match do |filename|
-      report(filename).include?(parts.join("||")).should be_true
+      report(filename).should have_failed_on(parts.join(" "))
     end
 
     def report(filename)
-      @report ||= File.readlines(filename)[1..-1].collect(&:strip)
+      @report ||= Jasmine::Headless::Report.load(filename)
     end
   end
 

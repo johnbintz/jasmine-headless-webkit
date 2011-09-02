@@ -10,6 +10,9 @@ module Jasmine
     autoload :Runner, 'jasmine/headless/runner'
     autoload :Options, 'jasmine/headless/options'
     autoload :Task, 'jasmine/headless/task'
+
+    autoload :Report, 'jasmine/headless/report'
+    autoload :ReportMessage, 'jasmine/headless/report_message'
   end
 end
 
