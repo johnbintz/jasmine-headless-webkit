@@ -14,6 +14,7 @@ class ReportFileOutputTest : public QObject {
     ReportFileOutputTest();
   private slots:
     void testPassed();
+    void testFailed();
 };
 
 #endif
