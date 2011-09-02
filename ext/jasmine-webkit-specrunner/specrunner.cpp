@@ -56,11 +56,13 @@ int main(int argc, char** argv)
   app.setApplicationName("jasmine-headless-webkit");
   Runner runner;
   runner.setColors(showColors);
+
   runner.reportFile(reporter);
 
   for (index = optind; index < argc; index++) {
     runner.addFile(QString::fromLocal8Bit(argv[index]));
   }
+
   runner.go();
 
   return app.exec();

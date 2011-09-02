@@ -4,6 +4,9 @@
 #include <QObject>
 #include <iostream>
 #include <QStack>
+#include <sstream>
+
+using namespace std;
 
 class ReportFileOutput : public QObject {
   public:
@@ -21,9 +24,14 @@ class ReportFileOutput : public QObject {
     void reportSuccess(const QString &totalTests, const QString &failedTests, const QString &duration);
     void reportSuccessWithJSErrors(const QString &totalTests, const QString &failedTests, const QString &duration);
 
-    std::ostream *outputIO;
+    void reset();
+
+    stringstream *buffer;
+    stringstream *outputIO;
     QStack<QString> successes;
     QStack<QString> failures;
+  private:
+    void reportTotals(const QString &totalTests, const QString &failedTests, const QString &duration, bool hasJavaScriptError);
 };
 
 #endif

@@ -6,53 +6,57 @@
 #include <QFile>
 #include <QTextStream>
 #include <iostream>
+#include <fstream>
 #include <QQueue>
 
 #include "Page.h"
 #include "ConsoleOutput.h"
 #include "ReportFileOutput.h"
 
-  class Runner: public QObject {
-    Q_OBJECT
-    public:
-      Runner();
-      void setColors(bool colors);
-      void reportFile(const QString &file);
-      void addFile(const QString &spec);
-      void go();
+using namespace std;
+
+class Runner: public QObject {
+  Q_OBJECT
+  public:
+    Runner();
+    void setColors(bool colors);
+    void reportFile(const QString &file);
+    void addFile(const QString &spec);
+    void go();
     public slots:
       void log(const QString &msg);
-      bool hasError();
-      void leavePageAttempt(const QString &msg);
-      void specPassed();
-      void specFailed(const QString &specDetail);
-      void printName(const QString &name);
-      void printResult(const QString &result);
-      void finishSuite(const QString &duration, const QString &total, const QString& failed);
+    bool hasError();
+    void leavePageAttempt(const QString &msg);
+    void specPassed(const QString &specDetail);
+    void specFailed(const QString &specDetail);
+    void printName(const QString &name);
+    void printResult(const QString &result);
+    void finishSuite(const QString &duration, const QString &total, const QString& failed);
     private slots:
       void watch(bool ok);
-      void errorLog(const QString &msg, int lineNumber, const QString &sourceID);
-      void internalLog(const QString &note, const QString &msg);
-      void addJHW();
-    protected:
-      bool hasElement(const char *select);
-      void timerEvent(QTimerEvent *event);
-    private:
-      Page m_page;
-      QBasicTimer m_ticker;
-      int m_runs;
-      bool hasErrors;
-      bool usedConsole;
-      bool isFinished;
-      bool didFail;
-      QQueue<QString> runnerFiles;
-      QString reportFilename;
-      QStack<QString> failedSpecs;
+    void errorLog(const QString &msg, int lineNumber, const QString &sourceID);
+    void internalLog(const QString &note, const QString &msg);
+    void addJHW();
+  protected:
+    bool hasElement(const char *select);
+    void timerEvent(QTimerEvent *event);
+  private:
+    Page m_page;
+    QBasicTimer m_ticker;
+    int m_runs;
+    bool hasErrors;
+    bool usedConsole;
+    bool isFinished;
+    bool didFail;
+    QQueue<QString> runnerFiles;
+    QStack<QString> failedSpecs;
 
-      ConsoleOutput consoleOutput;
-      ReportFileOutput reportFileOutput;
+    ConsoleOutput consoleOutput;
+    ReportFileOutput reportFileOutput;
 
-      void loadSpec();
-  };
+    QString reportFileName;
+
+    void loadSpec();
+};
 
 #endif

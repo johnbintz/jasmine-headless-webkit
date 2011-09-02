@@ -15,6 +15,12 @@ class ReportFileOutputTest : public QObject {
   private slots:
     void testPassed();
     void testFailed();
+    void testErrorLog();
+    void testConsoleLog();
+    void testStubMethods();
+    void testReportFailure();
+    void testReportSuccess();
+    void testReportSuccessWithJSErrors();
 };
 
 #endif

@@ -26,7 +26,8 @@ guard 'jasmine-headless-webkit', :all_on_start => false do
 end
 
 def compile
-  system %{cd ext/jasmine-webkit-specrunner && ruby test.rb && ruby extconf.rb}
+  #system %{cd ext/jasmine-webkit-specrunner && ruby test.rb && ruby extconf.rb}
+  system %{cd ext/jasmine-webkit-specrunner && ruby extconf.rb}
 end
 
 compile

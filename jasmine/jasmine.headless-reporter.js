@@ -14,7 +14,7 @@
     HeadlessReporterResult.prototype.print = function() {
       var bestChoice, output, result, _i, _len, _ref, _results;
       output = this.name;
-      bestChoice = this._findSpecLine();
+      bestChoice = HeadlessReporterResult.findSpecLine(this.splitName);
       if (bestChoice.file) {
         output += " (" + bestChoice.file + ":" + bestChoice.lineNumber + ")";
       }
@@ -27,7 +27,7 @@
       }
       return _results;
     };
-    HeadlessReporterResult.prototype._findSpecLine = function() {
+    HeadlessReporterResult.findSpecLine = function(splitName) {
       var bestChoice, file, index, lastLine, line, lineNumber, lines, newLineNumberInfo, _i, _len, _ref;
       bestChoice = {
         accuracy: 0,
@@ -39,7 +39,7 @@
         lines = _ref[file];
         index = 0;
         lineNumber = 0;
-        while (newLineNumberInfo = lines[this.splitName[index]]) {
+        while (newLineNumberInfo = lines[splitName[index]]) {
           if (newLineNumberInfo.length === 0) {
             lineNumber = newLineNumberInfo[0];
           } else {
@@ -70,14 +70,21 @@
   jasmine.Suite.prototype.getSuiteSplitName = function() {
     var parts;
     parts = this.parentSuite ? this.parentSuite.getSuiteSplitName() : [];
-    parts.push(this.description);
+    parts.push(String(this.description).replace(/[\n\r]/g, ' '));
     return parts;
   };
   jasmine.Spec.prototype.getSpecSplitName = function() {
     var parts;
     parts = this.suite.getSuiteSplitName();
-    parts.push(this.description);
+    parts.push(String(this.description).replace(/[\n\r]/g, ' '));
     return parts;
+  };
+  jasmine.Spec.prototype.getJHWSpecInformation = function() {
+    var parts, specLineInfo;
+    parts = this.getSpecSplitName();
+    specLineInfo = HeadlessReporterResult.findSpecLine(parts);
+    parts.push("" + specLineInfo.file + ":" + specLineInfo.lineNumber);
+    return parts.join("||");
   };
   jasmine.HeadlessReporter = (function() {
     function HeadlessReporter(callback) {
@@ -112,9 +119,9 @@
       results = spec.results();
       this.length++;
       if (results.passed()) {
-        return JHW.specPassed();
+        return JHW.specPassed(spec.getJHWSpecInformation());
       } else {
-        JHW.specFailed(spec.getSpecSplitName().join('||'));
+        JHW.specFailed(spec.getJHWSpecInformation());
         this.failedCount++;
         failureResult = new HeadlessReporterResult(spec.getFullName(), spec.getSpecSplitName());
         _ref = results.getItems();

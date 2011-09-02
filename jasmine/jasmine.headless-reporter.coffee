@@ -8,19 +8,19 @@ class window.HeadlessReporterResult
     @results.push(message)
   print: ->
     output = @name
-    bestChoice = this._findSpecLine()
+    bestChoice = HeadlessReporterResult.findSpecLine(@splitName)
     output += " (#{bestChoice.file}:#{bestChoice.lineNumber})" if bestChoice.file
 
     JHW.printName(output)
     for result in @results
       JHW.printResult(result)
-  _findSpecLine: ->
+  @findSpecLine: (splitName) ->
     bestChoice = { accuracy: 0, file: null, lineNumber: null }
 
     for file, lines of HeadlessReporterResult.specLineNumbers
       index = 0
       lineNumber = 0
-      while newLineNumberInfo = lines[@splitName[index]]
+      while newLineNumberInfo = lines[splitName[index]]
         if newLineNumberInfo.length == 0
           lineNumber = newLineNumberInfo[0]
         else
@@ -40,13 +40,19 @@ class window.HeadlessReporterResult
 
 jasmine.Suite.prototype.getSuiteSplitName = ->
   parts = if @parentSuite then @parentSuite.getSuiteSplitName() else []
-  parts.push(@description)
+  parts.push(String(@description).replace(/[\n\r]/g, ' '))
   parts
 
 jasmine.Spec.prototype.getSpecSplitName = ->
   parts = @suite.getSuiteSplitName()
-  parts.push(@description)
+  parts.push(String(@description).replace(/[\n\r]/g, ' '))
   parts
+
+jasmine.Spec.prototype.getJHWSpecInformation = ->
+  parts = this.getSpecSplitName()
+  specLineInfo = HeadlessReporterResult.findSpecLine(parts)
+  parts.push("#{specLineInfo.file}:#{specLineInfo.lineNumber}")
+  parts.join("||")
 
 class jasmine.HeadlessReporter
   constructor: (@callback = null) ->
@@ -61,27 +67,31 @@ class jasmine.HeadlessReporter
 
     this.callback() if @callback
     JHW.finishSuite((new Date() - @startTime) / 1000.0, @length, @failedCount)
+
   reportRunnerStarting: (runner) ->
     @startTime = new Date()
+
   reportSpecResults: (spec) ->
     return if this.hasError()
 
     results = spec.results()
     @length++
     if results.passed()
-      JHW.specPassed()
+      JHW.specPassed(spec.getJHWSpecInformation())
     else
-      JHW.specFailed(spec.getSpecSplitName().join('||'))
+      JHW.specFailed(spec.getJHWSpecInformation())
       @failedCount++
       failureResult = new HeadlessReporterResult(spec.getFullName(), spec.getSpecSplitName())
       for result in results.getItems()
         if result.type == 'expect' and !result.passed_
           failureResult.addResult(result.message)
       @results.push(failureResult)
+
   reportSpecStarting: (spec) ->
     if this.hasError()
       spec.finish()
       spec.suite.finish()
+
   reportSuiteResults: (suite) ->
   hasError: ->
     JHW.hasError()
