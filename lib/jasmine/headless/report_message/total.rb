@@ -20,6 +20,7 @@ module Jasmine::Headless::ReportMessage
     end
 
     def ==(other)
+      other &&
       self.total == other.total &&
       self.failed == other.failed &&
       self.time == other.time &&

@@ -5,6 +5,7 @@ module Jasmine::Headless
     extend Forwardable
 
     def_delegators :report, :length, :[]
+    def_delegators :last_total, :total, :failed, :time
 
     class << self
       def load(file)
@@ -29,14 +30,6 @@ module Jasmine::Headless
       self
     end
 
-    def total
-      last_total.total
-    end
-
-    def failed
-      last_total.failed
-    end
-
     def has_used_console?
       @report.any? { |entry| entry.class == Jasmine::Headless::ReportMessage::Console }
     end
@@ -47,6 +40,10 @@ module Jasmine::Headless
           entry.statement == statement
         end
       }
+    end
+
+    def valid?
+      last_total != nil
     end
 
     private

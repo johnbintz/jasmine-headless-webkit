@@ -37,6 +37,9 @@ REPORT
         report.total.should == 1
         report.failed.should == 2
         report.should have_used_console
+        report.time.should == 3.0
+
+        report.should be_valid
 
         report.should have_failed_on("Statement Two")
       end
