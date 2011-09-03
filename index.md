@@ -13,21 +13,38 @@ in a browser environment can be problematic and slow:
 * The [Jasmine gem](https://github.com/pivotal/jasmine-gem)'s server makes getting up and testing very fast, but F5-ing your browser for each test run is distracting.
 * Jasmine CI uses Selenium, which speeds up the process a bit, but you're still rendering pixels in a browser, albeit with the option of rendering those pixels in a lot of different browsers at once.
 * Node.js, EnvJS, and Rhino solutions for running Jasmine are great for anything that will never run in a real browser. I'm a big believer of running code destined for a browser in a browser itself, not a simulator.
+* [Evergreen](https://github.com/jnicklas/evergreen) makes Jasmine testing in a Rails app as easy as pie, but not everyone writes for Rails.
 
-But there's a solution for fast, accurate browser-based testing, using one of the most popular browser cores, and it dovetails perfectly into the Jasmine gem's already established protocols.
+But there's a solution for fast, accurate browser-based testing. with a focus on continuous testing,
+using one of the most popular browser cores, and that dovetails perfectly into the Jasmine gem's already established protocols.
 
 ## Enter `jasmine-headless-webkit`
 
 `jasmine-headless-webkit` uses the [QtWebKit widget](http://trac.webkit.org/wiki/QtWebKit) to run your specs without needing to render a pixel. It's nearly
 as fast as running in a JavaScript engine like Node.js, and, since it's a real browser environment, all the modules
-you would normally use, like jQuery and Backbone, work without any modifications. If you write your tests correctly,
+you would normally use, like jQuery and Backbone.js, work without any modifications. If you write your tests correctly,
 they'll even work when running in the Jasmine gem's server with no changes to your code.
 
 `jasmine-headless-webkit` also streamlines your workflow in other ways:
 
-* It integrates with [Guard](https://github.com/guard/guard) when using [`guard-jasmine-headless-webkit`](https://github.com/guard/guard-jasmine-headless-webkit).
+* It integrates with [Guard](https://github.com/guard/guard) for a continuous testing setup when using [`guard-jasmine-headless-webkit`](https://github.com/guard/guard-jasmine-headless-webkit).
 * It compiles [CoffeeScript](http://jashkenas.github.com/coffee-script/), both for your tests and for your application logic.
 * It can be configured like RSpec, and its output is very similar to RSpec's output, so you don't need to learn too much new stuff to use and integrate it.
+* It's *fast*.
+
+## Is this for me?
+
+That depends on what you need:
+
+* If you're new to JavaScript testing, drop in [Pivotal's Jasmine gem](https://github.com/pivotal/jasmine-gem) and point your browser at http://localhost:8888/.
+* If you're used to how the Jasmine gem works and want to move to a faster solution geared toward continuous testing, you're in the right place!
+* If you want an even simpler config and access to all of your Rails routes and resources for a quasi-intergration testing setup, use [Evergreen](https://github.com/jnicklas/evergreen).
+  You even get your choice of browser drivers for free (as opposed to just Selenium or WebKit) as well as headless testing!
+* If you want true integration testing, where you test the whole application stack, use Cucumber and/or Capybara.
+* If you're not using Rails and still want to unit test, the Jasmine gem or `jasmine-headless-webkit` is what you want.
+
+'round here, we focus on unit testing and mocking external interfaces. No using your app's views or routes, no hitting the app server to
+get resources, just mocking and stubbing.
 
 ## How do I use this wonderful toy?
 
@@ -45,16 +62,19 @@ to use the Jasmine gem:
     gem install jasmine
     jasmine init
 
+Once you're good enough, you can make the `spec/javascripts/support/jasmine.yml` file yourself and skip the Pivotal Jasmine gem entirely.
+It's what the cool kids do.
+
 ### What do I need to get it working?
 
 Installation requires Qt 4.7. `jasmine-headless-webkit` has been tested in the following environments:
 
-* Mac OS X 10.6, with MacPorts Qt, Homebrew Qt and Nokia Qt.mpkg
+* Mac OS X 10.6 and 10.7, with MacPorts Qt, Homebrew Qt and Nokia Qt.mpkg
 * Kubuntu 10.10 and 10.04
 * Ubuntu 11.04 9.10
 * Arch Linux
 
-If it works in yours, [leave me a message on GitHub](https://github.com/johnbintz) or 
+If it works in yours, [leave me a message on GitHub](https://github.com/johnbintz) or
 [fork this site](https://github.com/johnbintz/jasmine-headless-webkit/tree/gh-pages) and add your setup.
 
 ## Qt 4.7.X
@@ -143,6 +163,18 @@ spec_dir: spec/javascripts
 It also brings in the same copy of the Jasmine library that the Jasmine gem includes, so if you're testing in both environments,
 you're guaranteed to get the same results in your tests.
 
+#### Caching, caching, caching
+
+`jasmine-headless-webkit` does two things that are CPU intensive (besides running tests): compiling CoffeeScript and analyzing
+spec files to get line number information for nicer spec failure messages (_did I mention you get really nice spec failure
+messages with `jasmine-headless-webkit`, too?_). These two operations are cached into the `.jhw-cache/` folder from where the
+runner is executed. When this cache is combined with running tests continuously using Guard, runtime overhead is reduced to almost
+nothing.
+
+Of course, being a cache, it takes time to warm up. The first time you run `jasmine-headless-webkit` on a big project, it can take
+several seconds to warm the cache. After that, enjoy an almost 20% speedup in runtime (tested on exactly one project's runtime,
+YMMV). This is new as of `0.7.0`.
+
 #### `*.coffee` in my `jasmine.yml` file?!
 
 Yes, `jasmine-headless-webkit` will support `*.coffee` files in `jasmine.yml`, which the normal Jasmine server currently
@@ -212,11 +244,12 @@ printing HTML nodes, but it can be pretty noisy when printing objects.
 ## Running the runner
 
 {% highlight bash %}
-jasmine-headless-webkit [ -c / --colors ] 
-                        [ --no-colors ] 
-                        [ --no-full-run ] 
-                        [ --keep ] 
-                        [ --report <report file> ] 
+jasmine-headless-webkit [ -c / --colors ]
+                        [ --no-colors ]
+                        [ --no-full-run ]
+                        [ --keep ]
+                        [ -l / --list ]
+                        [ --report <report file> ]
                         [ -j / --jasmine-config <path to jasmine.yml> ]
                         <spec files to run>
 {% endhighlight %}
@@ -232,6 +265,11 @@ The runner will return one of three exit codes:
 Much like RSpec, you can define the default options for each run of the runner. Place your global options into a
 `~/.jasmine-headless-webkit` file and your per-project settings in a `.jasmine-headless-webkit` file at the root of
 the project.
+
+### Listng what files `jasmine-headless-webkit` will include
+
+If your tests are not picking up a file you thought they should be, or they're being included in the wrong order,
+run with the `-l` flag to get a list of the files that `jasmine-headless-webkit` will include in the generated HTML file.
 
 ### Coloring the output
 
@@ -249,11 +287,17 @@ get `specrunner.$$.html` files in your working directory.
 
 ### Writing out a machine-readable report
 
-Use the `--report` option to create a simple report file like this:
+Use the `--report` option to create a detailed report file:
 
-    <total tests>/<failures>/<T if console was used, F otherwise>/<total time>
+    PASS||Statement||One||file.js:23
+    FAIL||Statement||Two||file.js:23
+    CONSOLE||Yes
+    ERROR||Uh oh||file.js:23
+    TOTAL||1||2||3||T
 
 [`guard-jasmine-headless-webkit`](http://github.com/guard/guard-jasmine-headless-webkit/) uses this for the Growl notifications.
+You can also use it in your own setups, to run specs remotely and stick the results into a CI system. You can use
+`Jasmine::Headless::Report` to interpret the file and transform the output.
 
 ### Using a different `jasmine.yml` file
 
@@ -290,7 +334,7 @@ If you don't want this behavior, pass in `--no-full-run` and filtered runs will 
 You can call the runner from Ruby:
 
 {% highlight ruby %}
-require 'jasmine/headless/runner'
+require 'jasmine-headless-webkit'
 
 status_code = Jasmine::Headless::Runner.run(
   :colors => false, 
@@ -358,7 +402,7 @@ Support for Autotest is *deprecated* and no new features will be added to the Au
 You can create a Rake task for your headless Jasmine specs:
 
 {% highlight ruby %}
-require 'jasmine/headless/task'
+require 'jasmine-headless-webkit'
 
 Jasmine::Headless::Task.new('jasmine:headless') do |t|
   t.colors = true
