@@ -17,6 +17,10 @@ module Jasmine::Headless::ReportMessage
     def ==(other)
       self.statement == other.statement && self.file_info == other.file_info
     end
+
+    def filename
+      file_info.split(":").first
+    end
   end
 end
 

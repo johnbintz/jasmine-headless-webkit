@@ -31,12 +31,12 @@ module Jasmine::Headless
     end
 
     def has_used_console?
-      @report.any? { |entry| entry.class == Jasmine::Headless::ReportMessage::Console }
+      @report.any? { |entry| entry.kind_of?(Jasmine::Headless::ReportMessage::Console) }
     end
 
     def has_failed_on?(statement)
       @report.any? { |entry| 
-        if entry.class == Jasmine::Headless::ReportMessage::Fail
+        if entry.kind_of?(Jasmine::Headless::ReportMessage::Fail)
           entry.statement == statement
         end
       }
@@ -44,6 +44,12 @@ module Jasmine::Headless
 
     def valid?
       last_total != nil
+    end
+
+    def failed_files
+      @report.find_all { |entry| 
+        entry.kind_of?(Jasmine::Headless::ReportMessage::Fail)
+      }.collect(&:filename).uniq
     end
 
     private

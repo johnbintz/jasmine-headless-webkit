@@ -18,21 +18,23 @@ describe Jasmine::Headless::Report do
       before do
         File.open(file, 'wb') { |fh| fh.puts <<-REPORT }
 PASS||Statement||One||file.js:23
-FAIL||Statement||Two||file.js:23
+FAIL||Statement||Two||file2.js:23
+FAIL||Statement||Three||file2.js:23
 CONSOLE||Yes
-ERROR||Uh oh||file.js:23
+ERROR||Uh oh||file3.js:23
 TOTAL||1||2||3||T
 REPORT
       end
 
       it 'should read the report file' do
-        report.length.should == 5
+        report.length.should == 6
 
         report[0].should == Jasmine::Headless::ReportMessage::Pass.new("Statement One", "file.js:23")
-        report[1].should == Jasmine::Headless::ReportMessage::Fail.new("Statement Two", "file.js:23")
-        report[2].should == Jasmine::Headless::ReportMessage::Console.new("Yes")
-        report[3].should == Jasmine::Headless::ReportMessage::Error.new("Uh oh", "file.js:23")
-        report[4].should == Jasmine::Headless::ReportMessage::Total.new(1, 2, 3, true)
+        report[1].should == Jasmine::Headless::ReportMessage::Fail.new("Statement Two", "file2.js:23")
+        report[2].should == Jasmine::Headless::ReportMessage::Fail.new("Statement Three", "file2.js:23")
+        report[3].should == Jasmine::Headless::ReportMessage::Console.new("Yes")
+        report[4].should == Jasmine::Headless::ReportMessage::Error.new("Uh oh", "file3.js:23")
+        report[5].should == Jasmine::Headless::ReportMessage::Total.new(1, 2, 3, true)
 
         report.total.should == 1
         report.failed.should == 2
@@ -42,6 +44,7 @@ REPORT
         report.should be_valid
 
         report.should have_failed_on("Statement Two")
+        report.failed_files.should == [ 'file2.js' ]
       end
     end
   end

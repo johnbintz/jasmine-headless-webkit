@@ -10,6 +10,7 @@ module Jasmine
     class ConsoleLogUsage < StandardError ; end
 
     class JasmineConfigNotFound < Errno::ENOENT ; end
+    class InvalidReport < StandardError ; end
   end
 end
 

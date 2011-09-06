@@ -12,3 +12,4 @@ moc_*.*
 hydra-runner.log
 jhw-test
 .jhw-cache/
+_site/
