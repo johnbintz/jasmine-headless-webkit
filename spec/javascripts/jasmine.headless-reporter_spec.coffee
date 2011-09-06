@@ -61,6 +61,13 @@ describe 'jasmine.Spec.prototype.getSuiteSplitName', ->
     spec.description = 1
     expect(spec.getSpecSplitName()).toEqual([ "1" ])
 
+describe 'jasmine.Spec.prototype.getJHWSpecInformation', ->
+  it 'should append null when there is no file information', ->
+    spec = new jasmine.Spec({}, {})
+    spyOn(spec, 'getSpecSplitName').andReturn(["one"])
+    spyOn(HeadlessReporterResult, 'findSpecLine').andReturn({})
+    expect(spec.getJHWSpecInformation()).toEqual("one||")
+
 describe 'jasmine.WaitsBlock and jasmine.WaitsForBlock', ->
   beforeEach ->
   it 'should notify JHW of waiting', ->

@@ -21,7 +21,8 @@ module Jasmine::Headless
 
     def process
       @report = File.readlines(file).collect do |line|
-        type, *parts = line.split('||')
+        type, *parts = line.split('||', -1)
+        parts.last.strip!
 
         Jasmine::Headless::ReportMessage.const_get(
           Jasmine::Headless::ReportMessage.constants.find { |k| k.to_s.downcase == type.downcase }
@@ -49,7 +50,7 @@ module Jasmine::Headless
     def failed_files
       @report.find_all { |entry| 
         entry.kind_of?(Jasmine::Headless::ReportMessage::Fail)
-      }.collect(&:filename).uniq
+      }.collect(&:filename).uniq.compact
     end
 
     private

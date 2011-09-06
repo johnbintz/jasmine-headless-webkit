@@ -19,7 +19,11 @@
     var parts, specLineInfo;
     parts = this.getSpecSplitName();
     specLineInfo = HeadlessReporterResult.findSpecLine(parts);
-    parts.push("" + specLineInfo.file + ":" + specLineInfo.lineNumber);
+    if (specLineInfo.file) {
+      parts.push("" + specLineInfo.file + ":" + specLineInfo.lineNumber);
+    } else {
+      parts.push('');
+    }
     return parts.join("||");
   };
   if (!jasmine.WaitsBlock.prototype._execute) {

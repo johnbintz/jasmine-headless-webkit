@@ -19,7 +19,11 @@ module Jasmine::Headless::ReportMessage
     end
 
     def filename
-      file_info.split(":").first
+      if name = file_info.split(":").first
+        name
+      else
+        nil
+      end
     end
   end
 end

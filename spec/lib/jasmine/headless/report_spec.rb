@@ -47,6 +47,19 @@ REPORT
         report.failed_files.should == [ 'file2.js' ]
       end
     end
+
+    context 'nil filed file' do
+      before do
+        File.open(file, 'wb') { |fh| fh.puts <<-REPORT }
+FAIL||Statement||Two||
+TOTAL||1||2||3||T
+REPORT
+      end
+
+      it 'should read the report file' do
+        report.failed_files.should == []
+      end
+    end
   end
 end
 
