@@ -18,6 +18,8 @@ using namespace std;
 class Runner: public QObject {
   Q_OBJECT
   public:
+    enum { TIMER_TICK = 200, MAX_LOOPS = 25 };
+
     Runner();
     void setColors(bool colors);
     void reportFile(const QString &file);
@@ -27,6 +29,8 @@ class Runner: public QObject {
       void log(const QString &msg);
     bool hasError();
     void leavePageAttempt(const QString &msg);
+    void timerPause();
+    void timerDone();
     void specPassed(const QString &specDetail);
     void specFailed(const QString &specDetail);
     void printName(const QString &name);
@@ -37,12 +41,12 @@ class Runner: public QObject {
     void errorLog(const QString &msg, int lineNumber, const QString &sourceID);
     void internalLog(const QString &note, const QString &msg);
     void addJHW();
+    void timerEvent();
   protected:
     bool hasElement(const char *select);
-    void timerEvent(QTimerEvent *event);
   private:
     Page m_page;
-    QBasicTimer m_ticker;
+    QTimer m_ticker;
     int m_runs;
     bool hasErrors;
     bool usedConsole;

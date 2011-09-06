@@ -61,3 +61,29 @@ describe 'jasmine.Spec.prototype.getSuiteSplitName', ->
     spec.description = 1
     expect(spec.getSpecSplitName()).toEqual([ "1" ])
 
+describe 'jasmine.WaitsBlock and jasmine.WaitsForBlock', ->
+  beforeEach ->
+  it 'should notify JHW of waiting', ->
+    waits(5500)
+    runs ->
+      expect(true).toEqual(true)
+
+  it 'should notify JHW of waiting for something', ->
+    value = false
+
+    setTimeout(
+      -> 
+        value = true
+      , 5000
+    )
+
+    waitsFor(
+      ->
+        value
+      , "Nope"
+      5500
+    )
+
+    runs ->
+      expect(true).toEqual(true)
+

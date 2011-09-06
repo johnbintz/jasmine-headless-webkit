@@ -1,6 +1,39 @@
 (function() {
+  var getSplitName, pauseAndRun;
   if (!(typeof jasmine !== "undefined" && jasmine !== null)) {
     throw new Error("jasmine not laoded!");
+  }
+  getSplitName = function(parts) {
+    parts.push(String(this.description).replace(/[\n\r]/g, ' '));
+    return parts;
+  };
+  jasmine.Suite.prototype.getSuiteSplitName = function() {
+    return this.getSplitName(this.parentSuite ? this.parentSuite.getSuiteSplitName() : []);
+  };
+  jasmine.Spec.prototype.getSpecSplitName = function() {
+    return this.getSplitName(this.suite.getSuiteSplitName());
+  };
+  jasmine.Suite.prototype.getSplitName = getSplitName;
+  jasmine.Spec.prototype.getSplitName = getSplitName;
+  jasmine.Spec.prototype.getJHWSpecInformation = function() {
+    var parts, specLineInfo;
+    parts = this.getSpecSplitName();
+    specLineInfo = HeadlessReporterResult.findSpecLine(parts);
+    parts.push("" + specLineInfo.file + ":" + specLineInfo.lineNumber);
+    return parts.join("||");
+  };
+  if (!jasmine.WaitsBlock.prototype._execute) {
+    jasmine.WaitsBlock.prototype._execute = jasmine.WaitsBlock.prototype.execute;
+    jasmine.WaitsForBlock.prototype._execute = jasmine.WaitsForBlock.prototype.execute;
+    pauseAndRun = function(onComplete) {
+      JHW.timerPause();
+      return this._execute(function() {
+        JHW.timerDone();
+        return onComplete();
+      });
+    };
+    jasmine.WaitsBlock.prototype.execute = pauseAndRun;
+    jasmine.WaitsForBlock.prototype.execute = pauseAndRun;
   }
   window.HeadlessReporterResult = (function() {
     function HeadlessReporterResult(name, splitName) {
@@ -67,25 +100,6 @@
     };
     return HeadlessReporterResult;
   })();
-  jasmine.Suite.prototype.getSuiteSplitName = function() {
-    var parts;
-    parts = this.parentSuite ? this.parentSuite.getSuiteSplitName() : [];
-    parts.push(String(this.description).replace(/[\n\r]/g, ' '));
-    return parts;
-  };
-  jasmine.Spec.prototype.getSpecSplitName = function() {
-    var parts;
-    parts = this.suite.getSuiteSplitName();
-    parts.push(String(this.description).replace(/[\n\r]/g, ' '));
-    return parts;
-  };
-  jasmine.Spec.prototype.getJHWSpecInformation = function() {
-    var parts, specLineInfo;
-    parts = this.getSpecSplitName();
-    specLineInfo = HeadlessReporterResult.findSpecLine(parts);
-    parts.push("" + specLineInfo.file + ":" + specLineInfo.lineNumber);
-    return parts.join("||");
-  };
   jasmine.HeadlessReporter = (function() {
     function HeadlessReporter(callback) {
       this.callback = callback != null ? callback : null;

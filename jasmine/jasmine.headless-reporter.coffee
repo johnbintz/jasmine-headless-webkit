@@ -1,6 +1,40 @@
 if !jasmine?
   throw new Error("jasmine not laoded!")
 
+# Jasmine extensions
+getSplitName = (parts) ->
+  parts.push(String(@description).replace(/[\n\r]/g, ' '))
+  parts
+
+jasmine.Suite.prototype.getSuiteSplitName = ->
+  this.getSplitName(if @parentSuite then @parentSuite.getSuiteSplitName() else [])
+
+jasmine.Spec.prototype.getSpecSplitName = ->
+  this.getSplitName(@suite.getSuiteSplitName())
+
+jasmine.Suite.prototype.getSplitName = getSplitName
+jasmine.Spec.prototype.getSplitName = getSplitName
+
+jasmine.Spec.prototype.getJHWSpecInformation = ->
+  parts = this.getSpecSplitName()
+  specLineInfo = HeadlessReporterResult.findSpecLine(parts)
+  parts.push("#{specLineInfo.file}:#{specLineInfo.lineNumber}")
+  parts.join("||")
+
+if !jasmine.WaitsBlock.prototype._execute
+  jasmine.WaitsBlock.prototype._execute = jasmine.WaitsBlock.prototype.execute
+  jasmine.WaitsForBlock.prototype._execute = jasmine.WaitsForBlock.prototype.execute
+
+  pauseAndRun = (onComplete) ->
+    JHW.timerPause()
+    this._execute ->
+      JHW.timerDone()
+      onComplete()
+
+  jasmine.WaitsBlock.prototype.execute = pauseAndRun
+  jasmine.WaitsForBlock.prototype.execute = pauseAndRun
+
+# Try to get the line number of a failed spec
 class window.HeadlessReporterResult
   constructor: (@name, @splitName) ->
     @results = []
@@ -38,22 +72,7 @@ class window.HeadlessReporterResult
     
     bestChoice
 
-jasmine.Suite.prototype.getSuiteSplitName = ->
-  parts = if @parentSuite then @parentSuite.getSuiteSplitName() else []
-  parts.push(String(@description).replace(/[\n\r]/g, ' '))
-  parts
-
-jasmine.Spec.prototype.getSpecSplitName = ->
-  parts = @suite.getSuiteSplitName()
-  parts.push(String(@description).replace(/[\n\r]/g, ' '))
-  parts
-
-jasmine.Spec.prototype.getJHWSpecInformation = ->
-  parts = this.getSpecSplitName()
-  specLineInfo = HeadlessReporterResult.findSpecLine(parts)
-  parts.push("#{specLineInfo.file}:#{specLineInfo.lineNumber}")
-  parts.join("||")
-
+# The reporter itself.
 class jasmine.HeadlessReporter
   constructor: (@callback = null) ->
     @results = []

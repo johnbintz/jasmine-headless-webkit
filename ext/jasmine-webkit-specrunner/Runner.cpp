@@ -14,8 +14,12 @@ Runner::Runner() : QObject()
   , hasErrors(false)
   , usedConsole(false)
   , isFinished(false)
-  , didFail(false) {
+  , didFail(false)
+  {
   m_page.settings()->enablePersistentStorage();
+  m_ticker.setInterval(TIMER_TICK);
+
+  connect(&m_ticker, SIGNAL(timeout()), this, SLOT(timerEvent()));
   connect(&m_page, SIGNAL(loadFinished(bool)), this, SLOT(watch(bool)));
   connect(&m_page, SIGNAL(consoleLog(QString, int, QString)), this, SLOT(errorLog(QString, int, QString)));
   connect(&m_page, SIGNAL(internalLog(QString, QString)), this, SLOT(internalLog(QString, QString)));
@@ -32,6 +36,8 @@ void Runner::go()
   m_page.setPreferredContentsSize(QSize(1024, 600));
   addJHW();
   loadSpec();
+
+  m_ticker.start();
 }
 void Runner::addJHW()
 {
@@ -41,7 +47,7 @@ void Runner::addJHW()
 void Runner::loadSpec()
 {
   m_page.mainFrame()->load(runnerFiles.dequeue());
-  m_ticker.start(200, this);
+  m_ticker.start();
 }
 
 void Runner::watch(bool ok)
@@ -54,7 +60,6 @@ void Runner::watch(bool ok)
     return;
   }
 
-  m_ticker.start(200, this);
 }
 
 bool Runner::hasElement(const char *select)
@@ -72,6 +77,14 @@ void Runner::reportFile(const QString &file) {
 
 bool Runner::hasError() {
   return hasErrors;
+}
+
+void Runner::timerPause() {
+  m_ticker.stop();
+}
+
+void Runner::timerDone() {
+  m_ticker.start();
 }
 
 void Runner::specPassed(const QString &specDetail) {
@@ -94,7 +107,7 @@ void Runner::errorLog(const QString &msg, int lineNumber, const QString &sourceI
 
   hasErrors = true;
   m_runs = 0;
-  m_ticker.start(200, this);
+  m_ticker.start();
 }
 
 void Runner::internalLog(const QString &note, const QString &msg) {
@@ -155,12 +168,9 @@ void Runner::finishSuite(const QString &duration, const QString &total, const QS
   isFinished = true;
 }
 
-void Runner::timerEvent(QTimerEvent *event)
+void Runner::timerEvent()
 {
   ++m_runs;
-
-  if (event->timerId() != m_ticker.timerId())
-    return;
 
   if (hasErrors && m_runs > 2)
     QApplication::instance()->exit(1);
@@ -193,7 +203,7 @@ void Runner::timerEvent(QTimerEvent *event)
     }
   }
 
-  if (m_runs > 30) {
+  if (m_runs > MAX_LOOPS) {
     std::cout << "WARNING: too many runs and the test is still not finished!" << std::endl;
     QApplication::instance()->exit(1);
   }
