@@ -60,6 +60,20 @@ REPORT
         report.failed_files.should == []
       end
     end
+
+    context 'multi line console' do
+      before do
+        File.open(file, 'wb') { |fh| fh.puts <<-REPORT }
+CONSOLE||test
+test2
+TOTAL||1||2||3||T
+REPORT
+      end
+
+      it 'should read the report file' do
+        report[0].should == Jasmine::Headless::ReportMessage::Console.new("test\ntest2")
+      end
+    end
   end
 end
 

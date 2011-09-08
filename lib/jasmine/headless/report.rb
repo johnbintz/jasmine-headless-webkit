@@ -20,13 +20,20 @@ module Jasmine::Headless
     end
 
     def process
+      last_message = nil
       @report = File.readlines(file).collect do |line|
         type, *parts = line.split('||', -1)
-        parts.last.strip!
 
-        Jasmine::Headless::ReportMessage.const_get(
-          Jasmine::Headless::ReportMessage.constants.find { |k| k.to_s.downcase == type.downcase }
-        ).new_from_parts(parts)
+        if !(report_klass = report_class_for(type))
+          if last_message.kind_of?(Jasmine::Headless::ReportMessage::Console)
+            last_message.message << "\n"
+            last_message.message << line.strip
+          end
+        else
+          parts.last.strip!
+
+          last_message = report_klass.new_from_parts(parts)
+        end
       end
       self
     end
@@ -57,6 +64,12 @@ module Jasmine::Headless
 
     def last_total
       @report.reverse.find { |entry| entry.respond_to?(:total) }
+    end
+
+    def report_class_for(type)
+      if constant = ReportMessage.constants.find { |k| k.to_s.downcase == type.downcase }
+        ReportMessage.const_get(constant)
+      end
     end
   end
 end
