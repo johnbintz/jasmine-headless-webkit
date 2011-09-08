@@ -232,14 +232,15 @@ of course:
 spyOn(window, 'confirm').andReturn(false)
 {% endhighlight %}
 
-`console.log()` also works.  It uses `JSON.stringify()` to serialize objects. This means that cyclical objects, like HTML elements, can't be directly serialized (yet). Use jQuery to help you retrieve the HTML:
+`console.log()` also works. It uses one of three methods for serializing what you've provided:
 
-{% highlight js %}
-console.log($('#element').parent().html())
-{% endhighlight %}
+* If the object given responds to `toJSON`, `jasmine-headless-webkit` uses `JSON.stringify(object.toJSON())`.
+* If the object is a jQuery object, it is serialized with `jQuery('<div>').append(object).html()` 
+  and pretty-printed using the HTML beautifier from [JS Beautifier](https://github.com/einars/js-beautify).
+* If none of these apply, it uses a hacked-up version of [jsDump](https://github.com/NV/jsDump) that ignores 
+  Functions on objects and prevents cyclical references.
 
-If you need a heavy-weight object printer, you also have `console.pp()`, which uses Jasmine's built-in pretty-printer if available, and falls back to `JSON.stringify()` if it's not. This one's the best for
-printing HTML nodes, but it can be pretty noisy when printing objects.
+If you need a heavy-weight object printer, you also have `console.pp()`, which uses Jasmine's built-in pretty-printer if available, and falls back to `JSON.stringify()` if it's not.
 
 ## Running the runner
 
