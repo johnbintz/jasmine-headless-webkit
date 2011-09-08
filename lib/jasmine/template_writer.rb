@@ -29,7 +29,7 @@ module Jasmine
   <script type="text/javascript">
     window.console = { log: function(data) { 
       if (typeof(jQuery) !== 'undefined' && data instanceof jQuery) {
-        JHW.log("jQuery: \\n" + $("<div />").append(data).html());
+        JHW.log(style_html($("<div />").append(data).html(), { indent_size: 2 }));
       } else {
         var usejsDump = true;
         try {
@@ -40,7 +40,12 @@ module Jasmine
         } catch (e) {}
 
         if (usejsDump) {
-          JHW.log("jsDump: " + jsDump.parse(data));
+          var dump = jsDump.parse(data);
+          if (dump.indexOf("\\n") == -1) {
+            JHW.log(dump);
+          } else {
+            JHW.log("jsDump: " + jsDump.parse(data));
+          }
         }
       }
     }, pp: function(data) {

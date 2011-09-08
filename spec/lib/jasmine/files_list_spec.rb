@@ -15,6 +15,7 @@ describe Jasmine::FilesList do
         File.join(Jasmine::Core.path, "jasmine-html.js"),
         File.expand_path('jasmine/jasmine.headless-reporter.js'),
         File.expand_path('js-lib/jsDump.js'),
+        File.expand_path('js-lib/beautify-html.js'),
       ]
     end
   end

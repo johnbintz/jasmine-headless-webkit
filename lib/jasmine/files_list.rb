@@ -10,7 +10,8 @@ module Jasmine
       File.join(Jasmine::Core.path, "jasmine.js"),
       File.join(Jasmine::Core.path, "jasmine-html.js"),
       File.expand_path('../../../jasmine/jasmine.headless-reporter.js', __FILE__),
-      File.expand_path('../../../js-lib/jsDump.js', __FILE__)
+      File.expand_path('../../../js-lib/jsDump.js', __FILE__),
+      File.expand_path('../../../js-lib/beautify-html.js', __FILE__)
     ]
 
     PLEASE_WAIT_IM_WORKING_TIME = 2
