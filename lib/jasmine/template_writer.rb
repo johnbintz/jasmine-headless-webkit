@@ -29,9 +29,19 @@ module Jasmine
   <script type="text/javascript">
     window.console = { log: function(data) { 
       if (typeof(jQuery) !== 'undefined' && data instanceof jQuery) {
-        JHW.log($("<div />").append(data).html());
+        JHW.log("jQuery: \\n" + $("<div />").append(data).html());
       } else {
-        JHW.log(JSON.stringify(data));
+        var usejsDump = true;
+        try {
+          if (typeof data.toJSON == 'function') {
+            JHW.log("JSON: " + JSON.stringify(data, null, 2));
+            usejsDump = false;
+          }
+        } catch (e) {}
+
+        if (usejsDump) {
+          JHW.log("jsDump: " + jsDump.parse(data));
+        }
       }
     }, pp: function(data) {
       JHW.log(jasmine ? jasmine.pp(data) : JSON.stringify(data));

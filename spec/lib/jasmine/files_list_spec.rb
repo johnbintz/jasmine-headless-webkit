@@ -13,7 +13,8 @@ describe Jasmine::FilesList do
       files_list.files.should == [
         File.join(Jasmine::Core.path, "jasmine.js"),
         File.join(Jasmine::Core.path, "jasmine-html.js"),
-        File.expand_path('jasmine/jasmine.headless-reporter.js')
+        File.expand_path('jasmine/jasmine.headless-reporter.js'),
+        File.expand_path('js-lib/jsDump.js'),
       ]
     end
   end
