@@ -40,11 +40,11 @@ module Jasmine
         } catch (e) {}
 
         if (usejsDump) {
-          var dump = jsDump.parse(data);
+          var dump = jsDump.doParse(data);
           if (dump.indexOf("\\n") == -1) {
             JHW.log(dump);
           } else {
-            JHW.log("jsDump: " + jsDump.parse(data));
+            JHW.log("jsDump: " + dump);
           }
         }
       }

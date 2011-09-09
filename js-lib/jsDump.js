@@ -39,6 +39,10 @@ var jsDump;
 	var reName = /^function (\w+)/;
 	
 	jsDump = {
+    doParse:function(obj) {
+      this.alreadySeenObjects = [];
+      return this.parse(obj);
+    },
 		parse:function( obj, type ){//type is used mostly internally, you can fix a (custom)type in advance
 			var parser = this.parsers[ type || this.typeOf(obj) ];
 			type = typeof parser;
@@ -146,7 +150,7 @@ var jsDump;
           if (!this.ignoreFunctions || this.typeOf(map[key]) != 'function') {
             var value = "<< LOOP >>";
 
-            if (this.alreadySeenObjects.indexOf(map[key]) == -1) {
+            if ((typeof map[key] != 'object') || this.alreadySeenObjects.indexOf(map[key]) == -1) {
               this.alreadySeenObjects.push(map[key]);
               value = this.parse(map[key]);
             }
