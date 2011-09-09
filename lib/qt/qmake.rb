@@ -75,12 +75,12 @@ module Qt
       end
 
       def qt_version_of(qmake_path)
+        $stderr.puts %x{#{qmake_path} -v}
         Gem::Version.new(%x{#{qmake_path} -v}.lines.to_a[1][%r{Using Qt version ([^ ]+) },1])
       end
 
       def best_qmake
         if qmake_path = QMAKES.collect do |path|
-          $stderr.puts path
           result = nil
           if qmake_path = get_exe_path(path)
             if (qt_version = qt_version_of(qmake_path)) >= Gem::Version.create('4.7')
@@ -113,10 +113,6 @@ module Qt
       end
 
       def get_exe_path(command)
-        $stderr.puts command
-        $stderr.puts `bash -c 'which which 2>&1'`
-        $stderr.puts `bash -c 'which #{command} 2>&1'`
-
         path = %x{which #{command}}.strip
         path = nil if path == ''
         path
