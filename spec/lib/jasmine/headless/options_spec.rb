@@ -52,6 +52,9 @@ describe Jasmine::Headless::Options do
     let(:test_data) { '-j test' }
 
     before do
+      FileUtils.mkdir_p File.split(Jasmine::Headless::Options::GLOBAL_DEFAULTS_FILE).first
+      FileUtils.mkdir_p File.split(Jasmine::Headless::Options::DEFAULTS_FILE).first
+
       File.open(Jasmine::Headless::Options::GLOBAL_DEFAULTS_FILE, 'w') { |fh| fh.puts global_test_data }
       File.open(Jasmine::Headless::Options::DEFAULTS_FILE, 'w') { |fh| fh.puts test_data }
     end

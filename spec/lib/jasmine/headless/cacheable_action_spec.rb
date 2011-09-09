@@ -59,6 +59,7 @@ describe Jasmine::Headless::CacheableAction do
         let(:cache_file_mtime) { 15 }
 
         before do
+          FileUtils.mkdir_p File.split(cache_file).first
           File.open(cache_file, 'wb') { |fh| fh.print compiled }
         end
 

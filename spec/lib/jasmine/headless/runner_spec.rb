@@ -18,8 +18,12 @@ describe Jasmine::Headless::Runner do
   describe '#load_config' do
     include FakeFS::SpecHelpers
 
+    let(:runner_filename) { 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner' }
+
     before do
-      File.open('ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner', 'w')
+      FileUtils.mkdir_p File.split(runner_filename).first
+
+      File.open(runner_filename, 'w')
     end
 
     let(:config_filename) { 'test.yml' }

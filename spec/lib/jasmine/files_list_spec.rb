@@ -36,6 +36,7 @@ describe Jasmine::FilesList do
 
     before do
       [ first_file, src_file, spec_file, helper_file, stylesheet_file ].each do |file|
+        FileUtils.mkdir_p File.split(file).first
         File.open(file, 'w')
       end
     end
@@ -49,6 +50,8 @@ describe Jasmine::FilesList do
           File.expand_path(helper_file),
           File.expand_path(spec_file)
         ]
+
+        files_list.spec_files.should == [ File.expand_path(spec_file) ]
       end
     end
 
@@ -90,8 +93,11 @@ describe Jasmine::FilesList do
       'spec_dir' => spec_dir
     } }
 
+    let(:spec_files) { %w{one_spec.js two_spec.js whatever.js} }
+
     before do
-      %w{one_spec.js two_spec.js whatever.js}.each do |file|
+      spec_files.each do |file|
+        FileUtils.mkdir_p spec_dir
         File.open(File.join(spec_dir, file), 'w')
       end
     end
@@ -103,6 +109,7 @@ describe Jasmine::FilesList do
         files_list.files.any? { |file| file['two_spec.js'] }.should be_true
         files_list.filtered?.should be_false
         files_list.should_not have_spec_outside_scope
+        files_list.spec_files.sort.should == %w{one_spec.js two_spec.js}.sort.collect { |file| File.expand_path(File.join(spec_dir, file)) }
       end
     end
 
@@ -113,6 +120,7 @@ describe Jasmine::FilesList do
         files_list.files.any? { |file| file['two_spec.js'] }.should be_true
         files_list.filtered?.should be_true
         files_list.should_not have_spec_outside_scope
+        files_list.spec_files.should == filter
       end
 
       it 'should return only filtered files for filtered_files' do

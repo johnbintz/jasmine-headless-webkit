@@ -4,7 +4,7 @@ require 'time'
 
 module Jasmine
   class FilesList
-    attr_reader :files, :filtered_files, :spec_outside_scope
+    attr_reader :files, :spec_files, :filtered_files, :spec_outside_scope
 
     DEFAULT_FILES = [
       File.join(Jasmine::Core.path, "jasmine.js"),
@@ -100,15 +100,17 @@ module Jasmine
             @files += found_files
 
             if searches == 'spec_files'
-              @spec_files += spec_filter
+              @spec_files += spec_filter.empty? ? found_files : (found_files & spec_filter)
             end
 
-            @filtered_files += (if searches == 'spec_files'
-              @spec_outside_scope = ((spec_filter | found_files).sort != found_files.sort)
-              spec_filter.empty? ? found_files : (spec_filter || found_files)
-            else
-              found_files
-            end)
+            @filtered_files +=  begin
+                                  if searches == 'spec_files'
+                                    @spec_outside_scope = ((spec_filter | found_files).sort != found_files.sort)
+                                    spec_filter.empty? ? found_files : (spec_filter || found_files)
+                                  else
+                                    found_files
+                                  end
+                                end
           end
         end
       end
