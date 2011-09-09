@@ -112,6 +112,9 @@ module Qt
       end
 
       def get_exe_path(command)
+        system %{bash -c 'which which 2>&1'}
+        system %{bash -c 'which command 2>&1'}
+
         path = %x{which #{command}}.strip
         path = nil if path == ''
         path
