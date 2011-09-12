@@ -527,7 +527,7 @@ JavaScript runtime environment.
      See https://github.com/sstephenson/execjs
      for a list of available runtimes.
 
-To resolve this problem, install and use the 'therubyracer` gem, which is the embed V8 JavaScript interpreter into Ruby.
+To resolve this problem, install and use the `therubyracer` gem, which is the embed V8 JavaScript interpreter into Ruby.
 Additionally, you can set the `EXECJS_RUNTIME` environment variable to a [valid ExecJS runtime name](https://github.com/sstephenson/execjs/blob/master/lib/execjs/runtimes.rb#L55).
 
     export EXECJS_RUNTIME=Node
