@@ -1,6 +1,7 @@
 require 'jasmine-core'
 require 'iconv'
 require 'time'
+require 'multi_json'
 
 module Jasmine
   class FilesList
@@ -63,10 +64,25 @@ module Jasmine
           alert_time = nil
         end
 
-        case File.extname(file)
+        function_locations = {}
+        source = nil
+
+        result = case File.extname(file)
         when '.coffee'
           begin
-            %{<script type="text/javascript">#{Jasmine::Headless::CoffeeScriptCache.for(file)}</script>}
+            cache = Jasmine::Headless::CoffeeScriptCache.new(file)
+            source = cache.handle
+            if cache.cached?
+              %{
+                <script type="text/javascript" src="#{cache.cache_file}"></script>S
+                <script type="text/javascript">
+                  window.CoffeeScriptToFilename = window.CoffeeScriptToFilename || {};
+                  window.CoffeeScriptToFilename['#{File.split(cache.cache_file).last}'] = '#{file}';
+                </script>
+              }
+            else
+              %{<script type="text/javascript">#{source}</script>}
+            end
           rescue CoffeeScript::CompilationError => ne
             puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), file.color(:yellow), ne.message.to_s.color(:white) ]
             raise ne
@@ -79,6 +95,8 @@ module Jasmine
         when '.css'
           %{<link rel="stylesheet" href="#{file}" type="text/css" />}
         end
+
+        result
       }.flatten.compact.reject(&:empty?)
     end
 

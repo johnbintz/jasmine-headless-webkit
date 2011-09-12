@@ -58,7 +58,11 @@ module Jasmine::Headless
     end
 
     def fresh?
-      File.exist?(cache_file) && (File.mtime(file) < File.mtime(cache_file))
+      cached? && (File.mtime(file) < File.mtime(cache_file))
+    end
+
+    def cached?
+      File.exist?(cache_file)
     end
 
     def action

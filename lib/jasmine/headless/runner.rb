@@ -14,7 +14,8 @@ module Jasmine
         'spec_dir' => 'spec/javascripts',
         'src_dir' => nil,
         'stylesheets' => [],
-        'src_files' => []
+        'src_files' => [],
+        'backtrace' => []
       }
 
       RUNNER_DIR = File.expand_path('../../../../ext/jasmine-webkit-specrunner', __FILE__)

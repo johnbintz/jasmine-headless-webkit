@@ -6,6 +6,10 @@ describe Jasmine::TemplateWriter do
   describe '.write!' do
     include FakeFS::SpecHelpers
 
+    before do
+      File.stubs(:read).returns(nil)
+    end
+
     let(:files_list) { Jasmine::FilesList.new }
 
     before do

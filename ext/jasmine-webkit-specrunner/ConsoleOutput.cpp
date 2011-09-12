@@ -82,8 +82,15 @@ void ConsoleOutput::logSpecFilename(const QString &name) {
 }
 
 void ConsoleOutput::logSpecResult(const QString &result) {
+  QStringList lines = result.split("\n");
+  QStringListIterator linesIterator(lines);
+
   red();
-  *outputIO << "  " << qPrintable(result) << std::endl;
+  while (linesIterator.hasNext()) {
+    *outputIO << "  " << qPrintable(linesIterator.next()) << std::endl;
+    yellow();
+  }
+
   clear();
 }
 
