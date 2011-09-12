@@ -33,6 +33,7 @@ jasmine.Spec.prototype.fail = (e) ->
         message: e.message,
         lineNumber: "~" + String(e.line),
         sourceURL: realFilename
+      }
 
   expectationResult = new jasmine.ExpectationResult({
     passed: false,
@@ -56,18 +57,26 @@ if !jasmine.WaitsBlock.prototype._execute
 
   jasmine.NestedResults.prototype.addResult_ = jasmine.NestedResults.prototype.addResult
 
+  jasmine.NestedResults.ParsedFunctions = []
+
   jasmine.NestedResults.prototype.addResult = (result) ->
     result.expectations = []
     # always three up?
     lineCount = 0
-    for line in arguments.callee.caller.caller.caller.toString().split("\n")
-      line = line.replace(/^\s*/, '').replace(/\s*$/, '')
-      if line.match(/^\s*expect/)
-        result.expectations.push(line)
-      lineCount += 1
+
+    functionSignature = arguments.callee.caller.caller.caller.toString()
+    if !jasmine.NestedResults.ParsedFunctions[functionSignature]
+      lines = []
+      for line in functionSignature.split("\n")
+        if line.match(/^\s*expect/)
+          line = line.replace(/^\s*/, '').replace(/\s*$/, '')
+          lines.push(line)
+        lineCount += 1
+      jasmine.NestedResults.ParsedFunctions[functionSignature] = lines
+    result.expectations = jasmine.NestedResults.ParsedFunctions[functionSignature]
 
     this.addResult_(result)
-  }
+  
 
   jasmine.ExpectationResult.prototype.line = ->
     if @expectations && @lineNumber then @expectations[@lineNumber] else ''

@@ -61,19 +61,26 @@
     jasmine.WaitsBlock.prototype.execute = pauseAndRun;
     jasmine.WaitsForBlock.prototype.execute = pauseAndRun;
     jasmine.NestedResults.prototype.addResult_ = jasmine.NestedResults.prototype.addResult;
+    jasmine.NestedResults.ParsedFunctions = [];
     jasmine.NestedResults.prototype.addResult = function(result) {
-      var line, lineCount, _i, _len, _ref;
+      var functionSignature, line, lineCount, lines, _i, _len, _ref;
       result.expectations = [];
       lineCount = 0;
-      _ref = arguments.callee.caller.caller.caller.toString().split("\n");
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        line = _ref[_i];
-        line = line.replace(/^\s*/, '').replace(/\s*$/, '');
-        if (line.match(/^\s*expect/)) {
-          result.expectations.push(line);
+      functionSignature = arguments.callee.caller.caller.caller.toString();
+      if (!jasmine.NestedResults.ParsedFunctions[functionSignature]) {
+        lines = [];
+        _ref = functionSignature.split("\n");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          line = _ref[_i];
+          if (line.match(/^\s*expect/)) {
+            line = line.replace(/^\s*/, '').replace(/\s*$/, '');
+            lines.push(line);
+          }
+          lineCount += 1;
         }
-        lineCount += 1;
+        jasmine.NestedResults.ParsedFunctions[functionSignature] = lines;
       }
+      result.expectations = jasmine.NestedResults.ParsedFunctions[functionSignature];
       return this.addResult_(result);
     };
     jasmine.ExpectationResult.prototype.line = function() {
