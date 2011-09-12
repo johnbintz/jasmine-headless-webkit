@@ -48,6 +48,31 @@
     });
     return this.results_.addResult(expectationResult);
   };
+  jasmine.NestedResults.isValidSpecLine = function(line) {
+    return line.match(/^\s*expect/) !== null || line.match(/^\s*return\s*expect/) !== null;
+  };
+  jasmine.NestedResults.parseFunction = function(func) {
+    var line, lineCount, lines, _i, _len, _ref;
+    lines = [];
+    lineCount = 0;
+    _ref = func.split("\n");
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      line = _ref[_i];
+      if (jasmine.NestedResults.isValidSpecLine(line)) {
+        line = line.replace(/^\s*/, '').replace(/\s*$/, '').replace(/^return\s*/, '');
+        lines.push([line, lineCount]);
+      }
+      lineCount += 1;
+    }
+    return lines;
+  };
+  jasmine.NestedResults.parseAndStore = function(func) {
+    if (!jasmine.NestedResults.ParsedFunctions[func]) {
+      jasmine.NestedResults.ParsedFunctions[func] = jasmine.NestedResults.parseFunction(func);
+    }
+    return jasmine.NestedResults.ParsedFunctions[func];
+  };
+  jasmine.NestedResults.ParsedFunctions = [];
   if (!jasmine.WaitsBlock.prototype._execute) {
     jasmine.WaitsBlock.prototype._execute = jasmine.WaitsBlock.prototype.execute;
     jasmine.WaitsForBlock.prototype._execute = jasmine.WaitsForBlock.prototype.execute;
@@ -61,34 +86,10 @@
     jasmine.WaitsBlock.prototype.execute = pauseAndRun;
     jasmine.WaitsForBlock.prototype.execute = pauseAndRun;
     jasmine.NestedResults.prototype.addResult_ = jasmine.NestedResults.prototype.addResult;
-    jasmine.NestedResults.ParsedFunctions = [];
     jasmine.NestedResults.prototype.addResult = function(result) {
-      var functionSignature, line, lineCount, lines, _i, _len, _ref;
       result.expectations = [];
-      lineCount = 0;
-      functionSignature = arguments.callee.caller.caller.caller.toString();
-      if (!jasmine.NestedResults.ParsedFunctions[functionSignature]) {
-        lines = [];
-        _ref = functionSignature.split("\n");
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          line = _ref[_i];
-          if (line.match(/^\s*expect/)) {
-            line = line.replace(/^\s*/, '').replace(/\s*$/, '');
-            lines.push(line);
-          }
-          lineCount += 1;
-        }
-        jasmine.NestedResults.ParsedFunctions[functionSignature] = lines;
-      }
-      result.expectations = jasmine.NestedResults.ParsedFunctions[functionSignature];
+      result.expectations = jasmine.NestedResults.parseAndStore(arguments.callee.caller.caller.caller.toString());
       return this.addResult_(result);
-    };
-    jasmine.ExpectationResult.prototype.line = function() {
-      if (this.expectations && this.lineNumber) {
-        return this.expectations[this.lineNumber];
-      } else {
-        return '';
-      }
     };
   }
   window.HeadlessReporterResult = (function() {
@@ -114,7 +115,7 @@
         result = _ref[_i];
         output = result.message;
         if (result.lineNumber) {
-          output += " (line ~" + (bestChoice.lineNumber + result.lineNumber) + ")\n  " + (result.line());
+          output += " (line ~" + (bestChoice.lineNumber + result.lineNumber) + ")\n  " + result.line;
         }
         _results.push(JHW.printResult(output));
       }
@@ -204,7 +205,7 @@
           result = _ref[_i];
           if (result.type === 'expect' && !result.passed_) {
             if (foundLine = result.expectations[testCount - 1]) {
-              result.lineNumber = testCount - 1;
+              result.line = foundLine[0], result.lineNumber = foundLine[1];
             }
             failureResult.addResult(result);
           }

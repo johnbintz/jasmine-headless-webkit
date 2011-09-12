@@ -42,6 +42,26 @@ jasmine.Spec.prototype.fail = (e) ->
   })
   @results_.addResult(expectationResult)
 
+jasmine.NestedResults.isValidSpecLine = (line) ->
+  line.match(/^\s*expect/) != null || line.match(/^\s*return\s*expect/) != null
+
+jasmine.NestedResults.parseFunction = (func) ->
+  lines = []
+  lineCount = 0
+  for line in func.split("\n")
+    if jasmine.NestedResults.isValidSpecLine(line)
+      line = line.replace(/^\s*/, '').replace(/\s*$/, '').replace(/^return\s*/, '')
+      lines.push([line, lineCount])
+    lineCount += 1
+  lines
+
+jasmine.NestedResults.parseAndStore = (func) ->
+  if !jasmine.NestedResults.ParsedFunctions[func]
+    jasmine.NestedResults.ParsedFunctions[func] = jasmine.NestedResults.parseFunction(func)
+  jasmine.NestedResults.ParsedFunctions[func]
+
+jasmine.NestedResults.ParsedFunctions = []
+
 if !jasmine.WaitsBlock.prototype._execute
   jasmine.WaitsBlock.prototype._execute = jasmine.WaitsBlock.prototype.execute
   jasmine.WaitsForBlock.prototype._execute = jasmine.WaitsForBlock.prototype.execute
@@ -56,30 +76,13 @@ if !jasmine.WaitsBlock.prototype._execute
   jasmine.WaitsForBlock.prototype.execute = pauseAndRun
 
   jasmine.NestedResults.prototype.addResult_ = jasmine.NestedResults.prototype.addResult
-
-  jasmine.NestedResults.ParsedFunctions = []
-
   jasmine.NestedResults.prototype.addResult = (result) ->
     result.expectations = []
     # always three up?
-    lineCount = 0
 
-    functionSignature = arguments.callee.caller.caller.caller.toString()
-    if !jasmine.NestedResults.ParsedFunctions[functionSignature]
-      lines = []
-      for line in functionSignature.split("\n")
-        if line.match(/^\s*expect/)
-          line = line.replace(/^\s*/, '').replace(/\s*$/, '')
-          lines.push(line)
-        lineCount += 1
-      jasmine.NestedResults.ParsedFunctions[functionSignature] = lines
-    result.expectations = jasmine.NestedResults.ParsedFunctions[functionSignature]
+    result.expectations = jasmine.NestedResults.parseAndStore(arguments.callee.caller.caller.caller.toString())
 
     this.addResult_(result)
-  
-
-  jasmine.ExpectationResult.prototype.line = ->
-    if @expectations && @lineNumber then @expectations[@lineNumber] else ''
 
 # Try to get the line number of a failed spec
 class window.HeadlessReporterResult
@@ -96,7 +99,7 @@ class window.HeadlessReporterResult
     for result in @results
       output = result.message
       if result.lineNumber
-        output += " (line ~#{bestChoice.lineNumber + result.lineNumber})\n  #{result.line()}"
+        output += " (line ~#{bestChoice.lineNumber + result.lineNumber})\n  #{result.line}"
       JHW.printResult(output)
   @findSpecLine: (splitName) ->
     bestChoice = { accuracy: 0, file: null, lineNumber: null }
@@ -155,7 +158,7 @@ class jasmine.HeadlessReporter
       for result in results.getItems()
         if result.type == 'expect' and !result.passed_
           if foundLine = result.expectations[testCount - 1]
-            result.lineNumber = testCount - 1
+            [ result.line, result.lineNumber ] = foundLine
           failureResult.addResult(result)
         testCount += 1
       @results.push(failureResult)
