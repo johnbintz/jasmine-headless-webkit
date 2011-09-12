@@ -30,6 +30,7 @@ they'll even work when running in the Jasmine gem's server with no changes to yo
 * It integrates with [Guard](https://github.com/guard/guard) for a continuous testing setup when using [`guard-jasmine-headless-webkit`](https://github.com/guard/guard-jasmine-headless-webkit).
 * It compiles [CoffeeScript](http://jashkenas.github.com/coffee-script/), both for your tests and for your application logic.
 * It can be configured like RSpec, and its output is very similar to RSpec's output, so you don't need to learn too much new stuff to use and integrate it.
+* It provides cleaner debugging and backtrace output than a lot of other console-based test tools provide.
 * It's *fast*.
 
 ## Is this for me?
@@ -70,8 +71,8 @@ It's what the cool kids do.
 Installation requires Qt 4.7. `jasmine-headless-webkit` has been tested in the following environments:
 
 * Mac OS X 10.6 and 10.7, with MacPorts Qt, Homebrew Qt and Nokia Qt.mpkg
-* Kubuntu 10.10 and 10.04
-* Ubuntu 11.04 9.10
+* Kubuntu 110.04, 10.10 and 10.04
+* Ubuntu 11.04 and 9.10
 * Arch Linux
 
 If it works in yours, [leave me a message on GitHub](https://github.com/johnbintz) or
@@ -79,26 +80,27 @@ If it works in yours, [leave me a message on GitHub](https://github.com/johnbint
 
 ## Qt 4.7.X
 
-The gem is compiled using **qt4-qmake** and you will need Qt 4.7.x or greater.
+The gem is compiled using `qt4-qmake` and you will need Qt 4.7.x or greater.
 The version you have installed should be detected correctly, and the appropriate message for installing Qt should
 be given if it's wrong. If it's not, please file a new issue!
 
 ### Manually checking the Qt version
 
-Test that qt4-qmake it is installed and verify your version.
+Test that `qt4-qmake` it is installed and verify your version.
      qmake --version
 
 If you have the Qt 4.7.x or greater, you are ready to install jasmine-headless-webkit.
      QMake version 2.01a
      Using Qt version 4.7.2 in /usr/lib
 
-If you receive a different message, you can install qt4-qmake using one of the following commands as root:
+If you receive a different message, you can install `qt4-qmake` using one of the following commands as root:
 
 ### Ubuntu 11.04
 
 {% highlight bash %}
 sudo apt-get install libqt4-dev
 sudo apt-get install qt4-qmake
+sudo update-alternatives --config qmake # and select Qt 4's qmake
 {% endhighlight %}
 
 ### Ubuntu 9.10
@@ -110,8 +112,8 @@ but it installs **version 4.5.2**, which will not be able to compile
 You will need to compile qt4-qmake from source
 [Qt version 4.7.0](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.0.tar.gz).
 There are excellent [directions](http://doc.qt.nokia.com/latest/install-x11.html) on how to compile
-the source code. You will need to ensure Qt is exported to your $PATH before using qmake, as the source code will
-install to /usr/local/Trolltech/.
+the source code. You will need to ensure Qt is exported to your `$PATH` before using qmake, as the source code will
+install to `/usr/local/Trolltech/`.
 
 ### Mac OS X 10.6 & 10.7
 
@@ -429,7 +431,7 @@ rake jasmine:headless     # Run Jasmine specs headlessly
 
 This is the same as running `jasmine-headless-webkit -c`.
 
-## Continuous Integration Using Xvfb
+## Continuous integration & testing using Xvfb
 
 Since most continuous integration servers do not have a display, you will need to use
 Xvfb or virtual framebuffer Xserver for Version 11. If you elect not to use Xvfb, you will
@@ -440,7 +442,7 @@ Reference: [Xvfb Manpages](http://manpages.ubuntu.com/manpages/natty/man1/Xvfb.1
 ### Install Xvfb
       sudo apt-get install xvfb
 
-### Resolve Missing Dependencies
+### Resolve missing dependencies
 To resolve missing dependencies, you will need to know what to install.
 	$ Xvfb :99 -ac
 You will see a long list of warning messages:
@@ -492,12 +494,28 @@ Once you have resolved these dependencies, you should see:
      /usr/share/fonts/X11/75dpi, removing from list!
 
 ### Run with Xvfb
-Use Xvfb to run the headless rake command. This will resolve the issue of jasmine-webkit-specrunner failing to connect
-to X server.
+
+#### ...as a Rake task
+
      xvfb-run rake jasmine:headless 
+     # ...or...
      xvfb-run jasmine-headless-webkit -c
 
 Reference: [MARTIN DALE LYNESS](http://blog.martin-lyness.com/archives/installing-xvfb-on-ubuntu-9-10-karmic-koala)
+
+#### ...seamlessly
+
+First run Xvfb in the background:
+
+    Xvfb :0 -screen 0 1024x768x24 > /dev/null 2>&1 &
+
+Then, set your `DISPLAY` to point at the Xvfb instance. Putting all this in your `.bash_profile` or equivalent startup
+script makes this a lot easier:
+
+    xdpyinfo -display :0 &>/dev/null && export DISPLAY=:0
+
+See [Paul Goscicki's post](http://paulgoscicki.com/archives/2011/09/run-guard-jasmine-headless-webkit-without-x-server/) for
+more details on the setup. Thanks, Paul!
 
 ## RubyMine
 
@@ -509,16 +527,10 @@ JavaScript runtime environment.
      See https://github.com/sstephenson/execjs
      for a list of available runtimes.
 
-To resolve this problem, install the **therubyracer** gem, which is the embed V8 JavaScript interpreter into Ruby.
-Reference: [therubyracer](https://github.com/cowboyd/therubyracer)
+To resolve this problem, install and use the 'therubyracer` gem, which is the embed V8 JavaScript interpreter into Ruby.
+Additionally, you can set the `EXECJS_RUNTIME` environment variable to a [valid ExecJS runtime name](https://github.com/sstephenson/execjs/blob/master/lib/execjs/runtimes.rb#L55).
 
-You can use it standalone:
-
-    gem install therubyracer
-
-Or you can use it with Bundler:
-
-    gem 'therubyracer'
+    export EXECJS_RUNTIME=Node
 
 ## I have a problem or helpful suggestion, good sir.
 
