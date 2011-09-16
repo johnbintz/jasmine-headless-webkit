@@ -170,7 +170,8 @@ describe Jasmine::FilesList do
                                        'test.coffee'
       ])
 
-      Jasmine::Headless::CoffeeScriptCache.stubs(:for).with('test.coffee').returns("i compiled")
+      File.stubs(:read)
+      Jasmine::Headless::CoffeeScriptCache.any_instance.stubs(:handle).returns("i compiled")
     end
 
     context '#files_to_html' do

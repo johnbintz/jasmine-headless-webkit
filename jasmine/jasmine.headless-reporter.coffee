@@ -24,6 +24,44 @@ jasmine.Spec.prototype.getJHWSpecInformation = ->
     parts.push('')
   parts.join("||")
 
+jasmine.Spec.prototype.fail = (e) ->
+  if e and window.CoffeeScriptToFilename
+    filename = e.sourceURL.split('/').pop()
+    if realFilename = window.CoffeeScriptToFilename[filename]
+      e = {
+        name: e.name,
+        message: e.message,
+        lineNumber: "~" + String(e.line),
+        sourceURL: realFilename
+      }
+
+  expectationResult = new jasmine.ExpectationResult({
+    passed: false,
+    message: if e then jasmine.util.formatException(e) else 'Exception',
+    trace: { stack: e.stack }
+  })
+  @results_.addResult(expectationResult)
+
+jasmine.NestedResults.isValidSpecLine = (line) ->
+  line.match(/^\s*expect/) != null || line.match(/^\s*return\s*expect/) != null
+
+jasmine.NestedResults.parseFunction = (func) ->
+  lines = []
+  lineCount = 0
+  for line in func.split("\n")
+    if jasmine.NestedResults.isValidSpecLine(line)
+      line = line.replace(/^\s*/, '').replace(/\s*$/, '').replace(/^return\s*/, '')
+      lines.push([line, lineCount])
+    lineCount += 1
+  lines
+
+jasmine.NestedResults.parseAndStore = (func) ->
+  if !jasmine.NestedResults.ParsedFunctions[func]
+    jasmine.NestedResults.ParsedFunctions[func] = jasmine.NestedResults.parseFunction(func)
+  jasmine.NestedResults.ParsedFunctions[func]
+
+jasmine.NestedResults.ParsedFunctions = []
+
 if !jasmine.WaitsBlock.prototype._execute
   jasmine.WaitsBlock.prototype._execute = jasmine.WaitsBlock.prototype.execute
   jasmine.WaitsForBlock.prototype._execute = jasmine.WaitsForBlock.prototype.execute
@@ -36,6 +74,15 @@ if !jasmine.WaitsBlock.prototype._execute
 
   jasmine.WaitsBlock.prototype.execute = pauseAndRun
   jasmine.WaitsForBlock.prototype.execute = pauseAndRun
+
+  jasmine.NestedResults.prototype.addResult_ = jasmine.NestedResults.prototype.addResult
+  jasmine.NestedResults.prototype.addResult = (result) ->
+    result.expectations = []
+    # always three up?
+
+    result.expectations = jasmine.NestedResults.parseAndStore(arguments.callee.caller.caller.caller.toString())
+
+    this.addResult_(result)
 
 # Try to get the line number of a failed spec
 class window.HeadlessReporterResult
@@ -50,7 +97,10 @@ class window.HeadlessReporterResult
 
     JHW.printName(output)
     for result in @results
-      JHW.printResult(result)
+      output = result.message
+      if result.lineNumber
+        output += " (line ~#{bestChoice.lineNumber + result.lineNumber})\n  #{result.line}"
+      JHW.printResult(output)
   @findSpecLine: (splitName) ->
     bestChoice = { accuracy: 0, file: null, lineNumber: null }
 
@@ -104,9 +154,13 @@ class jasmine.HeadlessReporter
       JHW.specFailed(spec.getJHWSpecInformation())
       @failedCount++
       failureResult = new HeadlessReporterResult(spec.getFullName(), spec.getSpecSplitName())
+      testCount = 1
       for result in results.getItems()
         if result.type == 'expect' and !result.passed_
-          failureResult.addResult(result.message)
+          if foundLine = result.expectations[testCount - 1]
+            [ result.line, result.lineNumber ] = foundLine
+          failureResult.addResult(result)
+        testCount += 1
       @results.push(failureResult)
 
   reportSpecStarting: (spec) ->

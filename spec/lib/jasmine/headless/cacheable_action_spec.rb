@@ -22,6 +22,8 @@ describe Jasmine::Headless::CacheableAction do
   let(:cache_file) { File.join(cache_dir, cache_type, Digest::SHA1.hexdigest(file)) }
   let(:cache_file_data) { YAML.load(File.read(cache_file)) }
 
+  let(:cache_object) { described_class.new(file) }
+
   describe '.for' do
     context 'cache disabled' do
       before do
@@ -32,6 +34,8 @@ describe Jasmine::Headless::CacheableAction do
         action_runs!
         described_class.for(file).should == compiled
         cache_file.should_not be_a_file
+
+        cache_object.should_not be_cached
       end
     end
 
@@ -52,6 +56,7 @@ describe Jasmine::Headless::CacheableAction do
           described_class.for(file).should == compiled
 
           cache_file_data.should == compiled
+          cache_object.should be_cached
         end
       end
 
@@ -69,6 +74,7 @@ describe Jasmine::Headless::CacheableAction do
           described_class.for(file).should == compiled
 
           cache_file_data.should == compiled
+          cache_object.should be_cached
         end
       end
 
@@ -81,6 +87,7 @@ describe Jasmine::Headless::CacheableAction do
           described_class.for(file).should == compiled
 
           cache_file_data.should == compiled
+          cache_object.should be_cached
         end
       end
     end

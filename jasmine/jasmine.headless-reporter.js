@@ -26,6 +26,53 @@
     }
     return parts.join("||");
   };
+  jasmine.Spec.prototype.fail = function(e) {
+    var expectationResult, filename, realFilename;
+    if (e && window.CoffeeScriptToFilename) {
+      filename = e.sourceURL.split('/').pop();
+      if (realFilename = window.CoffeeScriptToFilename[filename]) {
+        e = {
+          name: e.name,
+          message: e.message,
+          lineNumber: "~" + String(e.line),
+          sourceURL: realFilename
+        };
+      }
+    }
+    expectationResult = new jasmine.ExpectationResult({
+      passed: false,
+      message: e ? jasmine.util.formatException(e) : 'Exception',
+      trace: {
+        stack: e.stack
+      }
+    });
+    return this.results_.addResult(expectationResult);
+  };
+  jasmine.NestedResults.isValidSpecLine = function(line) {
+    return line.match(/^\s*expect/) !== null || line.match(/^\s*return\s*expect/) !== null;
+  };
+  jasmine.NestedResults.parseFunction = function(func) {
+    var line, lineCount, lines, _i, _len, _ref;
+    lines = [];
+    lineCount = 0;
+    _ref = func.split("\n");
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      line = _ref[_i];
+      if (jasmine.NestedResults.isValidSpecLine(line)) {
+        line = line.replace(/^\s*/, '').replace(/\s*$/, '').replace(/^return\s*/, '');
+        lines.push([line, lineCount]);
+      }
+      lineCount += 1;
+    }
+    return lines;
+  };
+  jasmine.NestedResults.parseAndStore = function(func) {
+    if (!jasmine.NestedResults.ParsedFunctions[func]) {
+      jasmine.NestedResults.ParsedFunctions[func] = jasmine.NestedResults.parseFunction(func);
+    }
+    return jasmine.NestedResults.ParsedFunctions[func];
+  };
+  jasmine.NestedResults.ParsedFunctions = [];
   if (!jasmine.WaitsBlock.prototype._execute) {
     jasmine.WaitsBlock.prototype._execute = jasmine.WaitsBlock.prototype.execute;
     jasmine.WaitsForBlock.prototype._execute = jasmine.WaitsForBlock.prototype.execute;
@@ -38,6 +85,12 @@
     };
     jasmine.WaitsBlock.prototype.execute = pauseAndRun;
     jasmine.WaitsForBlock.prototype.execute = pauseAndRun;
+    jasmine.NestedResults.prototype.addResult_ = jasmine.NestedResults.prototype.addResult;
+    jasmine.NestedResults.prototype.addResult = function(result) {
+      result.expectations = [];
+      result.expectations = jasmine.NestedResults.parseAndStore(arguments.callee.caller.caller.caller.toString());
+      return this.addResult_(result);
+    };
   }
   window.HeadlessReporterResult = (function() {
     function HeadlessReporterResult(name, splitName) {
@@ -60,7 +113,11 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         result = _ref[_i];
-        _results.push(JHW.printResult(result));
+        output = result.message;
+        if (result.lineNumber) {
+          output += " (line ~" + (bestChoice.lineNumber + result.lineNumber) + ")\n  " + result.line;
+        }
+        _results.push(JHW.printResult(output));
       }
       return _results;
     };
@@ -130,7 +187,7 @@
       return this.startTime = new Date();
     };
     HeadlessReporter.prototype.reportSpecResults = function(spec) {
-      var failureResult, result, results, _i, _len, _ref;
+      var failureResult, foundLine, result, results, testCount, _i, _len, _ref;
       if (this.hasError()) {
         return;
       }
@@ -142,12 +199,17 @@
         JHW.specFailed(spec.getJHWSpecInformation());
         this.failedCount++;
         failureResult = new HeadlessReporterResult(spec.getFullName(), spec.getSpecSplitName());
+        testCount = 1;
         _ref = results.getItems();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           result = _ref[_i];
           if (result.type === 'expect' && !result.passed_) {
-            failureResult.addResult(result.message);
+            if (foundLine = result.expectations[testCount - 1]) {
+              result.line = foundLine[0], result.lineNumber = foundLine[1];
+            }
+            failureResult.addResult(result);
           }
+          testCount += 1;
         }
         return this.results.push(failureResult);
       }

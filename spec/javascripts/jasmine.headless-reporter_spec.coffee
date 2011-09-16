@@ -94,3 +94,22 @@ describe 'jasmine.WaitsBlock and jasmine.WaitsForBlock', ->
     runs ->
       expect(true).toEqual(true)
 
+describe 'jasmine.NestedResults.isValidSpecLine', ->
+  it 'should check the lines', ->
+    expect(jasmine.NestedResults.isValidSpecLine('yes')).toEqual(false)
+    expect(jasmine.NestedResults.isValidSpecLine('expect')).toEqual(true)
+    expect(jasmine.NestedResults.isValidSpecLine(' expect')).toEqual(true)
+    expect(jasmine.NestedResults.isValidSpecLine('return expect')).toEqual(true)
+    expect(jasmine.NestedResults.isValidSpecLine(' return expect')).toEqual(true)
+
+describe 'jasmine.nestedResults.parseFunction', ->
+  it 'should parse the function', ->
+    expect(jasmine.NestedResults.parseFunction("""
+test
+expect("cat")
+  return expect("dog")
+    """)).toEqual([
+      [ 'expect("cat")', 1 ],
+      [ 'expect("dog")', 2 ]
+    ])
+

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <iostream>
 #include <QStack>
+#include <QStringList>
 
 class ConsoleOutput : public QObject {
   public:
