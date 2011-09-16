@@ -1,3 +1,5 @@
+require 'digest/sha1'
+
 module Jasmine::Headless
   class CacheableAction
     class << self
