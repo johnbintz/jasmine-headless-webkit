@@ -87,8 +87,10 @@ void ConsoleOutput::logSpecResult(const QString &result) {
 
   red();
   while (linesIterator.hasNext()) {
-    *outputIO << "  " << qPrintable(linesIterator.next()) << std::endl;
-    yellow();
+    QString line = linesIterator.next();
+    if (!linesIterator.hasNext())
+      yellow();
+    *outputIO << "  " << qPrintable(line) << std::endl;
   }
 
   clear();
