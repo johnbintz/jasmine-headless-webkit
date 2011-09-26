@@ -25,7 +25,7 @@ jasmine.Spec.prototype.getJHWSpecInformation = ->
   parts.join("||")
 
 jasmine.Spec.prototype.fail = (e) ->
-  if e and window.CoffeeScriptToFilename
+  if e and e.sourceURL and window.CoffeeScriptToFilename
     filename = e.sourceURL.split('/').pop()
     if realFilename = window.CoffeeScriptToFilename[filename]
       e = {

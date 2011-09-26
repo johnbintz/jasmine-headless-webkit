@@ -28,7 +28,7 @@
   };
   jasmine.Spec.prototype.fail = function(e) {
     var expectationResult, filename, realFilename;
-    if (e && window.CoffeeScriptToFilename) {
+    if (e && e.sourceURL && window.CoffeeScriptToFilename) {
       filename = e.sourceURL.split('/').pop();
       if (realFilename = window.CoffeeScriptToFilename[filename]) {
         e = {
