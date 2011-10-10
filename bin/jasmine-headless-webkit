@@ -10,19 +10,12 @@ end
 $:.unshift(File.join(gem_dir, 'lib'))
 require 'jasmine-headless-webkit'
 
-require 'jasmine/headless/errors'
-require 'jasmine/headless/runner'
-require 'jasmine/headless/options'
-
 begin
   options = Jasmine::Headless::Options.from_command_line
   runner = Jasmine::Headless::Runner.new(options)
 
   if options[:do_list]
-    files_list = Jasmine::FilesList.new(
-      :config => runner.jasmine_config
-    )
-
+    files_list = Jasmine::FilesList.new(:config => runner.jasmine_config)
     files_list.files.each { |file| puts file }
   else
     puts "Running Jasmine specs...".color(:white)

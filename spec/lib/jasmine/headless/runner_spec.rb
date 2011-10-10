@@ -13,6 +13,11 @@ describe Jasmine::Headless::Runner do
       runner.options[:test].should == 'test'
       runner.options[:jasmine_config].should == 'spec/javascripts/support/jasmine.yml'
     end
+
+    it 'should have a template writer' do
+      runner.template_writer.should be_a_kind_of(Jasmine::Headless::TemplateWriter)
+      runner.template_writer.runner.should == runner
+    end
   end
 
   describe '#load_config' do
@@ -94,6 +99,25 @@ describe Jasmine::Headless::Runner do
 
       report.should be_a_report_containing(1, 1, false)
       report.should contain_a_failing_spec(['failure', 'should fail with error code of 1'])
+    end
+  end
+
+  describe '#runner_filename' do
+    context 'not provided' do
+      let(:opts) { { :runner_output_filename => false } }
+
+      it 'should reverse the remove_html_file option' do
+        runner.runner_filename.should == false
+      end
+    end
+    
+    context 'provided' do
+      let(:filename) { 'filename.html' }
+      let(:opts) { { :runner_output_filename => filename } }
+
+      it 'should reverse the remove_html_file option' do
+        runner.runner_filename.should == filename
+      end
     end
   end
 end

@@ -19,7 +19,7 @@ describe Jasmine::Headless::CacheableAction do
 
   let(:cache_type) { 'action' }
   let(:cache_dir) { 'cache' }
-  let(:cache_file) { File.join(cache_dir, cache_type, Digest::SHA1.hexdigest(file)) }
+  let(:cache_file) { File.join(cache_dir, cache_type, Digest::SHA1.hexdigest(file)) + '.js' }
   let(:cache_file_data) { YAML.load(File.read(cache_file)) }
 
   let(:cache_object) { described_class.new(file) }

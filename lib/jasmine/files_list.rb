@@ -9,9 +9,10 @@ module Jasmine
     DEFAULT_FILES = [
       File.join(Jasmine::Core.path, "jasmine.js"),
       File.join(Jasmine::Core.path, "jasmine-html.js"),
-      File.expand_path('../../../jasmine/jasmine.headless-reporter.js', __FILE__),
-      File.expand_path('../../../js-lib/jsDump.js', __FILE__),
-      File.expand_path('../../../js-lib/beautify-html.js', __FILE__)
+      File.join(Jasmine::Core.path, "jasmine.css"),
+      Jasmine::Headless.root.join('jasmine/jasmine.headless-reporter.js').to_s,
+      Jasmine::Headless.root.join('js-lib/jsDump.js').to_s,
+      Jasmine::Headless.root.join('js-lib/beautify-html.js').to_s
     ]
 
     PLEASE_WAIT_IM_WORKING_TIME = 2

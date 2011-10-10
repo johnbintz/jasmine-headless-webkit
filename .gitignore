@@ -13,3 +13,4 @@ hydra-runner.log
 jhw-test
 .jhw-cache/
 _site/
+jhw.*.html

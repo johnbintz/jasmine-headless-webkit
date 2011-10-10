@@ -40,6 +40,10 @@ module Jasmine
         @options = options
       end
 
+      def template_writer
+        @template_writer ||= TemplateWriter.new(self)
+      end
+
       def jasmine_config
         raise JasmineConfigNotFound.new("Jasmine config not found. I tried #{@options[:jasmine_config]}.") if !File.file?(@options[:jasmine_config])
 
@@ -63,18 +67,22 @@ module Jasmine
           :only => @options[:files]
         )
 
-        targets = Jasmine::TemplateWriter.write!(files_list)
+        targets = template_writer.write!(files_list)
         run_targets = targets.dup
         run_targets.pop if (!@options[:full_run] && files_list.filtered?) || files_list.has_spec_outside_scope?
 
         system jasmine_command(run_targets)
         status = $?.exitstatus
 
-        if @options[:remove_html_file] || (status == 0)
+        if !(runner_filename || (@options[:remove_html_file] && status != 0))
           targets.each { |target| FileUtils.rm_f target }
         end
 
         status
+      end
+
+      def runner_filename
+        options[:runner_output_filename]
       end
     end
   end

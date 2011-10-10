@@ -11,6 +11,7 @@ module Jasmine
       DEFAULT_OPTIONS = {
         :colors => false,
         :remove_html_file => true,
+        :runner_output_filename => false,
         :jasmine_config => 'spec/javascripts/support/jasmine.yml',
         :report => false,
         :do_list => false,
@@ -51,6 +52,8 @@ module Jasmine
           @options[:remove_html_file] = false
         when '--report'
           @options[:report] = arg
+        when '--runner-out'
+          @options[:runner_output_filename] = arg
         when '--jasmine-config', '-j'
           @options[:jasmine_config] = arg
         when '--no-full-run'
@@ -75,6 +78,7 @@ module Jasmine
           [ '--cache', GetoptLong::NO_ARGUMENT ],
           [ '--no-t stcache', GetoptLong::NO_ARGUMENT ],
           [ '--keep', GetoptLong::NO_ARGUMENT ],
+          [ '--runner-out', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--report', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--jasmine-config', '-j', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--no-full-run', GetoptLong::NO_ARGUMENT ],

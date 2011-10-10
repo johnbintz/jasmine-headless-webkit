@@ -126,5 +126,16 @@ describe "jasmine-headless-webkit" do
       files.lines.to_a.should include("./spec/jasmine/success/success_spec.js\n")
     end
   end
+
+  describe 'runner-out' do
+    it 'should write out the runner HTML to the specified path and not run the test' do
+      runner_path = Tempfile.new('jhw')
+      runner_path.close
+
+      system %{bin/jasmine-headless-webkit -j spec/jasmine/success/success.yml --runner-out #{runner_path.path}}
+
+      File.size(runner_path.path).should_not == 0
+    end
+  end
 end
 
