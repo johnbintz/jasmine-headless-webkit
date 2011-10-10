@@ -14,12 +14,23 @@ require 'jasmine/headless/task'
 
 Jasmine::Headless::Task.new
 
+PLATFORMS = %w{1.8.7 1.9.2 ree 1.9.3-rc1}
+
+def rvm_bundle(command = '')
+  Bundler.with_clean_env do
+    system %{bash -c 'unset BUNDLE_BIN_PATH && unset BUNDLE_GEMFILE && rvm #{PLATFORMS.join(',')} ruby bundle #{command}'}.tap { |o| p o }
+  end
+end
+
+class SpecFailure < StandardError; end
+class BundleFailure < StandardError; end
+
 namespace :spec do
   desc "Run on three Rubies"
   task :platforms do
-    system %{rvm 1.8.7,1.9.2,ree ruby bundle}
-    system %{rvm 1.8.7,1.9.2,ree ruby bundle exec rake spec}
-    raise StandardError.new if $?.exitstatus != 0
+    rvm_bundle
+    rvm_bundle "exec rspec spec"
+    raise SpecError.new if $?.exitstatus != 0
   end
 end
 
@@ -31,3 +42,4 @@ task :build_runner do
     system %{ruby extconf.rb}
   end
 end
+

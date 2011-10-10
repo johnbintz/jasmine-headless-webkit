@@ -1,5 +1,4 @@
 require 'jasmine-core'
-require 'iconv'
 require 'time'
 require 'multi_json'
 
@@ -64,7 +63,6 @@ module Jasmine
           alert_time = nil
         end
 
-        function_locations = {}
         source = nil
 
         result = case File.extname(file)
