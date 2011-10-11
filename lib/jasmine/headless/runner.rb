@@ -82,7 +82,13 @@ module Jasmine
       end
 
       def runner_filename
-        options[:runner_output_filename]
+        options[:runner_output_filename] || begin
+          if (runner_output = jasmine_config['runner_output']) && !runner_output.empty?
+            runner_output
+          else
+            false
+          end
+        end
       end
     end
   end

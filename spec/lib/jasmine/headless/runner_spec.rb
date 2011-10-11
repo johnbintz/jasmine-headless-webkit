@@ -103,20 +103,55 @@ describe Jasmine::Headless::Runner do
   end
 
   describe '#runner_filename' do
-    context 'not provided' do
+    let(:runner_filename) { runner.runner_filename }
+    let(:yaml_output) { 'yaml output' }
+
+    context 'not in options' do
       let(:opts) { { :runner_output_filename => false } }
 
-      it 'should reverse the remove_html_file option' do
-        runner.runner_filename.should == false
+      context 'not in yaml file' do
+        before do
+          runner.stubs(:jasmine_config).returns('runner_output' => '')
+        end
+
+        it 'should reverse the remove_html_file option' do
+          runner_filename.should == false
+        end
+      end
+
+      context 'in yaml file' do
+        before do
+          runner.stubs(:jasmine_config).returns('runner_output' => yaml_output)
+        end
+
+        it 'should use the yaml file definition' do
+          runner_filename.should == yaml_output
+        end
       end
     end
     
-    context 'provided' do
+    context 'in options' do
       let(:filename) { 'filename.html' }
       let(:opts) { { :runner_output_filename => filename } }
 
-      it 'should reverse the remove_html_file option' do
-        runner.runner_filename.should == filename
+      context 'not in yaml file' do
+        before do
+          runner.stubs(:jasmine_config).returns('runner_output' => '')
+        end
+
+        it 'should reverse the remove_html_file option' do
+          runner.runner_filename.should == filename
+        end
+      end
+
+      context 'in yaml file' do
+        before do
+          runner.stubs(:jasmine_config).returns('runner_output' => yaml_output)
+        end
+
+        it 'shoulduse the command line filename' do
+          runner.runner_filename.should == filename
+        end
       end
     end
   end
