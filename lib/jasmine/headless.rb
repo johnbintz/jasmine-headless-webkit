@@ -1,3 +1,5 @@
+require 'pathname'
+
 module Jasmine::Headless
   autoload :CoffeeScriptCache, 'jasmine/headless/coffee_script_cache'
   autoload :SpecFileAnalyzer, 'jasmine/headless/spec_file_analyzer'
