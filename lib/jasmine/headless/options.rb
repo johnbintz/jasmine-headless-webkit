@@ -21,7 +21,7 @@ module Jasmine
       }
 
       DEFAULTS_FILE = File.join(Dir.pwd, '.jasmine-headless-webkit')
-      GLOBAL_DEFAULTS_FILE = File.expand_path("~/#{DEFAULTS_FILE}")
+      GLOBAL_DEFAULTS_FILE = File.expand_path('~/.jasmine-headless-webkit')
 
       def self.from_command_line
         options = new
