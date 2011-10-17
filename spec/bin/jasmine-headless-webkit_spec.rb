@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'tempfile'
 
 describe "jasmine-headless-webkit" do
   let(:report) { 'spec/report.txt' }
@@ -122,8 +123,8 @@ describe "jasmine-headless-webkit" do
       files = %x{bin/jasmine-headless-webkit -l -j spec/jasmine/success/success.yml}
       $?.exitstatus.should == 0
 
-      files.lines.to_a.should include("./spec/jasmine/success/success.js\n")
-      files.lines.to_a.should include("./spec/jasmine/success/success_spec.js\n")
+      files.lines.to_a.should include(File.expand_path("./spec/jasmine/success/success.js\n"))
+      files.lines.to_a.should include(File.expand_path("./spec/jasmine/success/success_spec.js\n"))
     end
   end
 

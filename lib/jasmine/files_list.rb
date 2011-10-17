@@ -100,7 +100,15 @@ module Jasmine
     end
 
     def spec_filter
-      @spec_filter ||= (@options[:only] ? @options[:only].collect { |path| Dir[path] }.flatten : [])
+      return @spec_filter if @spec_filter
+
+      @spec_filter = begin
+                       if @options[:only]
+                         @options[:only].collect { |path| expanded_dir(path) }.flatten
+                       else
+                         []
+                       end
+                     end
     end
 
     def use_config!
@@ -112,7 +120,7 @@ module Jasmine
           data[searches].flatten.collect do |search|
             path = search
             path = File.join(data[root], path) if data[root]
-            found_files = Dir[path] - @files
+            found_files = expanded_dir(path) - @files
 
             @files += found_files
 
@@ -135,6 +143,10 @@ module Jasmine
 
     def config?
       @options[:config]
+    end
+
+    def expanded_dir(path)
+      Dir[path].collect { |file| File.expand_path(file) }
     end
   end
 end
