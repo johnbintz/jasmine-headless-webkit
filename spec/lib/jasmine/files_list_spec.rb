@@ -90,17 +90,22 @@ describe Jasmine::FilesList do
         'spec_files' => [ '*_spec.js' ],
         'helpers' => [],
         'stylesheets' => [ 'stylesheet/*.css' ],
-        'vendored_helpers' => { 'one' => 'version' }
+        'vendored_helpers' => [ 'one', 'two' ]
       } }
 
-      let(:helper_file) { "path/one/version.js" }
+      let(:helper_file) { "path/one.js" }
+      let(:other_helper_file) { "path/two.js" }
 
       before do
-        described_class.expects(:find_vendored_asset_path).with('one', 'version').returns([ helper_file ])
+        described_class.expects(:find_vendored_asset_path).with('one').returns([ helper_file ])
+        described_class.expects(:find_vendored_asset_path).with('two').returns([ other_helper_file ])
       end
 
       it 'should find the vendored file' do
         files_list.files.should include(helper_file)
+        files_list.files.should include(other_helper_file)
+
+        files_list.files.index(helper_file).should be < files_list.files.index(other_helper_file)
       end
     end
   end

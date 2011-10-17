@@ -119,8 +119,8 @@ module Jasmine
         if data[searches]
           case searches
           when 'vendored_helpers'
-            data[searches].each do |name, version|
-              found_files = self.class.find_vendored_asset_path(name, version)
+            data[searches].each do |name|
+              found_files = self.class.find_vendored_asset_path(name)
 
               @files += found_files
               @filtered_files += found_files
@@ -159,14 +159,16 @@ module Jasmine
       Dir[path].collect { |file| File.expand_path(file) }
     end
 
-    def self.find_vendored_asset_path(name, version)
+    def self.find_vendored_asset_path(name)
       require 'rubygems'
 
-      Gem::Specification.map { |spec|
-        spec.files.find_all { |file|
-          file["vendor/assets/#{name}/#{version}"]
-        }.collect { |file| File.join(spec.gem_dir, file) }
-      }.flatten.compact
+      all_spec_files.find_all { |file| file["vendor/assets/javascripts/#{name}.js"] }
+    end
+
+    def self.all_spec_files
+      @all_spec_files ||= Gem::Specification.map { |spec| spec.files.find_all { |file|
+        file["vendor/assets/javascripts"]
+      }.compact.collect { |file| File.join(spec.gem_dir, file) } }.flatten
     end
   end
 end
