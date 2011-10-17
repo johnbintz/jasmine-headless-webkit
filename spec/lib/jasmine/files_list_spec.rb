@@ -6,7 +6,7 @@ require 'fakefs/spec_helpers'
 require 'coffee-script'
 
 describe Jasmine::FilesList do
-  let(:files_list) { Jasmine::FilesList.new }
+  let(:files_list) { described_class.new }
 
   describe '#initialize' do
     it "should have default files" do
@@ -22,7 +22,7 @@ describe Jasmine::FilesList do
   end
 
   describe '#use_config' do
-    let(:files_list) { Jasmine::FilesList.new(:config => config) }
+    let(:files_list) { described_class.new(:config => config) }
 
     include FakeFS::SpecHelpers
 
@@ -80,6 +80,28 @@ describe Jasmine::FilesList do
       } }
 
       it_should_behave_like :reading_data
+    end
+
+    context 'with vendored helpers' do
+      let(:config) { {
+        'src_dir' => src_dir,
+        'spec_dir' => spec_dir,
+        'src_files' => [ 'js/first_file.js', 'js/*.js' ],
+        'spec_files' => [ '*_spec.js' ],
+        'helpers' => [],
+        'stylesheets' => [ 'stylesheet/*.css' ],
+        'vendored_helpers' => { 'one' => 'version' }
+      } }
+
+      let(:helper_file) { "path/one/version.js" }
+
+      before do
+        described_class.expects(:find_vendored_asset_path).with('one', 'version').returns([ helper_file ])
+      end
+
+      it 'should find the vendored file' do
+        files_list.files.should include(helper_file)
+      end
     end
   end
 

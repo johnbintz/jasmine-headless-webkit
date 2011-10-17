@@ -115,27 +115,37 @@ module Jasmine
       @filtered_files = @files.dup
 
       data = @options[:config].dup
-      [ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'helpers', 'spec_dir' ], [ 'spec_files', 'spec_dir' ] ].each do |searches, root|
+      [ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'vendored_helpers' ], [ 'helpers', 'spec_dir' ], [ 'spec_files', 'spec_dir' ] ].each do |searches, root|
         if data[searches]
-          data[searches].flatten.collect do |search|
-            path = search
-            path = File.join(data[root], path) if data[root]
-            found_files = expanded_dir(path) - @files
+          case searches
+          when 'vendored_helpers'
+            data[searches].each do |name, version|
+              found_files = self.class.find_vendored_asset_path(name, version)
 
-            @files += found_files
-
-            if searches == 'spec_files'
-              @spec_files += spec_filter.empty? ? found_files : (found_files & spec_filter)
+              @files += found_files
+              @filtered_files += found_files
             end
+          else
+            data[searches].flatten.collect do |search|
+              path = search
+              path = File.join(data[root], path) if data[root]
+              found_files = expanded_dir(path) - @files
 
-            @filtered_files +=  begin
-                                  if searches == 'spec_files'
-                                    @spec_outside_scope = ((spec_filter | found_files).sort != found_files.sort)
-                                    spec_filter.empty? ? found_files : (spec_filter || found_files)
-                                  else
-                                    found_files
+              @files += found_files
+
+              if searches == 'spec_files'
+                @spec_files += spec_filter.empty? ? found_files : (found_files & spec_filter)
+              end
+
+              @filtered_files += begin
+                                    if searches == 'spec_files'
+                                      @spec_outside_scope = ((spec_filter | found_files).sort != found_files.sort)
+                                      spec_filter.empty? ? found_files : (spec_filter || found_files)
+                                    else
+                                      found_files
+                                    end
                                   end
-                                end
+            end
           end
         end
       end
@@ -147,6 +157,16 @@ module Jasmine
 
     def expanded_dir(path)
       Dir[path].collect { |file| File.expand_path(file) }
+    end
+
+    def self.find_vendored_asset_path(name, version)
+      require 'rubygems'
+
+      Gem::Specification.map { |spec|
+        spec.files.find_all { |file|
+          file["vendor/assets/#{name}/#{version}"]
+        }.collect { |file| File.join(spec.gem_dir, file) }
+      }.flatten.compact
     end
   end
 end
