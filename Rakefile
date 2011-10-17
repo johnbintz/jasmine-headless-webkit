@@ -18,7 +18,7 @@ PLATFORMS = %w{1.8.7 1.9.2 ree 1.9.3-rc1}
 
 def rvm_bundle(command = '')
   Bundler.with_clean_env do
-    system %{bash -c 'unset BUNDLE_BIN_PATH && unset BUNDLE_GEMFILE && rvm #{PLATFORMS.join(',')} ruby bundle #{command}'}.tap { |o| p o }
+    system %{bash -c 'unset BUNDLE_BIN_PATH && unset BUNDLE_GEMFILE && rvm #{PLATFORMS.join(',')} do bundle #{command}'}
   end
 end
 

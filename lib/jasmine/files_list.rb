@@ -162,6 +162,7 @@ module Jasmine
     def self.find_vendored_asset_path(name)
       require 'rubygems'
 
+      raise StandardError.new("A newer version of Rubygems is required to use vendored assets. Please upgrade.") if !Gem::Specification.respond_to?(:map)
       all_spec_files.find_all { |file| file["vendor/assets/javascripts/#{name}.js"] }
     end
 
