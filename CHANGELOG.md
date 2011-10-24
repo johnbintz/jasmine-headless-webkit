@@ -1,3 +1,30 @@
+## 0.7.2
+
+* Improved finding of CoffeeScript spec line locations
+* Improved Runner reporting of which expectations failed
+* Initial vendored helper support, paving the way for Sprockets integratioon (maybe!)
+* Add 1.9.3-rc1 test support and fixes
+* Add console.peek()
+
+## 0.7.1
+
+* Bugfix for missing digest/sha1 import
+
+## 0.7.0
+
+* Major C++ cleanup, now much more modular
+* Greatly improved object inspection and printing provided by jsDump and beautify-js
+
+## 0.6.3
+
+* Ensure Rubygems is available before doing version comparison
+* Fix other build problems
+* Better output for jQuery nodes
+
+## 0.6.2
+
+* Clean up C++ and test running
+
 ## 0.6.1
 
 * Ensure YAML is loaded before use
