@@ -35,6 +35,7 @@ void Runner::go()
   m_ticker.stop();
   m_page.setPreferredContentsSize(QSize(1024, 600));
   addJHW();
+
   loadSpec();
 
   m_ticker.start();
@@ -46,6 +47,13 @@ void Runner::addJHW()
 
 void Runner::loadSpec()
 {
+  if (!reportFileName.isEmpty()) {
+    outputFile = new QFile(reportFileName);
+    outputFile->open(QIODevice::WriteOnly);
+
+    ts = new QTextStream(outputFile);
+  }
+
   m_page.mainFrame()->load(runnerFiles.dequeue());
   m_ticker.start();
 }
@@ -59,11 +67,9 @@ void Runner::watch(bool ok)
     QApplication::instance()->exit(1);
     return;
   }
-
 }
 
-bool Runner::hasElement(const char *select)
-{
+bool Runner::hasElement(const char *select) {
   return !m_page.mainFrame()->findFirstElement(select).isNull();
 }
 
@@ -75,10 +81,6 @@ void Runner::reportFile(const QString &file) {
   reportFileName = file;
 }
 
-bool Runner::hasError() {
-  return hasErrors;
-}
-
 void Runner::timerPause() {
   m_ticker.stop();
 }
@@ -87,17 +89,21 @@ void Runner::timerDone() {
   m_ticker.start();
 }
 
-void Runner::specPassed(const QString &specDetail) {
-  consoleOutput.passed(specDetail);
-  reportFileOutput.passed(specDetail);
-}
+void Runner::print(const QString &fh, const QString &content) {
+  if (fh == "stdout") {
+    std::cout << qPrintable(content);
+    std::cout.flush();
+  }
 
-void Runner::specFailed(const QString &specDetail) {
-  consoleOutput.failed(specDetail);
-  reportFileOutput.failed(specDetail);
+  if (fh == "stderr") {
+    std::cerr << qPrintable(content);
+    std::cerr.flush();
+  }
 
-  didFail = true;
-  failedSpecs.push(specDetail);
+  if (fh == "report") {
+    *ts << qPrintable(content);
+    ts->flush();
+  }
 }
 
 void Runner::errorLog(const QString &msg, int lineNumber, const QString &sourceID)
@@ -115,11 +121,9 @@ void Runner::internalLog(const QString &note, const QString &msg) {
   reportFileOutput.internalLog(note, msg);
 }
 
-void Runner::log(const QString &msg)
+void Runner::usedConsole()
 {
   usedConsole = true;
-  consoleOutput.consoleLog(msg);
-  reportFileOutput.consoleLog(msg);
 }
 
 void Runner::leavePageAttempt(const QString &msg)
@@ -129,53 +133,19 @@ void Runner::leavePageAttempt(const QString &msg)
   hasErrors = true;
 }
 
-void Runner::printName(const QString &name)
-{
-  consoleOutput.logSpecFilename(name);
-}
-
-void Runner::printResult(const QString &result)
-{
-  consoleOutput.logSpecResult(result);
-}
-
-void Runner::finishSuite(const QString &duration, const QString &total, const QString& failed)
-{
-  if (didFail) {
-    consoleOutput.reportFailure(total, failed, duration);
-    reportFileOutput.reportFailure(total, failed, duration);
-  } else {
-    if (hasErrors) {
-      consoleOutput.reportSuccessWithJSErrors(total, failed, duration);
-      reportFileOutput.reportSuccessWithJSErrors(total, failed, duration);
-    } else {
-      consoleOutput.reportSuccess(total, failed, duration);
-      reportFileOutput.reportSuccess(total, failed, duration);
-    }
-  }
-
-  if (!reportFileName.isEmpty()) {
-    QFile outputFile(reportFileName);
-    outputFile.open(QIODevice::WriteOnly);
-
-    QTextStream ts(&outputFile);
-
-    ts << reportFileOutput.outputIO->str().c_str();
-
-    outputFile.close();
-  }
-
+void Runner::finishSuite() {
   isFinished = true;
 }
 
-void Runner::timerEvent()
-{
+void Runner::timerEvent() {
   ++m_runs;
 
   if (hasErrors && m_runs > 2)
     QApplication::instance()->exit(1);
 
   if (isFinished) {
+    outputFile->close();
+
     int exitCode = 0;
     if (didFail || hasErrors) {
       exitCode = 1;

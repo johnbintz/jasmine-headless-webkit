@@ -10,6 +10,9 @@ module Jasmine
       File.join(Jasmine::Core.path, "jasmine.js"),
       File.join(Jasmine::Core.path, "jasmine-html.js"),
       File.join(Jasmine::Core.path, "jasmine.css"),
+      Jasmine::Headless.root.join('jasmine/jasmine-extensions.js').to_s,
+      Jasmine::Headless.root.join('jasmine/intense.js').to_s,
+      Jasmine::Headless.root.join('jasmine/headless_reporter_result.js').to_s,
       Jasmine::Headless.root.join('jasmine/jasmine.headless-reporter.js').to_s,
       Jasmine::Headless.root.join('js-lib/jsDump.js').to_s,
       Jasmine::Headless.root.join('js-lib/beautify-html.js').to_s

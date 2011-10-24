@@ -31,11 +31,10 @@ class Runner: public QObject {
     void leavePageAttempt(const QString &msg);
     void timerPause();
     void timerDone();
-    void specPassed(const QString &specDetail);
-    void specFailed(const QString &specDetail);
-    void printName(const QString &name);
-    void printResult(const QString &result);
-    void finishSuite(const QString &duration, const QString &total, const QString& failed);
+
+    void print(const QString &fh, const QString &content);
+
+    void finishSuite();
     private slots:
       void watch(bool ok);
     void errorLog(const QString &msg, int lineNumber, const QString &sourceID);
@@ -55,12 +54,14 @@ class Runner: public QObject {
     QQueue<QString> runnerFiles;
     QStack<QString> failedSpecs;
 
-    ConsoleOutput consoleOutput;
     ReportFileOutput reportFileOutput;
 
     QString reportFileName;
 
     void loadSpec();
+
+    QFile *outputFile;
+    QTextStream *ts;
 };
 
 #endif
