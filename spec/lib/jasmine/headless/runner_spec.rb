@@ -155,4 +155,16 @@ describe Jasmine::Headless::Runner do
       end
     end
   end
+
+  describe '#jasmine_config' do
+    let(:opts) { {} }
+
+    before do
+      runner.stubs(:jasmine_config_data).returns('spec_files' => nil)
+    end
+
+    it 'should not merge in things with nil values' do
+      runner.jasmine_config['spec_files'].should == described_class::JASMINE_DEFAULTS['spec_files']
+    end
+  end
 end

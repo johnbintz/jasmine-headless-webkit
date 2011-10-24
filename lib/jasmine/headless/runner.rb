@@ -45,9 +45,13 @@ module Jasmine
       end
 
       def jasmine_config
-        raise JasmineConfigNotFound.new("Jasmine config not found. I tried #{@options[:jasmine_config]}.") if !File.file?(@options[:jasmine_config])
+        return @jasmine_config if @jasmine_config
 
-        @jasmine_config ||= JASMINE_DEFAULTS.dup.merge(YAML.load_file(@options[:jasmine_config]))
+        @jasmine_config = JASMINE_DEFAULTS.dup
+        jasmine_config_data.each do |key, value|
+          @jasmine_config[key] = value if value
+        end
+        @jasmine_config
       end
 
       def jasmine_command(*targets)
@@ -87,6 +91,13 @@ module Jasmine
             false
           end
         end
+      end
+
+      private
+      def jasmine_config_data
+        raise JasmineConfigNotFound.new("Jasmine config not found. I tried #{@options[:jasmine_config]}.") if !File.file?(@options[:jasmine_config])
+
+        YAML.load_file(@options[:jasmine_config])
       end
     end
   end
