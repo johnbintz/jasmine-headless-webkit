@@ -225,6 +225,20 @@ If you need to test server interaction, do one of the following:
 * Stub your server responses using [Sinon.JS](http://sinonjs.org/), the recommended way.
 * Use [PhantomJS](http://www.phantomjs.org/) against a running copy of a Jasmine server, instead of this project.
 
+#### Vendored JavaScript support
+
+_(still in development!)_
+
+You can pull in vendored JavaScript files as helpers in your setup! Add the `vendored_helpers` section to your `jasmine.yml` file
+with the names of some helpers you want to use (take a look at [jasmine-spec-extras](https://github.com/johnbintz/jasmine-spec-extras) to see how it works):
+
+{% highlight yaml %}
+vendored_helpers:
+- 'sinon'
+{% endhighlight %}
+
+_This is the first step in an effort to intergrate with Sprockets directly to make testing modern Rails apps as seamless as possible. Oh yeah, it's coming!_
+
 #### What else works?
 
 `alert()` and `confirm()` work, though the latter always returns `true`. You should be mocking calls to `confirm()`,
@@ -244,6 +258,9 @@ spyOn(window, 'confirm').andReturn(false)
 
 If you need a heavy-weight object printer, you also have `console.pp()`, which uses Jasmine's built-in pretty-printer if available, and falls back to `JSON.stringify()` if it's not.
 
+You also get an additional method, `console.peek()`, which calls `console.log()` with the provided parameter, then passes the parameter back along so you
+can continue to work with it. It's the equivalent of `.tap { |o| p o }` in Ruby.
+
 ## Running the runner
 
 {% highlight bash %}
@@ -253,6 +270,7 @@ jasmine-headless-webkit [ -c / --colors ]
                         [ --keep ]
                         [ -l / --list ]
                         [ --report <report file> ]
+                        [ --runner-out <html file> ]
                         [ -j / --jasmine-config <path to jasmine.yml> ]
                         <spec files to run>
 {% endhighlight %}
@@ -331,6 +349,18 @@ is typically what you want to know anyway. Newer versions of `guard-jasmine-head
 valuable seconds off of testing with every run, saving you enough time every day to run to the coffee shop and get some delicious brew!
 
 If you don't want this behavior, pass in `--no-full-run` and filtered runs will be the only thing that runs when you request one.
+
+### Writing the HTML runner to another location
+
+If you want to use the runner file in other places, use the `--runner-out` parameter with the name of the target file.
+The HTML produced uses the Jasmine `HtmlReporter` if not loaded in `jasmine-headless-webkit`, so you should be able
+to just open it in a browser and have it work.
+
+If you always want the reporter written to a particular location, you can define that location in `jasmine.yml`:
+
+{% highlight yaml %}
+runner_output: "runner.html"
+{% endhighlight %}
 
 ## Running the runner from a Ruby program
 

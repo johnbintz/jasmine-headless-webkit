@@ -1,4 +1,4 @@
-markdown: rdiscount
+markdown: redcarpet
 auto: true
 server: true
 pygments: true
