@@ -74,7 +74,6 @@ bool Runner::hasElement(const char *select) {
 }
 
 void Runner::setColors(bool colors) {
-  consoleOutput.showColors = colors;
 }
 
 void Runner::reportFile(const QString &file) {
@@ -108,27 +107,15 @@ void Runner::print(const QString &fh, const QString &content) {
 
 void Runner::errorLog(const QString &msg, int lineNumber, const QString &sourceID)
 {
-  consoleOutput.errorLog(msg, lineNumber, sourceID);
-  reportFileOutput.errorLog(msg, lineNumber, sourceID);
-
   hasErrors = true;
   m_runs = 0;
   m_ticker.start();
 }
 
-void Runner::internalLog(const QString &note, const QString &msg) {
-  consoleOutput.internalLog(note, msg);
-  reportFileOutput.internalLog(note, msg);
-}
-
-void Runner::usedConsole()
-{
-  usedConsole = true;
-}
+void Runner::internalLog(const QString &note, const QString &msg) {}
 
 void Runner::leavePageAttempt(const QString &msg)
 {
-  consoleOutput.internalLog("error", msg);
   m_page.oneFalseConfirm();
   hasErrors = true;
 }

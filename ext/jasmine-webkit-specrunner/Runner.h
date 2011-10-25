@@ -25,9 +25,7 @@ class Runner: public QObject {
     void reportFile(const QString &file);
     void addFile(const QString &spec);
     void go();
-    public slots:
-      void log(const QString &msg);
-    bool hasError();
+  public slots:
     void leavePageAttempt(const QString &msg);
     void timerPause();
     void timerDone();
@@ -35,8 +33,8 @@ class Runner: public QObject {
     void print(const QString &fh, const QString &content);
 
     void finishSuite();
-    private slots:
-      void watch(bool ok);
+  private slots:
+    void watch(bool ok);
     void errorLog(const QString &msg, int lineNumber, const QString &sourceID);
     void internalLog(const QString &note, const QString &msg);
     void addJHW();
@@ -53,8 +51,6 @@ class Runner: public QObject {
     bool didFail;
     QQueue<QString> runnerFiles;
     QStack<QString> failedSpecs;
-
-    ReportFileOutput reportFileOutput;
 
     QString reportFileName;
 
