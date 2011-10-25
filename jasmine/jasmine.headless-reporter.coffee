@@ -7,7 +7,7 @@ class jasmine.HeadlessReporter
     @results = []
     @failedCount = 0
     @length = 0
-    @_hasError = false
+
   reportRunnerResults: (runner) ->
     return if this.hasError()
 

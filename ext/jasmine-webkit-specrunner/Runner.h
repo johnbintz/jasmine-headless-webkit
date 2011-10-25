@@ -27,6 +27,8 @@ class Runner: public QObject {
     void timerPause();
     void timerDone();
 
+    void hasUsedConsole();
+
     void print(const QString &fh, const QString &content);
 
     void finishSuite();
@@ -35,8 +37,6 @@ class Runner: public QObject {
     void addJHW();
     void timerEvent();
     void handleError(const QString & message, int lineNumber, const QString & sourceID);
-  protected:
-    bool hasElement(const char *select);
   private:
     Page m_page;
     QTimer m_ticker;
@@ -48,7 +48,6 @@ class Runner: public QObject {
     bool useColors;
 
     QQueue<QString> runnerFiles;
-    QStack<QString> failedSpecs;
 
     QString reportFileName;
 

@@ -30,7 +30,7 @@ describe 'jasmine.HeadlessReporter', ->
 
     reporter.reportSpecStarting(spec)
     
-    expect(spec.finish).not.toHaveBeenCalled()
+    expect(spec.finish).toHaveBeenCalled()
     expect(suite.finish).toHaveBeenCalled()
 
 describe 'jasmine.Suite.prototype.getSuiteSplitName', ->

@@ -8,7 +8,6 @@
       this.results = [];
       this.failedCount = 0;
       this.length = 0;
-      this._hasError = false;
     }
     HeadlessReporter.prototype.reportRunnerResults = function(runner) {
       var result, resultLine, runtime, _i, _len, _ref;

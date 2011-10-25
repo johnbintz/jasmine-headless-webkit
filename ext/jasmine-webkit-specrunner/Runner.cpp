@@ -92,6 +92,10 @@ void Runner::setColors(bool colors) {
   useColors = colors;
 }
 
+void Runner::hasUsedConsole() {
+  usedConsole = true;
+}
+
 void Runner::reportFile(const QString &file) {
   reportFileName = file;
 }
