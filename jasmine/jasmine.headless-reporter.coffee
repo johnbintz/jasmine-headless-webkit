@@ -61,7 +61,7 @@ class jasmine.HeadlessReporter
 
   reportSuiteResults: (suite) ->
   hasError: ->
-    @_hasError == true
+    JHW._hasErrors
 
   _formatResultLine: (runtime) ->
     line = []

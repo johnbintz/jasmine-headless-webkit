@@ -10,9 +10,16 @@ window.Intense = {
     white: 7
   methods:
     foreground: (color) ->
-      "\033[3#{Intense.colors[color]}m#{this}\033[0m"
+      if Intense.useColors
+        "\033[3#{Intense.colors[color]}m#{this}\033[0m"
+      else
+        this
     bright: ->
-      "\033[1m#{this}\033[0m"
+      if Intense.useColors
+        "\033[1m#{this}\033[0m"
+      else
+        this
+  useColors: true
 }
 
 for method, code of Intense.methods

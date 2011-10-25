@@ -41,13 +41,22 @@ if window.JHW
   window.alert = (message) ->
     JHW.stderr.puts(message)
 
-  JHW.error = (message, sourceUrl, lineNumber) ->
+  JHW._hasErrors = false
 
+  JHW._handleError = (message, lineNumber, sourceURL) ->
+    JHW.stderr.puts(message)
+    JHW._hasErrors = true
+    false
 
-  for handle in [ 'stdout', 'stderr', 'report' ]
+  JHW._setColors = (what) ->
+    Intense.useColors = what
+
+  createHandle = (handle) ->
     JHW[handle] =
       print: (content) -> JHW.print(handle, content)
       puts: (content) -> JHW.print(handle, content + "\n")
+
+  createHandle(handle) for handle in [ 'stdout', 'stderr', 'report' ]
 
   JHW.log = (msg) ->
     JHW.usedConsole()

@@ -13,12 +13,21 @@
     },
     methods: {
       foreground: function(color) {
-        return "\033[3" + Intense.colors[color] + "m" + this + "\033[0m";
+        if (Intense.useColors) {
+          return "\033[3" + Intense.colors[color] + "m" + this + "\033[0m";
+        } else {
+          return this;
+        }
       },
       bright: function() {
-        return "\033[1m" + this + "\033[0m";
+        if (Intense.useColors) {
+          return "\033[1m" + this + "\033[0m";
+        } else {
+          return this;
+        }
       }
-    }
+    },
+    useColors: true
   };
   _ref = Intense.methods;
   for (method in _ref) {

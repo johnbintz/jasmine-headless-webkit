@@ -75,7 +75,7 @@
     };
     HeadlessReporter.prototype.reportSuiteResults = function(suite) {};
     HeadlessReporter.prototype.hasError = function() {
-      return this._hasError === true;
+      return JHW._hasErrors;
     };
     HeadlessReporter.prototype._formatResultLine = function(runtime) {
       var line;

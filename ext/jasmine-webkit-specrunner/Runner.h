@@ -10,15 +10,13 @@
 #include <QQueue>
 
 #include "Page.h"
-#include "ConsoleOutput.h"
-#include "ReportFileOutput.h"
 
 using namespace std;
 
 class Runner: public QObject {
   Q_OBJECT
   public:
-    enum { TIMER_TICK = 200, MAX_LOOPS = 25 };
+    enum { TIMER_TICK = 200, MAX_LOOPS = 50 };
 
     Runner();
     void setColors(bool colors);
@@ -26,7 +24,6 @@ class Runner: public QObject {
     void addFile(const QString &spec);
     void go();
   public slots:
-    void leavePageAttempt(const QString &msg);
     void timerPause();
     void timerDone();
 
@@ -35,10 +32,9 @@ class Runner: public QObject {
     void finishSuite();
   private slots:
     void watch(bool ok);
-    void errorLog(const QString &msg, int lineNumber, const QString &sourceID);
-    void internalLog(const QString &note, const QString &msg);
     void addJHW();
     void timerEvent();
+    void handleError(const QString & message, int lineNumber, const QString & sourceID);
   protected:
     bool hasElement(const char *select);
   private:
@@ -49,6 +45,8 @@ class Runner: public QObject {
     bool usedConsole;
     bool isFinished;
     bool didFail;
+    bool useColors;
+
     QQueue<QString> runnerFiles;
     QStack<QString> failedSpecs;
 
