@@ -80,4 +80,5 @@
       return JHW.stdout.puts(msg);
     };
   }
+  window.CoffeeScriptToFilename = {};
 }).call(this);

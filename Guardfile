@@ -3,6 +3,8 @@
 #   watch('file/path') { `command(s)` }
 #
 
+guard 'coffeescript', :input => 'vendor/assets/coffeescripts', :output => 'vendor/assets/javascripts'
+
 guard 'shell' do
   watch(%r{ext/jasmine-webkit-specrunner/.*\.(cpp|h|pro|pri)}) { |m|
     if !m[0]['moc_']
@@ -32,4 +34,3 @@ end
 
 compile
 
-guard 'coffeescript', :input => 'jasmine'

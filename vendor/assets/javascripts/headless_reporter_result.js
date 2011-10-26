@@ -25,7 +25,7 @@
           output += (" (line ~" + (bestChoice.lineNumber + result.lineNumber) + ")").foreground('red').bright();
         }
         JHW.stdout.puts("  " + output);
-        _results.push(JHW.stdout.puts(("    " + result.line).foreground('yellow')));
+        _results.push(result.line != null ? JHW.stdout.puts(("    " + result.line).foreground('yellow')) : void 0);
       }
       return _results;
     };

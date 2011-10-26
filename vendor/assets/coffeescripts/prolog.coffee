@@ -61,3 +61,4 @@ if window.JHW
     JHW._usedConsole = true
     JHW.stdout.puts(msg)
 
+window.CoffeeScriptToFilename = {}

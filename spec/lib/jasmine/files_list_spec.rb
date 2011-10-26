@@ -14,12 +14,12 @@ describe Jasmine::FilesList do
         File.join(Jasmine::Core.path, "jasmine.js"),
         File.join(Jasmine::Core.path, "jasmine-html.js"),
         File.join(Jasmine::Core.path, "jasmine.css"),
-        File.expand_path('jasmine/jasmine-extensions.js'),
-        File.expand_path('jasmine/intense.js'),
-        File.expand_path('jasmine/headless_reporter_result.js'),
-        File.expand_path('jasmine/jasmine.headless-reporter.js'),
-        File.expand_path('js-lib/jsDump.js'),
-        File.expand_path('js-lib/beautify-html.js'),
+        File.expand_path('vendor/assets/javascripts/jasmine-extensions.js'),
+        File.expand_path('vendor/assets/javascripts/intense.js'),
+        File.expand_path('vendor/assets/javascripts/headless_reporter_result.js'),
+        File.expand_path('vendor/assets/javascripts/jasmine.headless-reporter.js'),
+        File.expand_path('vendor/assets/javascripts/jsDump.js'),
+        File.expand_path('vendor/assets/javascripts/beautify-html.js'),
       ]
     end
   end

@@ -17,7 +17,9 @@ class window.HeadlessReporterResult
       if result.lineNumber
         output += " (line ~#{bestChoice.lineNumber + result.lineNumber})".foreground('red').bright()
       JHW.stdout.puts("  " + output)
-      JHW.stdout.puts("    #{result.line}".foreground('yellow'))
+
+      if result.line?
+        JHW.stdout.puts("    #{result.line}".foreground('yellow'))
 
   @findSpecLine: (splitName) ->
     bestChoice = { accuracy: 0, file: null, lineNumber: null }
