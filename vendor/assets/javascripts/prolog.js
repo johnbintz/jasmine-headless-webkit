@@ -81,4 +81,5 @@
     };
   }
   window.CoffeeScriptToFilename = {};
+  window.CSTF = window.CoffeeScriptToFilename;
 }).call(this);

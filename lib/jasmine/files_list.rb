@@ -90,7 +90,7 @@ module Jasmine
             if cache.cached?
               %{<script type="text/javascript" src="#{cache.cache_file}"></script>
                 <script type="text/javascript">
-                  window.CoffeeScriptToFilename['#{File.split(cache.cache_file).last}'] = '#{file}';
+                  window.CSTF['#{File.split(cache.cache_file).last}'] = '#{file}';
                 </script>}
             else
               %{<script type="text/javascript">#{source}</script>}

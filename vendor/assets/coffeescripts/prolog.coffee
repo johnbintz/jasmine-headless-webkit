@@ -62,3 +62,5 @@ if window.JHW
     JHW.stdout.puts(msg)
 
 window.CoffeeScriptToFilename = {}
+window.CSTF = window.CoffeeScriptToFilename
+
