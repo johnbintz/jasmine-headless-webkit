@@ -25,21 +25,16 @@ if window.JHW
       data
 
   window.onbeforeunload = (e) ->
-    JHW.leavePageAttempt()
-
     JHW.stderr.puts('The code tried to leave the test page. Check for unhandled form submits and link clicks.')
-
-    if e = e || window.event
-      e.returnValue = "leaving"
-
-    return "leaving"
+    JHW.hasError()
+    return false
 
   window.confirm = (message) ->
-    JHW.stderr.puts("jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm. Returning true.")
+    JHW.stderr.puts("#{"[confirm]".foreground('red')} jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm. Returning true.")
     true
 
   window.alert = (message) ->
-    JHW.stderr.puts(message)
+    JHW.stderr.puts("[alert] ".foreground('red') + message)
 
   JHW._hasErrors = false
 
@@ -48,8 +43,8 @@ if window.JHW
     JHW._hasErrors = true
     false
 
-  JHW._setColors = (what) ->
-    Intense.useColors = what
+  JHW._setColors = (useColors) ->
+    Intense.useColors = useColors
 
   createHandle = (handle) ->
     JHW[handle] =
@@ -58,7 +53,11 @@ if window.JHW
 
   createHandle(handle) for handle in [ 'stdout', 'stderr', 'report' ]
 
+  JHW._usedConsole = false
+
   JHW.log = (msg) ->
-    JHW.usedConsole()
+    JHW.hasUsedConsole()
+    JHW.report.puts("CONSOLE||#{msg}")
+    JHW._usedConsole = true
     JHW.stdout.puts(msg)
 

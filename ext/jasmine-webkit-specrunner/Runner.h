@@ -23,28 +23,28 @@ class Runner: public QObject {
     void reportFile(const QString &file);
     void addFile(const QString &spec);
     void go();
+
   public slots:
     void timerPause();
     void timerDone();
-
     void hasUsedConsole();
-
+    void hasError();
     void print(const QString &fh, const QString &content);
-
     void finishSuite();
+
   private slots:
     void watch(bool ok);
     void addJHW();
     void timerEvent();
     void handleError(const QString & message, int lineNumber, const QString & sourceID);
+
   private:
-    Page m_page;
-    QTimer m_ticker;
-    int m_runs;
+    Page page;
+    QTimer ticker;
+    int runs;
     bool hasErrors;
     bool usedConsole;
     bool isFinished;
-    bool didFail;
     bool useColors;
 
     QQueue<QString> runnerFiles;

@@ -24,18 +24,22 @@ class jasmine.HeadlessReporter
     else
       JHW.stdout.puts("FAIL: #{resultLine}".foreground('red'))
 
+    output = "TOTAL||#{@length}||#{@failedCount}||#{runtime}||#{if JHW._hasErrors then "T" else "F"}"
+
+    JHW.report.puts(output)
     result.print() for result in @results
 
     JHW.finishSuite()
 
   reportRunnerStarting: (runner) ->
     @startTime = new Date()
-    JHW.stdout.puts("Running Jasmine specs...")
+    JHW.stdout.puts("\nRunning Jasmine specs...".bright())
 
   reportSpecResults: (spec) ->
     return if this.hasError()
 
     results = spec.results()
+
     @length++
     if results.passed()
       JHW.stdout.print('.'.foreground('green'))
@@ -43,9 +47,12 @@ class jasmine.HeadlessReporter
     else
       JHW.stdout.print('F'.foreground('red'))
       JHW.report.puts("FAIL||" + spec.getJHWSpecInformation())
+      JHW.hasError()
+
       @failedCount++
       failureResult = new HeadlessReporterResult(spec.getFullName(), spec.getSpecSplitName())
       testCount = 1
+
       for result in results.getItems()
         if result.type == 'expect' and !result.passed_
           if foundLine = result.expectations[testCount - 1]

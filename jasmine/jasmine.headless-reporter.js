@@ -10,7 +10,7 @@
       this.length = 0;
     }
     HeadlessReporter.prototype.reportRunnerResults = function(runner) {
-      var result, resultLine, runtime, _i, _len, _ref;
+      var output, result, resultLine, runtime, _i, _len, _ref;
       if (this.hasError()) {
         return;
       }
@@ -25,6 +25,8 @@
       } else {
         JHW.stdout.puts(("FAIL: " + resultLine).foreground('red'));
       }
+      output = "TOTAL||" + this.length + "||" + this.failedCount + "||" + runtime + "||" + (JHW._hasErrors ? "T" : "F");
+      JHW.report.puts(output);
       _ref = this.results;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         result = _ref[_i];
@@ -34,7 +36,7 @@
     };
     HeadlessReporter.prototype.reportRunnerStarting = function(runner) {
       this.startTime = new Date();
-      return JHW.stdout.puts("Running Jasmine specs...");
+      return JHW.stdout.puts("\nRunning Jasmine specs...".bright());
     };
     HeadlessReporter.prototype.reportSpecResults = function(spec) {
       var failureResult, foundLine, result, results, testCount, _i, _len, _ref;
@@ -49,6 +51,7 @@
       } else {
         JHW.stdout.print('F'.foreground('red'));
         JHW.report.puts("FAIL||" + spec.getJHWSpecInformation());
+        JHW.hasError();
         this.failedCount++;
         failureResult = new HeadlessReporterResult(spec.getFullName(), spec.getSpecSplitName());
         testCount = 1;

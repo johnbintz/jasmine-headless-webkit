@@ -37,19 +37,16 @@
       }
     };
     window.onbeforeunload = function(e) {
-      JHW.leavePageAttempt();
       JHW.stderr.puts('The code tried to leave the test page. Check for unhandled form submits and link clicks.');
-      if (e = e || window.event) {
-        e.returnValue = "leaving";
-      }
-      return "leaving";
+      JHW.hasError();
+      return false;
     };
     window.confirm = function(message) {
-      JHW.stderr.puts("jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm. Returning true.");
+      JHW.stderr.puts("" + ("[confirm]".foreground('red')) + " jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm. Returning true.");
       return true;
     };
     window.alert = function(message) {
-      return JHW.stderr.puts(message);
+      return JHW.stderr.puts("[alert] ".foreground('red') + message);
     };
     JHW._hasErrors = false;
     JHW._handleError = function(message, lineNumber, sourceURL) {
@@ -57,8 +54,8 @@
       JHW._hasErrors = true;
       return false;
     };
-    JHW._setColors = function(what) {
-      return Intense.useColors = what;
+    JHW._setColors = function(useColors) {
+      return Intense.useColors = useColors;
     };
     createHandle = function(handle) {
       return JHW[handle] = {
@@ -75,8 +72,11 @@
       handle = _ref[_i];
       createHandle(handle);
     }
+    JHW._usedConsole = false;
     JHW.log = function(msg) {
-      JHW.usedConsole();
+      JHW.hasUsedConsole();
+      JHW.report.puts("CONSOLE||" + msg);
+      JHW._usedConsole = true;
       return JHW.stdout.puts(msg);
     };
   }

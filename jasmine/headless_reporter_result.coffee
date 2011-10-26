@@ -2,8 +2,10 @@
 class window.HeadlessReporterResult
   constructor: (@name, @splitName) ->
     @results = []
+
   addResult: (message) ->
     @results.push(message)
+
   print: ->
     output = @name.foreground('red')
     bestChoice = HeadlessReporterResult.findSpecLine(@splitName)
@@ -16,6 +18,7 @@ class window.HeadlessReporterResult
         output += " (line ~#{bestChoice.lineNumber + result.lineNumber})".foreground('red').bright()
       JHW.stdout.puts("  " + output)
       JHW.stdout.puts("    #{result.line}".foreground('yellow'))
+
   @findSpecLine: (splitName) ->
     bestChoice = { accuracy: 0, file: null, lineNumber: null }
 
@@ -37,5 +40,5 @@ class window.HeadlessReporterResult
 
       if index > bestChoice.accuracy
         bestChoice = { accuracy: index, file: file, lineNumber: lineNumber }
-    
+
     bestChoice
