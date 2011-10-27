@@ -18,8 +18,10 @@ if window.JHW
             JHW.log(dump)
           else
             JHW.log("jsDump: #{dump}")
+
     pp: (data) ->
       JHW.log(if jasmine then jasmine.pp(data) else console.log(data))
+
     peek: (data) ->
       console.log(data)
       data
@@ -37,7 +39,6 @@ if window.JHW
     JHW.stderr.puts("[alert] ".foreground('red') + message)
 
   JHW._hasErrors = false
-
   JHW._handleError = (message, lineNumber, sourceURL) ->
     JHW.stderr.puts(message)
     JHW._hasErrors = true

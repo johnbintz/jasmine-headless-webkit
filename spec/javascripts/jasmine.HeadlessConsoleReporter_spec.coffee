@@ -12,11 +12,11 @@ describe 'HeadlessReporterResult', ->
     expect(HeadlessReporterResult.findSpecLine([ 'name', 'of', 'test' ]).lineNumber).toEqual(3)
     expect(HeadlessReporterResult.findSpecLine([ 'other', 'of', 'test' ]).lineNumber).toEqual(10)
 
-describe 'jasmine.HeadlessReporter', ->
+describe 'jasmine.HeadlessConsoleReporter', ->
   reporter = null
 
   beforeEach ->
-    reporter = new jasmine.HeadlessReporter()
+    reporter = new jasmine.HeadlessConsoleReporter()
 
   it 'should stop running specs if there are errors reported', ->
     # otherwise it gets really confusing!

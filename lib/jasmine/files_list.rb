@@ -27,7 +27,7 @@ module Jasmine
       File.join(Jasmine::Core.path, "jasmine.js"),
       File.join(Jasmine::Core.path, "jasmine-html.js"),
       File.join(Jasmine::Core.path, "jasmine.css")
-    ] + %w{jasmine-extensions intense headless_reporter_result jasmine.headless-reporter jsDump beautify-html}.collect { |name|
+    ] + %w{jasmine-extensions intense headless_reporter_result jasmine.HeadlessConsoleReporter jsDump beautify-html}.collect { |name|
       Jasmine::Headless.root.join("vendor/assets/javascripts/#{name}.js").to_s
     }
 
