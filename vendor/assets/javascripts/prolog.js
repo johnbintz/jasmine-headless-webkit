@@ -37,9 +37,13 @@
       }
     };
     window.onbeforeunload = function(e) {
-      JHW.stderr.puts('The code tried to leave the test page. Check for unhandled form submits and link clicks.');
+      e = e || window.event;
       JHW.hasError();
-      return false;
+      JHW.stdout.puts('The code tried to leave the test page. Check for unhandled form submits and link clicks.');
+      if (e) {
+        e.returnValue = 'string';
+      }
+      return 'string';
     };
     window.confirm = function(message) {
       JHW.stderr.puts("" + ("[confirm]".foreground('red')) + " jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm. Returning true.");

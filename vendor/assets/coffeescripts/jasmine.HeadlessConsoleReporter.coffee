@@ -10,9 +10,6 @@ class jasmine.HeadlessConsoleReporter
   reportRunnerResults: (runner) ->
     return if this.hasError()
 
-    if window.JHW
-      window.onbeforeunload = null
-
     runtime = (new Date() - @startTime) / 1000.0
 
     JHW.stdout.print("\n")
@@ -23,11 +20,15 @@ class jasmine.HeadlessConsoleReporter
       JHW.stdout.puts("PASS: #{resultLine}".foreground('green'))
     else
       JHW.stdout.puts("FAIL: #{resultLine}".foreground('red'))
+      JHW.hasSpecFailure()
 
     output = "TOTAL||#{@length}||#{@failedCount}||#{runtime}||#{if JHW._hasErrors then "T" else "F"}"
 
     JHW.report.puts(output)
     result.print() for result in @results
+
+    if window.JHW
+      window.onbeforeunload = null
 
     JHW.finishSuite()
 
@@ -47,7 +48,6 @@ class jasmine.HeadlessConsoleReporter
     else
       JHW.stdout.print('F'.foreground('red'))
       JHW.report.puts("FAIL||" + spec.getJHWSpecInformation())
-      JHW.hasError()
 
       @failedCount++
       failureResult = new HeadlessReporterResult(spec.getFullName(), spec.getSpecSplitName())

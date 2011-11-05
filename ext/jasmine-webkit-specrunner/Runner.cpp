@@ -14,6 +14,7 @@ using namespace std;
 Runner::Runner() : QObject()
   , runs(0)
   , hasErrors(false)
+  , _hasSpecFailure(false)
   , usedConsole(false)
   , isFinished(false)
   , useColors(false)
@@ -99,6 +100,10 @@ void Runner::hasError() {
   hasErrors = true;
 }
 
+void Runner::hasSpecFailure() {
+  _hasSpecFailure = true;
+}
+
 void Runner::reportFile(const QString &file) {
   reportFileName = file;
 }
@@ -144,7 +149,7 @@ void Runner::timerEvent() {
     }
 
     int exitCode = 0;
-    if (hasErrors) {
+    if (_hasSpecFailure || hasErrors) {
       exitCode = 1;
     } else {
       if (usedConsole) {

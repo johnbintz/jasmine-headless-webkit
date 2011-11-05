@@ -29,6 +29,7 @@ class Runner: public QObject {
     void timerDone();
     void hasUsedConsole();
     void hasError();
+    void hasSpecFailure();
     void print(const QString &fh, const QString &content);
     void finishSuite();
 
@@ -43,6 +44,7 @@ class Runner: public QObject {
     QTimer ticker;
     int runs;
     bool hasErrors;
+    bool _hasSpecFailure;
     bool usedConsole;
     bool isFinished;
     bool useColors;

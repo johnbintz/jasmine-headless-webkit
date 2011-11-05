@@ -14,9 +14,6 @@
       if (this.hasError()) {
         return;
       }
-      if (window.JHW) {
-        window.onbeforeunload = null;
-      }
       runtime = (new Date() - this.startTime) / 1000.0;
       JHW.stdout.print("\n");
       resultLine = this._formatResultLine(runtime);
@@ -24,6 +21,7 @@
         JHW.stdout.puts(("PASS: " + resultLine).foreground('green'));
       } else {
         JHW.stdout.puts(("FAIL: " + resultLine).foreground('red'));
+        JHW.hasSpecFailure();
       }
       output = "TOTAL||" + this.length + "||" + this.failedCount + "||" + runtime + "||" + (JHW._hasErrors ? "T" : "F");
       JHW.report.puts(output);
@@ -31,6 +29,9 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         result = _ref[_i];
         result.print();
+      }
+      if (window.JHW) {
+        window.onbeforeunload = null;
       }
       return JHW.finishSuite();
     };
@@ -51,7 +52,6 @@
       } else {
         JHW.stdout.print('F'.foreground('red'));
         JHW.report.puts("FAIL||" + spec.getJHWSpecInformation());
-        JHW.hasError();
         this.failedCount++;
         failureResult = new HeadlessReporterResult(spec.getFullName(), spec.getSpecSplitName());
         testCount = 1;
