@@ -2,12 +2,6 @@ require 'rbconfig'
 require 'rubygems'
 require 'rubygems/version'
 
-begin
-  require 'facter'
-rescue LoadError
-  warn 'Including Facter allows for detection of # of cpus, resulting in faster compilations.'
-end
-
 module Qt
   class NotInstalledError < StandardError; end
   class Qmake
@@ -49,7 +43,7 @@ module Qt
       end
 
       def make_options
-        "-j#{number_of_cpus}"
+        ""
       end
 
       #
@@ -101,14 +95,6 @@ module Qt
             "#{env}=#{ENV[env]}"
           end
         end.compact.join(" ")
-      end
-
-      def number_of_cpus
-        if defined?(Facter)
-          Facter.sp_number_processors rescue Facter.processorcount
-        else
-          1
-        end
       end
 
       def get_exe_path(command)
