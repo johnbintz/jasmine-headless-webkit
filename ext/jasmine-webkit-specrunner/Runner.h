@@ -32,6 +32,7 @@ class Runner: public QObject {
     void hasSpecFailure();
     void print(const QString &fh, const QString &content);
     void finishSuite();
+    void ping();
 
   private slots:
     void watch(bool ok);

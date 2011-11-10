@@ -44,6 +44,7 @@
       if (this.hasError()) {
         return;
       }
+      JHW.ping();
       results = spec.results();
       this.length++;
       if (results.passed()) {

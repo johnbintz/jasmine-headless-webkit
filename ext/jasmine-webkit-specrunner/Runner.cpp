@@ -116,6 +116,10 @@ void Runner::timerDone() {
   ticker.start();
 }
 
+void Runner::ping() {
+  runs = 0;
+}
+
 void Runner::print(const QString &fh, const QString &content) {
   if (fh == "stdout") {
     std::cout << qPrintable(content);

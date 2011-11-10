@@ -38,6 +38,7 @@ class jasmine.HeadlessConsoleReporter
 
   reportSpecResults: (spec) ->
     return if this.hasError()
+    JHW.ping()
 
     results = spec.results()
 
