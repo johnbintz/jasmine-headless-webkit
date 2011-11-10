@@ -39,11 +39,7 @@ module Qt
 
         system command(project_file)
 
-        system %{make #{make_options}}
-      end
-
-      def make_options
-        ""
+        system %{make}
       end
 
       #

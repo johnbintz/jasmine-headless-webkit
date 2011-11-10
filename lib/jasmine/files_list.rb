@@ -6,14 +6,30 @@ module Jasmine
   class FilesList
     attr_reader :files, :spec_files, :filtered_files, :spec_outside_scope
 
+    class << self
+      def find_vendored_asset_paths(*names)
+        require 'rubygems'
+
+        raise StandardError.new("A newer version of Rubygems is required to use vendored assets. Please upgrade.") if !Gem::Specification.respond_to?(:map)
+        all_spec_files.find_all do |file|
+          names.any? { |name| file["/#{name}.js"] }
+        end
+      end
+
+      def all_spec_files
+        @all_spec_files ||= Gem::Specification.map { |spec| spec.files.find_all { |file|
+          file["vendor/assets/javascripts"]
+        }.compact.collect { |file| File.join(spec.gem_dir, file) } }.flatten
+      end
+    end
+
     DEFAULT_FILES = [
       File.join(Jasmine::Core.path, "jasmine.js"),
       File.join(Jasmine::Core.path, "jasmine-html.js"),
-      File.join(Jasmine::Core.path, "jasmine.css"),
-      Jasmine::Headless.root.join('jasmine/jasmine.headless-reporter.js').to_s,
-      Jasmine::Headless.root.join('js-lib/jsDump.js').to_s,
-      Jasmine::Headless.root.join('js-lib/beautify-html.js').to_s
-    ]
+      File.join(Jasmine::Core.path, "jasmine.css")
+    ] + %w{jasmine-extensions intense headless_reporter_result jasmine.HeadlessConsoleReporter jsDump beautify-html}.collect { |name|
+      Jasmine::Headless.root.join("vendor/assets/javascripts/#{name}.js").to_s
+    }
 
     PLEASE_WAIT_IM_WORKING_TIME = 2
 
@@ -72,13 +88,10 @@ module Jasmine
             cache = Jasmine::Headless::CoffeeScriptCache.new(file)
             source = cache.handle
             if cache.cached?
-              %{
-                <script type="text/javascript" src="#{cache.cache_file}"></script>S
+              %{<script type="text/javascript" src="#{cache.cache_file}"></script>
                 <script type="text/javascript">
-                  window.CoffeeScriptToFilename = window.CoffeeScriptToFilename || {};
-                  window.CoffeeScriptToFilename['#{File.split(cache.cache_file).last}'] = '#{file}';
-                </script>
-              }
+                  window.CSTF['#{File.split(cache.cache_file).last}'] = '#{file}';
+                </script>}
             else
               %{<script type="text/javascript">#{source}</script>}
             end
@@ -157,19 +170,6 @@ module Jasmine
 
     def expanded_dir(path)
       Dir[path].collect { |file| File.expand_path(file) }
-    end
-
-    def self.find_vendored_asset_path(name)
-      require 'rubygems'
-
-      raise StandardError.new("A newer version of Rubygems is required to use vendored assets. Please upgrade.") if !Gem::Specification.respond_to?(:map)
-      all_spec_files.find_all { |file| file["vendor/assets/javascripts/#{name}.js"] }
-    end
-
-    def self.all_spec_files
-      @all_spec_files ||= Gem::Specification.map { |spec| spec.files.find_all { |file|
-        file["vendor/assets/javascripts"]
-      }.compact.collect { |file| File.join(spec.gem_dir, file) } }.flatten
     end
   end
 end

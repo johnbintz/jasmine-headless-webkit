@@ -138,11 +138,5 @@ describe Qt::Qmake do
       end
     end
   end
-
-  describe '.make_options' do
-    subject { Qt::Qmake.make_options }
-
-    it { should == "" }
-  end
 end
 

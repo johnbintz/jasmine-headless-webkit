@@ -16,7 +16,7 @@ module Jasmine::Headless
 
   class << self
     def root
-      @root ||= Pathname.new(File.expand_path('../../..', __FILE__))
+      @root ||= Pathname(File.expand_path('../../..', __FILE__))
     end
   end
 end

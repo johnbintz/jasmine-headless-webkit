@@ -10,57 +10,53 @@
 #include <QQueue>
 
 #include "Page.h"
-#include "ConsoleOutput.h"
-#include "ReportFileOutput.h"
 
 using namespace std;
 
 class Runner: public QObject {
   Q_OBJECT
   public:
-    enum { TIMER_TICK = 200, MAX_LOOPS = 25 };
+    enum { TIMER_TICK = 200, MAX_LOOPS = 50 };
 
     Runner();
     void setColors(bool colors);
     void reportFile(const QString &file);
     void addFile(const QString &spec);
     void go();
-    public slots:
-      void log(const QString &msg);
-    bool hasError();
-    void leavePageAttempt(const QString &msg);
+
+  public slots:
     void timerPause();
     void timerDone();
-    void specPassed(const QString &specDetail);
-    void specFailed(const QString &specDetail);
-    void printName(const QString &name);
-    void printResult(const QString &result);
-    void finishSuite(const QString &duration, const QString &total, const QString& failed);
-    private slots:
-      void watch(bool ok);
-    void errorLog(const QString &msg, int lineNumber, const QString &sourceID);
-    void internalLog(const QString &note, const QString &msg);
+    void hasUsedConsole();
+    void hasError();
+    void hasSpecFailure();
+    void print(const QString &fh, const QString &content);
+    void finishSuite();
+
+  private slots:
+    void watch(bool ok);
     void addJHW();
     void timerEvent();
-  protected:
-    bool hasElement(const char *select);
+    void handleError(const QString & message, int lineNumber, const QString & sourceID);
+
   private:
-    Page m_page;
-    QTimer m_ticker;
-    int m_runs;
+    Page page;
+    QTimer ticker;
+    int runs;
     bool hasErrors;
+    bool _hasSpecFailure;
     bool usedConsole;
     bool isFinished;
-    bool didFail;
-    QQueue<QString> runnerFiles;
-    QStack<QString> failedSpecs;
+    bool useColors;
 
-    ConsoleOutput consoleOutput;
-    ReportFileOutput reportFileOutput;
+    QQueue<QString> runnerFiles;
 
     QString reportFileName;
 
     void loadSpec();
+
+    QFile *outputFile;
+    QTextStream *ts;
 };
 
 #endif

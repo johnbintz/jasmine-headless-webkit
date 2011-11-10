@@ -21,7 +21,6 @@
    THE SOFTWARE.
    */
 
-#include "Page.h"
 #include "Runner.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(4, 7, 0)

@@ -18,7 +18,6 @@ begin
     files_list = Jasmine::FilesList.new(:config => runner.jasmine_config)
     files_list.files.each { |file| puts file }
   else
-    puts "Running Jasmine specs...".color(:white)
     exit runner.run
   end
 rescue CoffeeScript::CompilationError
