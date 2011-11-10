@@ -27,6 +27,10 @@
       }
       return parts.join("||");
     };
+    jasmine.Spec.prototype.finishCallback = function() {
+      JHW.ping();
+      return this.env.reporter.reportSpecResults(this);
+    };
     jasmine.Spec.prototype.fail = function(e) {
       var expectationResult, filename, realFilename;
       if (e && e.sourceURL && window.CoffeeScriptToFilename) {

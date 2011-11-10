@@ -25,6 +25,10 @@ if window.JHW
       parts.push('')
     parts.join("||")
 
+  jasmine.Spec.prototype.finishCallback = ->
+    JHW.ping()
+    this.env.reporter.reportSpecResults(this)
+
   jasmine.Spec.prototype.fail = (e) ->
     if e and e.sourceURL and window.CoffeeScriptToFilename
       filename = e.sourceURL.split('/').pop()
