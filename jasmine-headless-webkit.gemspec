@@ -24,4 +24,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'coffee-script', '>= 2.2'
   s.add_dependency 'rainbow'
   s.add_dependency 'multi_json'
+  s.add_dependency 'sprockets', '~> 2.0'
 end

@@ -1,21 +1,23 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
-require 'rainbow'
 
 def gem_dir
   File.expand_path('../..', __FILE__)
 end
 
 $:.unshift(File.join(gem_dir, 'lib'))
+
 require 'jasmine-headless-webkit'
+require 'coffee-script'
+require 'rainbow'
 
 begin
   options = Jasmine::Headless::Options.from_command_line
   runner = Jasmine::Headless::Runner.new(options)
 
   if options[:do_list]
-    files_list = Jasmine::FilesList.new(:config => runner.jasmine_config)
+    files_list = Jasmine::Headless::FilesList.new(:config => runner.jasmine_config)
     files_list.files.each { |file| puts file }
   else
     exit runner.run

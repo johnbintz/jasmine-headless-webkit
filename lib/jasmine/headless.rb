@@ -8,6 +8,8 @@ module Jasmine::Headless
   autoload :Runner, 'jasmine/headless/runner'
   autoload :Options, 'jasmine/headless/options'
   autoload :Task, 'jasmine/headless/task'
+  autoload :FilesList, 'jasmine/headless/files_list'
+  autoload :TestFile, 'jasmine/headless/test_file'
 
   autoload :TemplateWriter, 'jasmine/headless/template_writer'
 

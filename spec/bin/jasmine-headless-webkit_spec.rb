@@ -138,5 +138,21 @@ describe "jasmine-headless-webkit" do
       File.size(runner_path.path).should_not == 0
     end
   end
+
+  describe 'sprockets' do
+    it 'should pull in the code via sprockets' do
+      files = %x{bin/jasmine-headless-webkit -l -j spec/jasmine/with_sprockets_includes/with_sprockets_includes.yml}
+      $?.exitstatus.should == 0
+
+      puts files
+
+      files.lines.to_a.should include('vendor/assets/javascripts/jquery.js')
+      files.lines.to_a.should include('assets/code.js')
+      files.lines.to_a.should include('assets/required.js')
+      files.lines.to_a.should include('assets/subcode/more_code.js')
+      files.lines.to_a.should include('spec/spec_helper.js')
+      files.lines.to_a.should include('spec/code_spec.js')
+    end
+  end
 end
 

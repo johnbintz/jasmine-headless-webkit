@@ -1,11 +1,10 @@
 # encoding: UTF-8
 
 require 'spec_helper'
-require 'jasmine/files_list'
 require 'fakefs/spec_helpers'
 require 'coffee-script'
 
-describe Jasmine::FilesList do
+describe Jasmine::Headless::FilesList do
   let(:files_list) { described_class.new }
 
   describe '#initialize' do
@@ -47,7 +46,7 @@ describe Jasmine::FilesList do
 
     shared_examples_for :reading_data do
       it 'should read the data from the jasmine.yml file and add the files' do
-        files_list.files.should == Jasmine::FilesList::DEFAULT_FILES + [
+        files_list.files.should == Jasmine::Headless::FilesList::DEFAULT_FILES + [
           File.expand_path(first_file),
           File.expand_path(src_file),
           File.expand_path(stylesheet_file),
@@ -114,7 +113,7 @@ describe Jasmine::FilesList do
   end
 
   context 'with filtered specs' do
-    let(:files_list) { Jasmine::FilesList.new(:only => filter, :config => config) }
+    let(:files_list) { Jasmine::Headless::FilesList.new(:only => filter, :config => config) }
     let(:spec_dir) { 'spec' }
 
     include FakeFS::SpecHelpers

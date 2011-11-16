@@ -2,7 +2,7 @@ require 'jasmine-core'
 require 'time'
 require 'multi_json'
 
-module Jasmine
+module Jasmine::Headless
   class FilesList
     attr_reader :files, :spec_files, :filtered_files, :spec_outside_scope
 
@@ -60,7 +60,7 @@ module Jasmine
 
     def spec_file_line_numbers
       @spec_file_line_numbers ||= Hash[@spec_files.collect { |file|
-        if File.exist?(file)
+        if ::File.exist?(file)
           if !(lines = Jasmine::Headless::SpecFileAnalyzer.for(file)).empty?
             [ file, lines ]
           end
@@ -81,6 +81,8 @@ module Jasmine
         end
 
         source = nil
+
+        next file.to_html
 
         result = case File.extname(file)
         when '.coffee'
@@ -162,6 +164,9 @@ module Jasmine
           end
         end
       end
+
+      @files.collect! { |file| Jasmine::Headless::TestFile.new(file) }
+      @filtered_files.collect! { |file| Jasmine::Headless::TestFile.new(file) }
     end
 
     def config?
