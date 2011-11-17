@@ -1,10 +1,12 @@
 require 'jasmine-core'
 require 'time'
 require 'multi_json'
+require 'set'
+require 'sprockets/directive_processor'
 
 module Jasmine::Headless
   class FilesList
-    attr_reader :files, :spec_files, :filtered_files, :spec_outside_scope
+    attr_reader :spec_outside_scope
 
     class << self
       def find_vendored_asset_paths(*names)
@@ -23,23 +25,33 @@ module Jasmine::Headless
       end
     end
 
-    DEFAULT_FILES = [
-      File.join(Jasmine::Core.path, "jasmine.js"),
-      File.join(Jasmine::Core.path, "jasmine-html.js"),
-      File.join(Jasmine::Core.path, "jasmine.css")
-    ] + %w{jasmine-extensions intense headless_reporter_result jasmine.HeadlessConsoleReporter jsDump beautify-html}.collect { |name|
-      Jasmine::Headless.root.join("vendor/assets/javascripts/#{name}.js").to_s
-    }
+    DEFAULT_FILES = 
+      %w{jasmine.js jasmine-html.js jasmine.css}.collect { |name| File.join(Jasmine::Core.path, name) } +
+      %w{jasmine-extensions intense headless_reporter_result jasmine.HeadlessConsoleReporter jsDump beautify-html}.collect { |name|
+        Jasmine::Headless.root.join("vendor/assets/javascripts/#{name}.js").to_s
+      }
 
     PLEASE_WAIT_IM_WORKING_TIME = 2
 
     def initialize(options = {})
       @options = options
-      @files = DEFAULT_FILES.dup
+      @files = Set.new(DEFAULT_FILES.dup)
       @filtered_files = @files.dup
       @spec_outside_scope = false
-      @spec_files = []
+      @spec_files = Set.new
       use_config! if config?
+    end
+
+    def files
+      @files.to_a
+    end
+
+    def filtered_files
+      @filtered_files.to_a
+    end
+
+    def spec_files
+      @spec_files.to_a
     end
 
     def has_spec_outside_scope?
@@ -60,7 +72,7 @@ module Jasmine::Headless
 
     def spec_file_line_numbers
       @spec_file_line_numbers ||= Hash[@spec_files.collect { |file|
-        if ::File.exist?(file)
+        if File.exist?(file)
           if !(lines = Jasmine::Headless::SpecFileAnalyzer.for(file)).empty?
             [ file, lines ]
           end
@@ -68,6 +80,18 @@ module Jasmine::Headless
           nil
         end
       }.compact]
+    end
+
+    def add_dependencies(file)
+      if File.file?(file)
+        processor = Sprockets::DirectiveProcessor.new(file)
+        processor.directives.each do |line, type, name|
+          case type
+          when 'require'
+            find_vendored(name)
+          end
+        end
+      end
     end
 
     private
@@ -80,37 +104,7 @@ module Jasmine::Headless
           alert_time = nil
         end
 
-        source = nil
-
-        next file.to_html
-
-        result = case File.extname(file)
-        when '.coffee'
-          begin
-            cache = Jasmine::Headless::CoffeeScriptCache.new(file)
-            source = cache.handle
-            if cache.cached?
-              %{<script type="text/javascript" src="#{cache.cache_file}"></script>
-                <script type="text/javascript">
-                  window.CSTF['#{File.split(cache.cache_file).last}'] = '#{file}';
-                </script>}
-            else
-              %{<script type="text/javascript">#{source}</script>}
-            end
-          rescue CoffeeScript::CompilationError => ne
-            puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), file.color(:yellow), ne.message.to_s.color(:white) ]
-            raise ne
-          rescue StandardError => e
-            puts "[%s] Error in compiling one of the followng: %s" % [ 'coffeescript'.color(:red), files.join(' ').color(:yellow) ]
-            raise e
-          end
-        when '.js'
-          %{<script type="text/javascript" src="#{file}"></script>}
-        when '.css'
-          %{<link rel="stylesheet" href="#{file}" type="text/css" />}
-        end
-
-        result
+        Jasmine::Headless::TestFile.new(file).to_html
       }.flatten.compact.reject(&:empty?)
     end
 
@@ -126,47 +120,53 @@ module Jasmine::Headless
                      end
     end
 
+    SEARCH_ROOTS = {
+      'src_files' => 'src_dir',
+      'stylesheets' => 'src_dir',
+      'helpers' => 'spec_dir',
+      'spec_files' => 'spec_dir'
+    }
+
     def use_config!
       @filtered_files = @files.dup
 
-      data = @options[:config].dup
-      [ [ 'src_files', 'src_dir' ], [ 'stylesheets', 'src_dir' ], [ 'vendored_helpers' ], [ 'helpers', 'spec_dir' ], [ 'spec_files', 'spec_dir' ] ].each do |searches, root|
-        if data[searches]
-          case searches
-          when 'vendored_helpers'
-            data[searches].each do |name|
-              found_files = self.class.find_vendored_asset_path(name)
+      @config = @options[:config].dup
 
-              @files += found_files
-              @filtered_files += found_files
-            end
+      %w{src_files stylesheets vendored_helpers helpers spec_files}.each do |searches|
+        if data = @config[searches]
+          if self.respond_to?("add_#{searches}_files", true)
+            send("add_#{searches}_files", data.flatten)
           else
-            data[searches].flatten.collect do |search|
-              path = search
-              path = File.join(data[root], path) if data[root]
-              found_files = expanded_dir(path) - @files
-
-              @files += found_files
-
-              if searches == 'spec_files'
-                @spec_files += spec_filter.empty? ? found_files : (found_files & spec_filter)
-              end
-
-              @filtered_files += begin
-                                    if searches == 'spec_files'
-                                      @spec_outside_scope = ((spec_filter | found_files).sort != found_files.sort)
-                                      spec_filter.empty? ? found_files : (spec_filter || found_files)
-                                    else
-                                      found_files
-                                    end
-                                  end
-            end
+            add_files(data.flatten, searches)
           end
         end
       end
+    end
 
-      @files.collect! { |file| Jasmine::Headless::TestFile.new(file) }
-      @filtered_files.collect! { |file| Jasmine::Headless::TestFile.new(file) }
+    def add_vendored_helpers_files(searches)
+      searches.each do |name|
+        self.class.find_vendored_asset_path(name).each do |file|
+          add_file(file)
+        end
+      end
+    end
+
+    def add_files(searches, type)
+      searches.each do |search|
+        path = search
+        path = File.join(@config[SEARCH_ROOTS[type]], path) if @config[SEARCH_ROOTS[type]]
+        found_files = expanded_dir(path) - files
+
+        found_files.each do |file|
+          type == 'spec_files' ? add_spec_file(file) : add_file(file)
+        end
+      end
+
+      if type == 'spec_files'
+        spec_filter.each do |file|
+          @spec_outside_scope ||= add_spec_file(file)
+        end
+      end
     end
 
     def config?
@@ -176,6 +176,33 @@ module Jasmine::Headless
     def expanded_dir(path)
       Dir[path].collect { |file| File.expand_path(file) }
     end
+
+    def add_file(file)
+      add_dependencies(file)
+
+      @files << file
+      @filtered_files << file
+    end
+
+    def add_spec_file(file)
+      add_dependencies(file)
+
+      if !@files.include?(file)
+        @files << file
+
+        if include_spec_file?(file)
+          @filtered_files << file
+          @spec_files << file if spec_filter.empty? || spec_filter.include?(file)
+        end
+
+        true
+      end
+    end
+
+    def include_spec_file?(file)
+      spec_filter.empty? || spec_filter.include?(file)
+    end
+
   end
 end
 

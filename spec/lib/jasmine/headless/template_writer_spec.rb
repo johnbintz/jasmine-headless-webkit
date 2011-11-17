@@ -53,7 +53,7 @@ describe Jasmine::Headless::TemplateWriter do
       runner.stubs(:runner_filename).returns(false)
     end
 
-    let(:files_list) { Jasmine::FilesList.new }
+    let(:files_list) { Jasmine::Headless::FilesList.new }
 
     before do
       files_list.files << 'file.js'
@@ -70,7 +70,7 @@ describe Jasmine::Headless::TemplateWriter do
 
     context 'filtered files' do
       before do
-        files_list.files << 'file2.js'
+        files_list.instance_variable_get(:@files) << 'file2.js'
       end
 
       it 'should write two files' do

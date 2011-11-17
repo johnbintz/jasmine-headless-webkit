@@ -45,14 +45,18 @@ describe Jasmine::Headless::FilesList do
     end
 
     shared_examples_for :reading_data do
-      it 'should read the data from the jasmine.yml file and add the files' do
-        files_list.files.should == Jasmine::Headless::FilesList::DEFAULT_FILES + [
+      let(:expected_files) do
+        Jasmine::Headless::FilesList::DEFAULT_FILES + [
           File.expand_path(first_file),
           File.expand_path(src_file),
           File.expand_path(stylesheet_file),
           File.expand_path(helper_file),
           File.expand_path(spec_file)
         ]
+      end
+
+      it 'should read the data from the jasmine.yml file and add the files' do
+        files_list.files.should == expected_files
 
         files_list.spec_files.should == [ File.expand_path(spec_file) ]
       end
@@ -241,6 +245,50 @@ describe Jasmine::Headless::FilesList do
       files_list.spec_file_line_numbers.should == {
         'test.coffee' => { 'cat' => [ 1, 2 ] }
       }
+    end
+  end
+
+  describe '#add_dependencies' do
+    include FakeFS::SpecHelpers
+
+    let(:file) { 'file.js' }
+
+    before do
+      File.open(file, 'wb') { |fh| fh.print data }
+    end
+
+    subject { files_list.add_dependencies(file) }
+
+    context 'no requires' do
+      let(:data) { 'javascript' }
+
+      before do
+        files_list.expects(:add_file).never
+      end
+
+      it 'should succeed' do
+        subject
+      end
+    end
+
+    context 'require' do
+      let(:data) { %{//= require 'other'\njavascript} }
+
+      before do
+        File.open(other, 'wb')
+      end
+
+      context 'with js' do
+        let(:other) { 'other.js' }
+
+        before do
+          files_list.expects(:add_file).with(other)
+        end
+
+        it 'should succeed' do
+          subject
+        end
+      end
     end
   end
 end
