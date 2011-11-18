@@ -6,7 +6,7 @@ RSpec.configure do |c|
   
   c.before(:each) do
     Jasmine::Headless::CacheableAction.enabled = false
-    Jasmine::Headless::FilesList.instance_variable_set(:@vendor_asset_paths, nil)
+    Jasmine::Headless::FilesList.reset!
   end
 end
 
@@ -66,6 +66,10 @@ module RSpec::Matchers
       end
 
       file_list.length == 0
+    end
+
+    failure_message_for_should do |lines|
+      %{expected\n#{lines.join("\n")}\nto contain the following files, in order:\n#{files.join("\n")}}
     end
   end
 end

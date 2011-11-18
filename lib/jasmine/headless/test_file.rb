@@ -46,7 +46,7 @@ module Jasmine::Headless
 
       processor = Sprockets::DirectiveProcessor.new(path)
       @dependencies = processor.directives.collect do |_, type, name|
-        if name[%r{^./}]
+        if name[%r{^\.}]
           name = File.expand_path(File.join(File.dirname(path), name)).gsub(%r{^#{source_root}/}, '')
         end
 

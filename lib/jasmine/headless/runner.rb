@@ -66,6 +66,8 @@ module Jasmine
       def run
         Jasmine::Headless::CacheableAction.enabled = @options[:enable_cache]
 
+        Jasmine::Headless::FilesList.reset!
+
         files_list = Jasmine::Headless::FilesList.new(
           :config => jasmine_config,
           :only => @options[:files]

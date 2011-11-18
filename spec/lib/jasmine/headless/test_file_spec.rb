@@ -99,5 +99,15 @@ describe Jasmine::Headless::TestFile do
 
       it { should == [ [ 'require', 'subdir/subsubdir/test' ] ] }
     end
+
+    context 'dot' do
+      let(:path) { File.join(source_root, 'subdir/subsubdir/path.js') }
+
+      let(:req) { '.' }
+
+      subject { file.dependencies }
+
+      it { should == [ [ 'require', 'subdir/subsubdir' ] ] }
+    end
   end
 end

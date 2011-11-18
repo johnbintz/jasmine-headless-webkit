@@ -237,7 +237,7 @@ describe Jasmine::Headless::FilesList do
       end
 
       it 'should do nothing' do
-        files_list.add_dependency('', other_file)
+        files_list.add_dependency('', other_file, nil)
       end
     end
 
@@ -247,7 +247,29 @@ describe Jasmine::Headless::FilesList do
       end
 
       it 'should add the file to the front' do
-        files_list.add_dependency('require', file)
+        files_list.add_dependency('require', file, nil)
+      end
+    end
+
+    context 'require_tree' do
+      include FakeFS::SpecHelpers
+
+      let(:paths) { %w{one.js dir/two.coffee dir/three.css dir/subdir/four.js.erb other/five.css.erb} }
+
+      before do
+        paths.each do |path|
+          FileUtils.mkdir_p File.dirname(path)
+          File.open(path, 'wb')
+
+          if path[%r{\.(js|css|coffee)$}]
+            files_list.expects(:find_dependency).with(path).returns(other_file)
+            files_list.expects(:add_file).with(other_file, nil)
+          end
+        end
+      end
+
+      it 'should add the file to the front' do
+        files_list.add_dependency('require_tree', '.', File.expand_path('.'))
       end
     end
   end

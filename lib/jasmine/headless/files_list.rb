@@ -20,6 +20,10 @@ module Jasmine::Headless
           File.directory?(path) ? path : nil
         }.compact
       end
+
+      def reset!
+        @vendor_asset_paths = nil
+      end
     end
 
     DEFAULT_FILES = %w{jasmine.js jasmine-html jasmine.css jasmine-extensions intense headless_reporter_result jasmine.HeadlessConsoleReporter jsDump beautify-html}
@@ -32,7 +36,7 @@ module Jasmine::Headless
       @files = []
       @filtered_files = []
 
-      DEFAULT_FILES.each { |file| add_dependency('require', file) }
+      DEFAULT_FILES.each { |file| add_dependency('require', file, nil) }
 
       @spec_outside_scope = false
       @spec_files = []
@@ -85,16 +89,20 @@ module Jasmine::Headless
     end
 
     def add_dependencies(file, source_root)
-      TestFile.new(file, source_root).dependencies.each { |type, name| add_dependency(type, name) }
+      TestFile.new(file, source_root).dependencies.each { |type, name| add_dependency(type, name, source_root) }
     end
 
-    def add_dependency(type, file)
-      if result = find_dependency(file)
-        path, source_root = result
-
-        case type
-        when 'require'
-          add_file(path, source_root)
+    def add_dependency(type, file, source_root)
+      case type
+      when 'require'
+        if result = find_dependency(file)
+          add_file(*result)
+        end
+      when 'require_tree'
+        Dir[File.join(source_root, file, '**/*.{js,css,coffee}')].each do |tree_path|
+          if result = find_dependency(tree_path.gsub(%r{^#{source_root}/}, ''))
+            add_file(*result)
+          end
         end
       end
     end
@@ -103,11 +111,11 @@ module Jasmine::Headless
       search_paths.each do |dir|
         if file[%r{\.(js|css|coffee)$}]
           if File.file?(path = File.join(dir, file))
-            return [ File.expand_path(path), dir ]
+            return [ File.expand_path(path), File.expand_path(dir) ]
           end
         else
           if path = Dir[File.join(dir, "#{file}.*")].first
-            return [ File.expand_path(path), dir ]
+            return [ File.expand_path(path), File.expand_path(dir) ]
           end
         end
       end
@@ -163,6 +171,7 @@ module Jasmine::Headless
     def add_files(searches, type)
       searches.each do |search|
         dir = @config[SEARCH_ROOTS[type]] || Dir.pwd
+        dir = File.expand_path(dir)
 
         path = File.expand_path(File.join(dir, search))
 
