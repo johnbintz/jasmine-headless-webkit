@@ -146,6 +146,8 @@ describe "jasmine-headless-webkit" do
 
       files.lines.to_a.should contain_in_order_in_file_list(
         'vendor/assets/javascripts/jquery.js',
+        'templates/that.jst.ejs',
+        'templates/this.jst',
         'assets/things/required.js',
         'assets/things/code.js',
         'assets/things/subcode/more_code.js',

@@ -72,6 +72,38 @@ describe Jasmine::Headless::TestFile do
         end
       end
     end
+
+    context '.jst' do
+      include FakeFS::SpecHelpers
+
+      let(:path) { 'file.jst' }
+      let(:content) { 'content' }
+
+      before do
+        File.open(path, 'wb') { |fh| fh.print content }
+      end
+
+      it 'should use the JST template processor to get the processed file' do
+        subject.should include('JST["file"]')
+        subject.should include(content)
+      end
+    end
+
+    context '.jst.*' do
+      include FakeFS::SpecHelpers
+
+      let(:path) { 'file.jst.ejs' }
+      let(:content) { 'content' }
+
+      before do
+        File.open(path, 'wb') { |fh| fh.print content }
+      end
+
+      it 'should use the JST template processor to get the processed file' do
+        subject.should include('JST["file"]')
+        subject.should include(content)
+      end
+    end
   end
 
   describe '#dependencies' do

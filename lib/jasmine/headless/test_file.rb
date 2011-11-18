@@ -1,5 +1,12 @@
 require 'rainbow'
-require 'sprockets/directive_processor'
+require 'sprockets'
+
+%w{haml-sprockets}.each do |library|
+  begin
+    require library
+  rescue LoadError
+  end
+end
 
 module Jasmine::Headless
   class TestFile
@@ -38,6 +45,13 @@ module Jasmine::Headless
         %{<script type="text/javascript" src="#{path}"></script>}
       when '.css'
         %{<link rel="stylesheet" href="#{path}" type="text/css" />}
+      when '.jst'
+        to_jst(read)
+      else
+        case path
+        when %r{\.jst(\..*)$}
+          to_jst(Sprockets.engines($1).new { read }.evaluate(self, {}))
+        end
       end
     end
 
@@ -52,6 +66,19 @@ module Jasmine::Headless
 
         [ type, name ]
       end
+    end
+
+    def logical_path
+      path.gsub(%r{^#{source_root}/}, '').gsub(%r{\..+$}, '')
+    end
+
+    private
+    def to_jst(data)
+      %{<script type="text/javascript">#{Sprockets.engines('.jst').new { data }.evaluate(self, {})}</script>}
+    end
+
+    def read
+      File.read(path)
     end
   end
 end

@@ -161,46 +161,6 @@ describe Jasmine::Headless::FilesList do
     end
   end
 
-  describe '#.*files_to_html' do
-    include FakeFS::SpecHelpers
-
-    before do
-      files_list.instance_variable_set(:@files, [
-                                       'test.js',
-                                       'test.coffee',
-                                       'test.whatever',
-                                       'test.css'
-      ])
-
-      files_list.instance_variable_set(:@filtered_files, [
-                                       'test.js',
-                                       'test.coffee'
-      ])
-
-      File.stubs(:read)
-      Jasmine::Headless::CoffeeScriptCache.any_instance.stubs(:handle).returns("i compiled")
-    end
-
-    context '#files_to_html' do
-      it "should create the right HTML" do
-        files_list.files_to_html.should == [
-          %{<script type="text/javascript" src="test.js"></script>},
-          %{<script type="text/javascript">i compiled</script>},
-          %{<link rel="stylesheet" href="test.css" type="text/css" />}
-        ]
-      end
-    end
-
-    context '#filtered_files_to_html' do
-      it "should create the right HTML" do
-        files_list.filtered_files_to_html.should == [
-          %{<script type="text/javascript" src="test.js"></script>},
-          %{<script type="text/javascript">i compiled</script>}
-        ]
-      end
-    end
-  end
-
   describe '#spec_file_line_numbers' do
     include FakeFS::SpecHelpers
 
@@ -292,7 +252,7 @@ describe Jasmine::Headless::FilesList do
       end
 
       it 'should take the src dir and spec dirs' do
-        files_list.search_paths.should == [ Jasmine::Core.path, src_dir, spec_dir ]
+        files_list.search_paths.should == [ Jasmine::Core.path, File.expand_path(src_dir), File.expand_path(spec_dir) ]
       end
     end
 
@@ -302,7 +262,7 @@ describe Jasmine::Headless::FilesList do
       end
 
       it 'should add the vendor gem paths to the list' do
-        files_list.search_paths.should == [ Jasmine::Core.path, src_dir, spec_dir, path ]
+        files_list.search_paths.should == [ Jasmine::Core.path, File.expand_path(src_dir), File.expand_path(spec_dir), path ]
       end
     end
   end

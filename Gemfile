@@ -16,4 +16,4 @@ gem 'guard-jasmine-headless-webkit', :git => 'git://github.com/johnbintz/guard-j
 gem 'facter'
 
 gem 'jquery-rails'
-
+gem 'ejs'

@@ -57,7 +57,7 @@ module Jasmine::Headless
     end
 
     def search_paths
-      @search_paths ||= [ Jasmine::Core.path, src_dir, spec_dir ] + self.class.vendor_asset_paths
+      @search_paths ||= [ Jasmine::Core.path, File.expand_path(src_dir), File.expand_path(spec_dir) ] + self.class.vendor_asset_paths
     end
 
     def has_spec_outside_scope?
@@ -92,6 +92,8 @@ module Jasmine::Headless
       TestFile.new(file, source_root).dependencies.each { |type, name| add_dependency(type, name, source_root) }
     end
 
+    EXTENSION_FILTER = %r{\.(js|css|coffee|jst.*)$}
+
     def add_dependency(type, file, source_root)
       case type
       when 'require'
@@ -99,7 +101,7 @@ module Jasmine::Headless
           add_file(*result)
         end
       when 'require_tree'
-        Dir[File.join(source_root, file, '**/*.{js,css,coffee}')].each do |tree_path|
+        Dir[File.join(source_root, file, '**/*')].find_all { |path| File.file?(path) && path[EXTENSION_FILTER] }.sort.each do |tree_path|
           if result = find_dependency(tree_path.gsub(%r{^#{source_root}/}, ''))
             add_file(*result)
           end
@@ -109,7 +111,7 @@ module Jasmine::Headless
 
     def find_dependency(file)
       search_paths.each do |dir|
-        if file[%r{\.(js|css|coffee)$}]
+        if file[EXTENSION_FILTER]
           if File.file?(path = File.join(dir, file))
             return [ File.expand_path(path), File.expand_path(dir) ]
           end
@@ -133,7 +135,11 @@ module Jasmine::Headless
           alert_time = nil
         end
 
-        Jasmine::Headless::TestFile.new(file).to_html
+        search_paths.collect do |path|
+          if file[path]
+            Jasmine::Headless::TestFile.new(file, path).to_html
+          end
+        end.compact.first
       }.flatten.compact.reject(&:empty?)
     end
 
@@ -194,7 +200,7 @@ module Jasmine::Headless
     end
 
     def expanded_dir(path)
-      Dir[path].collect { |file| File.expand_path(file) }
+      Dir[path].collect { |file| File.expand_path(file) }.find_all { |path| File.file?(path) && path[EXTENSION_FILTER] }
     end
 
     def add_file(file, source_root)

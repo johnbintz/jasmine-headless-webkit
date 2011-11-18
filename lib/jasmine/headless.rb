@@ -1,4 +1,5 @@
 require 'pathname'
+require 'sprockets/engines'
 
 module Jasmine::Headless
   autoload :CoffeeScriptCache, 'jasmine/headless/coffee_script_cache'
@@ -24,3 +25,4 @@ module Jasmine::Headless
 end
 
 require 'jasmine/headless/errors'
+Sprockets::Engines
