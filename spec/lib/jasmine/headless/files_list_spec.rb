@@ -46,7 +46,7 @@ describe Jasmine::Headless::FilesList do
 
     shared_examples_for :reading_data do
       let(:expected_files) do
-        Jasmine::Headless::FilesList::DEFAULT_FILES + [
+        [
           File.expand_path(first_file),
           File.expand_path(src_file),
           File.expand_path(stylesheet_file),
@@ -86,33 +86,6 @@ describe Jasmine::Headless::FilesList do
       } }
 
       it_should_behave_like :reading_data
-    end
-
-    context 'with vendored helpers' do
-      let(:config) { {
-        'src_dir' => src_dir,
-        'spec_dir' => spec_dir,
-        'src_files' => [ 'js/first_file.js', 'js/*.js' ],
-        'spec_files' => [ '*_spec.js' ],
-        'helpers' => [],
-        'stylesheets' => [ 'stylesheet/*.css' ],
-        'vendored_helpers' => [ 'one', 'two' ]
-      } }
-
-      let(:helper_file) { "path/one.js" }
-      let(:other_helper_file) { "path/two.js" }
-
-      before do
-        described_class.expects(:find_vendored_asset_path).with('one').returns([ helper_file ])
-        described_class.expects(:find_vendored_asset_path).with('two').returns([ other_helper_file ])
-      end
-
-      it 'should find the vendored file' do
-        files_list.files.should include(helper_file)
-        files_list.files.should include(other_helper_file)
-
-        files_list.files.index(helper_file).should be < files_list.files.index(other_helper_file)
-      end
     end
   end
 
@@ -248,46 +221,120 @@ describe Jasmine::Headless::FilesList do
     end
   end
 
-  describe '#add_dependencies' do
-    include FakeFS::SpecHelpers
-
-    let(:file) { 'file.js' }
+  describe '#add_dependency' do
+    let(:file) { 'file' }
+    let(:other_file) { 'other' }
+    let(:path) { 'path' }
 
     before do
-      File.open(file, 'wb') { |fh| fh.print data }
+      files_list.stubs(:find_dependency).with(file).returns(path)
+      files_list.stubs(:find_dependency).with(other_file).returns(false)
     end
 
-    subject { files_list.add_dependencies(file) }
-
-    context 'no requires' do
-      let(:data) { 'javascript' }
-
+    context 'not found' do
       before do
         files_list.expects(:add_file).never
       end
 
-      it 'should succeed' do
-        subject
+      it 'should do nothing' do
+        files_list.add_dependency('', other_file)
       end
     end
 
     context 'require' do
-      let(:data) { %{//= require 'other'\njavascript} }
-
       before do
-        File.open(other, 'wb')
+        files_list.expects(:add_file).with(path, nil)
       end
 
-      context 'with js' do
-        let(:other) { 'other.js' }
+      it 'should add the file to the front' do
+        files_list.add_dependency('require', file)
+      end
+    end
+  end
 
-        before do
-          files_list.expects(:add_file).with(other)
-        end
+  describe '#search_paths' do
+    let(:files_list) { described_class.new(:config => config) }
 
-        it 'should succeed' do
-          subject
-        end
+    let(:config) { {
+      'src_dir' => src_dir,
+      'spec_dir' => spec_dir
+    } }
+
+    let(:src_dir) { 'src dir' }
+    let(:spec_dir) { 'spec dir' }
+    let(:path) { 'path' }
+
+    context 'no vendored gem paths' do
+      before do
+        Jasmine::Headless::FilesList.stubs(:vendor_asset_paths).returns([])
+      end
+
+      it 'should take the src dir and spec dirs' do
+        files_list.search_paths.should == [ Jasmine::Core.path, src_dir, spec_dir ]
+      end
+    end
+
+    context 'vendored gem paths' do
+      before do
+        Jasmine::Headless::FilesList.stubs(:vendor_asset_paths).returns([ path ])
+      end
+
+      it 'should add the vendor gem paths to the list' do
+        files_list.search_paths.should == [ Jasmine::Core.path, src_dir, spec_dir, path ]
+      end
+    end
+  end
+
+  describe '.vendor_asset_paths' do
+    include FakeFS::SpecHelpers
+
+    let(:dir_one) { 'dir_one' }
+    let(:dir_two) { 'dir_two' }
+
+    let(:gem_one) { stub(:gem_dir => dir_one) }
+    let(:gem_two) { stub(:gem_dir => dir_two) }
+
+    before do
+      described_class.instance_variable_set(:@vendor_asset_paths, nil)
+
+      FileUtils.mkdir_p File.join(dir_two, 'vendor/assets/javascripts')
+
+      Gem::Specification.stubs(:_all).returns([gem_one, gem_two])
+    end
+
+    it 'should return all matching gems with vendor/assets/javascripts directories' do
+      described_class.vendor_asset_paths.should == [ File.join(dir_two, 'vendor/assets/javascripts') ]
+    end
+  end
+
+  describe '#find_dependency' do
+    include FakeFS::SpecHelpers
+
+    let(:dir) { File.expand_path('dir') }
+    let(:filename) { 'file' }
+    let(:file) { "#{filename}.js" }
+
+    before do
+      files_list.stubs(:search_paths).returns([ dir ])
+
+      FileUtils.mkdir_p dir
+    end
+
+    context 'does not exist' do
+      it 'should not be found' do
+        files_list.find_dependency(file).should be_false
+      end
+    end
+
+    context 'exists' do
+      let(:path) { File.join(dir, file) }
+
+      before do
+        File.open(path, 'wb')
+      end
+
+      it 'should be found' do
+        files_list.find_dependency(filename).should == [ File.expand_path(path), dir ]
       end
     end
   end

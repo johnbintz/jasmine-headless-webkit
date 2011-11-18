@@ -6,6 +6,7 @@ RSpec.configure do |c|
   
   c.before(:each) do
     Jasmine::Headless::CacheableAction.enabled = false
+    Jasmine::Headless::FilesList.instance_variable_set(:@vendor_asset_paths, nil)
   end
 end
 
@@ -51,4 +52,21 @@ module RSpec::Matchers
       File.file?(file)
     end
   end
+
+  define :contain_in_order_in_file_list do |*files|
+    match do |lines|
+      file_list = files.dup
+
+      lines.each do |line|
+        next if !file_list.first
+
+        if line[file_list.first]
+          file_list.shift
+        end
+      end
+
+      file_list.length == 0
+    end
+  end
 end
+

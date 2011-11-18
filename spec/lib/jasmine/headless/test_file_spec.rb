@@ -1,8 +1,10 @@
 require 'spec_helper'
 
 describe Jasmine::Headless::TestFile do
-  let(:file) { described_class.new(path) }
-  let(:path) { 'path' }
+  let(:source_root) { File.expand_path('source_root') }
+  let(:path) { File.join(source_root, 'path.js') }
+
+  let(:file) { described_class.new(path, source_root) }
 
   subject { file }
 
@@ -36,7 +38,7 @@ describe Jasmine::Headless::TestFile do
         end
 
         it 'should pass along the error' do
-          expect { subject }.to raise_error(error)
+          expect { subject }.to raise_error(CoffeeScript::CompilationError)
         end
       end
 
@@ -69,6 +71,33 @@ describe Jasmine::Headless::TestFile do
           end
         end
       end
+    end
+  end
+
+  describe '#dependencies' do
+    include FakeFS::SpecHelpers
+
+    before do
+      FileUtils.mkdir_p File.dirname(path)
+      File.open(path, 'wb') { |fh| fh.print "//= require '#{req}'\njavascript" }
+    end
+
+    context 'absolute' do
+      let(:req) { 'test' }
+
+      subject { file.dependencies }
+
+      it { should == [ [ 'require', req ] ] }
+    end
+
+    context 'relative' do
+      let(:path) { File.join(source_root, 'subdir/subsubdir/path.js') }
+
+      let(:req) { './test' }
+
+      subject { file.dependencies }
+
+      it { should == [ [ 'require', 'subdir/subsubdir/test' ] ] }
     end
   end
 end

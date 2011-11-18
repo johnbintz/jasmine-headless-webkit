@@ -2,10 +2,10 @@ src_dir: spec/jasmine/with_sprockets_includes/assets
 spec_dir: spec/jasmine/with_sprockets_includes/spec
 
 spec_files:
-  - "*_spec.js"
+  - "**/*_spec.js"
 
 src_files:
-  - "*.js"
+  - "things/**/*.js"
 
 helpers:
   - "spec_helper.js"

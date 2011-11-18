@@ -144,14 +144,14 @@ describe "jasmine-headless-webkit" do
       files = %x{bin/jasmine-headless-webkit -l -j spec/jasmine/with_sprockets_includes/with_sprockets_includes.yml}
       $?.exitstatus.should == 0
 
-      puts files
-
-      files.lines.to_a.should include('vendor/assets/javascripts/jquery.js')
-      files.lines.to_a.should include('assets/code.js')
-      files.lines.to_a.should include('assets/required.js')
-      files.lines.to_a.should include('assets/subcode/more_code.js')
-      files.lines.to_a.should include('spec/spec_helper.js')
-      files.lines.to_a.should include('spec/code_spec.js')
+      files.lines.to_a.should contain_in_order_in_file_list(
+        'vendor/assets/javascripts/jquery.js',
+        'assets/things/required.js',
+        'assets/things/code.js',
+        'assets/things/subcode/more_code.js',
+        'spec_helper.js',
+        'spec/things/code_spec.js'
+      )
     end
   end
 end

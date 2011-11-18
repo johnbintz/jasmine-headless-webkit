@@ -1,44 +1,42 @@
 require 'jasmine-core'
 require 'time'
 require 'multi_json'
-require 'set'
-require 'sprockets/directive_processor'
 
 module Jasmine::Headless
   class FilesList
-    attr_reader :spec_outside_scope
-
     class << self
-      def find_vendored_asset_paths(*names)
+      def vendor_asset_paths
+        return @vendor_asset_paths if @vendor_asset_paths
+
         require 'rubygems'
 
         raise StandardError.new("A newer version of Rubygems is required to use vendored assets. Please upgrade.") if !Gem::Specification.respond_to?(:map)
-        all_spec_files.find_all do |file|
-          names.any? { |name| file["/#{name}.js"] }
-        end
-      end
 
-      def all_spec_files
-        @all_spec_files ||= Gem::Specification.map { |spec| spec.files.find_all { |file|
-          file["vendor/assets/javascripts"]
-        }.compact.collect { |file| File.join(spec.gem_dir, file) } }.flatten
+        @vendor_asset_paths = []
+
+        Gem::Specification.map { |spec|
+          path = File.join(spec.gem_dir, 'vendor/assets/javascripts')
+
+          File.directory?(path) ? path : nil
+        }.compact
       end
     end
 
-    DEFAULT_FILES = 
-      %w{jasmine.js jasmine-html.js jasmine.css}.collect { |name| File.join(Jasmine::Core.path, name) } +
-      %w{jasmine-extensions intense headless_reporter_result jasmine.HeadlessConsoleReporter jsDump beautify-html}.collect { |name|
-        Jasmine::Headless.root.join("vendor/assets/javascripts/#{name}.js").to_s
-      }
+    DEFAULT_FILES = %w{jasmine.js jasmine-html jasmine.css jasmine-extensions intense headless_reporter_result jasmine.HeadlessConsoleReporter jsDump beautify-html}
 
     PLEASE_WAIT_IM_WORKING_TIME = 2
 
     def initialize(options = {})
       @options = options
-      @files = Set.new(DEFAULT_FILES.dup)
-      @filtered_files = @files.dup
+
+      @files = []
+      @filtered_files = []
+
+      DEFAULT_FILES.each { |file| add_dependency('require', file) }
+
       @spec_outside_scope = false
-      @spec_files = Set.new
+      @spec_files = []
+
       use_config! if config?
     end
 
@@ -52,6 +50,10 @@ module Jasmine::Headless
 
     def spec_files
       @spec_files.to_a
+    end
+
+    def search_paths
+      @search_paths ||= [ Jasmine::Core.path, src_dir, spec_dir ] + self.class.vendor_asset_paths
     end
 
     def has_spec_outside_scope?
@@ -82,16 +84,35 @@ module Jasmine::Headless
       }.compact]
     end
 
-    def add_dependencies(file)
-      if File.file?(file)
-        processor = Sprockets::DirectiveProcessor.new(file)
-        processor.directives.each do |line, type, name|
-          case type
-          when 'require'
-            find_vendored(name)
+    def add_dependencies(file, source_root)
+      TestFile.new(file, source_root).dependencies.each { |type, name| add_dependency(type, name) }
+    end
+
+    def add_dependency(type, file)
+      if result = find_dependency(file)
+        path, source_root = result
+
+        case type
+        when 'require'
+          add_file(path, source_root)
+        end
+      end
+    end
+
+    def find_dependency(file)
+      search_paths.each do |dir|
+        if file[%r{\.(js|css|coffee)$}]
+          if File.file?(path = File.join(dir, file))
+            return [ File.expand_path(path), dir ]
+          end
+        else
+          if path = Dir[File.join(dir, "#{file}.*")].first
+            return [ File.expand_path(path), dir ]
           end
         end
       end
+
+      false
     end
 
     private
@@ -132,33 +153,23 @@ module Jasmine::Headless
 
       @config = @options[:config].dup
 
-      %w{src_files stylesheets vendored_helpers helpers spec_files}.each do |searches|
+      %w{src_files stylesheets helpers spec_files}.each do |searches|
         if data = @config[searches]
-          if self.respond_to?("add_#{searches}_files", true)
-            send("add_#{searches}_files", data.flatten)
-          else
-            add_files(data.flatten, searches)
-          end
-        end
-      end
-    end
-
-    def add_vendored_helpers_files(searches)
-      searches.each do |name|
-        self.class.find_vendored_asset_path(name).each do |file|
-          add_file(file)
+          add_files(data.flatten, searches)
         end
       end
     end
 
     def add_files(searches, type)
       searches.each do |search|
-        path = search
-        path = File.join(@config[SEARCH_ROOTS[type]], path) if @config[SEARCH_ROOTS[type]]
+        dir = @config[SEARCH_ROOTS[type]] || Dir.pwd
+
+        path = File.expand_path(File.join(dir, search))
+
         found_files = expanded_dir(path) - files
 
         found_files.each do |file|
-          type == 'spec_files' ? add_spec_file(file) : add_file(file)
+          type == 'spec_files' ? add_spec_file(file) : add_file(file, dir)
         end
       end
 
@@ -177,22 +188,22 @@ module Jasmine::Headless
       Dir[path].collect { |file| File.expand_path(file) }
     end
 
-    def add_file(file)
-      add_dependencies(file)
+    def add_file(file, source_root)
+      add_dependencies(file, source_root)
 
-      @files << file
-      @filtered_files << file
+      @files << file if !@files.include?(file)
+      @filtered_files << file if !@filtered_files.include?(file)
     end
 
     def add_spec_file(file)
-      add_dependencies(file)
+      add_dependencies(file, spec_dir)
 
       if !@files.include?(file)
-        @files << file
+        @files << file if !@files.include?(file)
 
         if include_spec_file?(file)
-          @filtered_files << file
-          @spec_files << file if spec_filter.empty? || spec_filter.include?(file)
+          @filtered_files << file if !@filtered_files.include?(file)
+          @spec_files << file if !@spec_files.include?(file) && spec_filter.empty? || spec_filter.include?(file)
         end
 
         true
@@ -203,6 +214,23 @@ module Jasmine::Headless
       spec_filter.empty? || spec_filter.include?(file)
     end
 
+    def src_dir
+      config_dir_or_pwd('src_dir')
+    end
+
+    def spec_dir
+      config_dir_or_pwd('spec_dir')
+    end
+
+    def config_dir_or_pwd(dir)
+      found_dir = Dir.pwd
+
+      if @options[:config]
+        found_dir = @options[:config][dir] || found_dir
+      end
+
+      found_dir
+    end
   end
 end
 
