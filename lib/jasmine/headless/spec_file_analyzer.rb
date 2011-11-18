@@ -14,7 +14,7 @@ module Jasmine::Headless
       data = File.read(file)
 
       if data.respond_to?(:encode)
-        data.encode!('US-ASCII', 'UTF-8', :invalid => :replace)
+        data.encode!('US-ASCII', 'UTF-8', :invalid => :replace, :undef => :replace)
       else
         require 'iconv'
         ic = Iconv.new('UTF-8//IGNORE', 'US-ASCII')
