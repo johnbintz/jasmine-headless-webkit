@@ -92,7 +92,7 @@ module Jasmine::Headless
       TestFile.new(file, source_root).dependencies.each { |type, name| add_dependency(type, name, source_root) }
     end
 
-    EXTENSION_FILTER = %r{\.(js|css|coffee|jst.*)$}
+    EXTENSION_FILTER = %r{(#{(%w{.js .css} + Sprockets.engine_extensions).join('|')})$}
 
     def add_dependency(type, file, source_root)
       case type

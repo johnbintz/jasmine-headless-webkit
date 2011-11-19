@@ -1,13 +1,6 @@
 require 'rainbow'
 require 'sprockets'
 
-%w{haml-sprockets}.each do |library|
-  begin
-    require library
-  rescue LoadError
-  end
-end
-
 module Jasmine::Headless
   class TestFile
     attr_reader :path, :source_root
@@ -21,38 +14,7 @@ module Jasmine::Headless
     end
 
     def to_html
-      case File.extname(path)
-      when '.coffee'
-        begin
-          cache = Jasmine::Headless::CoffeeScriptCache.new(path)
-          source = cache.handle
-          if cache.cached?
-            %{<script type="text/javascript" src="#{cache.cache_file}"></script>
-              <script type="text/javascript">
-                window.CSTF['#{File.split(cache.cache_file).last}'] = '#{path}';
-              </script>}
-          else
-            %{<script type="text/javascript">#{source}</script>}
-          end
-        rescue CoffeeScript::CompilationError => ne
-          puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), path.color(:yellow), ne.message.dup.to_s.color(:white) ]
-          raise ne
-        rescue StandardError => e
-          puts "[%s] Error in compiling file: %s" % [ 'coffeescript'.color(:red), path.color(:yellow) ]
-          raise e
-        end
-      when '.js'
-        %{<script type="text/javascript" src="#{path}"></script>}
-      when '.css'
-        %{<link rel="stylesheet" href="#{path}" type="text/css" />}
-      when '.jst'
-        to_jst(read)
-      else
-        case path
-        when %r{\.jst(\..*)$}
-          to_jst(Sprockets.engines($1).new { read }.evaluate(self, {}))
-        end
-      end
+      process_data_by_filename(path)
     end
 
     def dependencies
@@ -73,12 +35,27 @@ module Jasmine::Headless
     end
 
     private
-    def to_jst(data)
-      %{<script type="text/javascript">#{Sprockets.engines('.jst').new { data }.evaluate(self, {})}</script>}
-    end
-
     def read
       File.read(path)
+    end
+
+    def process_data_by_filename(path, data = nil)
+      case extension = File.extname(path)
+      when ''
+        data || ''
+      when '.js'
+        data || %{<script type="text/javascript" src="#{path}"></script>}
+      when '.css'
+        data || %{<link rel="stylesheet" href="#{path}" type="text/css" />}
+      else
+        if engine = Sprockets.engines(extension)
+          data = engine.new(path) { data || read }.render(self)
+
+          process_data_by_filename(path.gsub(%r{#{extension}$}, ''), data)
+        else
+          data || ''
+        end
+      end
     end
   end
 end

@@ -1,5 +1,5 @@
 require 'pathname'
-require 'sprockets/engines'
+require 'sprockets'
 
 module Jasmine::Headless
   autoload :CoffeeScriptCache, 'jasmine/headless/coffee_script_cache'
@@ -14,6 +14,8 @@ module Jasmine::Headless
 
   autoload :TemplateWriter, 'jasmine/headless/template_writer'
 
+  autoload :CoffeeTemplate, 'jasmine/headless/coffee_template'
+
   autoload :Report, 'jasmine/headless/report'
   autoload :ReportMessage, 'jasmine/headless/report_message'
 
@@ -25,4 +27,21 @@ module Jasmine::Headless
 end
 
 require 'jasmine/headless/errors'
-Sprockets::Engines
+
+# register haml-sprockets if it's available...
+%w{haml-sprockets}.each do |library|
+  begin
+    require library
+  rescue LoadError
+  end
+end
+
+# ...and unregister ones we don't want/need
+module Sprockets
+  %w{less sass scss erb str}.each do |extension|
+    @engines.delete(".#{extension}")
+  end
+
+  register_engine '.coffee', Jasmine::Headless::CoffeeTemplate
+end
+
