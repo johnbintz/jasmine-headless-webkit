@@ -29,6 +29,7 @@ they'll even work when running in the Jasmine gem's server with no changes to yo
 
 * It integrates with [Guard](https://github.com/guard/guard) for a continuous testing setup when using [`guard-jasmine-headless-webkit`](https://github.com/guard/guard-jasmine-headless-webkit).
 * It compiles [CoffeeScript](http://jashkenas.github.com/coffee-script/), both for your tests and for your application logic.
+* It integrates with [Sprockets](https://github.com/sstephenson/sprockets) to handle code requires & preprocessing and JavaScript templates.
 * It can be configured like RSpec, and its output is very similar to RSpec's output, so you don't need to learn too much new stuff to use and integrate it.
 * It provides cleaner debugging and backtrace output than a lot of other console-based test tools provide.
 * It's *fast*.
@@ -146,19 +147,12 @@ files for the testing process are located:
 
 {% highlight yaml %}
 src_files:
-  - public/assets/common.js
-  - public/assets/templates.js
-  - public/javascripts/models/**/*.js
-  - public/javascripts/collections/**/*.js
-  - public/javascripts/views/**/*.js
-  - app/coffeescripts/models/**/*.coffee
-  - app/coffeescripts/collections/**/*.coffee
-  - app/coffeescripts/views/**/*.coffee
+  - "**/*"
 helpers:
-  - helpers/**/*.{js,coffee}
+  - helpers/**/*
 spec_files:
-  - "**/*[Ss]pec.{js,coffee}"
-src_dir:
+  - "**/*_spec.*"
+src_dir: app/assets/javascripts
 spec_dir: spec/javascripts
 {% endhighlight %}
 
@@ -225,19 +219,29 @@ If you need to test server interaction, do one of the following:
 * Stub your server responses using [Sinon.JS](http://sinonjs.org/), the recommended way.
 * Use [PhantomJS](http://www.phantomjs.org/) against a running copy of a Jasmine server, instead of this project.
 
-#### Vendored JavaScript support
+#### Sprockets support
 
-_(still in development!)_
+Nearly all of Sprockets is accessible to your test suite when using `jasmine-headless-webkit`. It's easier to list the parts that
+aren't accessible:
 
-You can pull in vendored JavaScript files as helpers in your setup! Add the `vendored_helpers` section to your `jasmine.yml` file
-with the names of some helpers you want to use (take a look at [jasmine-spec-extras](https://github.com/johnbintz/jasmine-spec-extras) to see how it works):
+* `*.erb` files are not processed at all (and are actually ignored) because it's assumed the contents of those files depend on an
+  outside source, like a Rails app.
+* No CSS compilation happens, so no Sass or LESS.
 
-{% highlight yaml %}
-vendored_helpers:
-- 'sinon'
+If you have to use ERB to inject information into the JavaScript or CoffeeScript files in your project, I recommend that you move those
+injections to a file that is included separately from the code, or include them in `application.*.erb` like this:
+
+{% highlight coffeescript %}
+# File: app/assets/javascripts/application.coffee.erb
+
+#= require 'jquery'
+#= require 'my_library'
+
+MyLibrary.root_url = <%= api_root_path %>
 {% endhighlight %}
 
-_This is the first step in an effort to intergrate with Sprockets directly to make testing modern Rails apps as seamless as possible. Oh yeah, it's coming!_
+This support is still pretty early, so as myself and others discover the best way to set up code that can be used in both places, those
+practices will be outlined here.
 
 #### What else works?
 
@@ -291,6 +295,7 @@ the project.
 
 If your tests are not picking up a file you thought they should be, or they're being included in the wrong order,
 run with the `-l` flag to get a list of the files that `jasmine-headless-webkit` will include in the generated HTML file.
+*Very* handy for making sure your Sprockets requires are working correctly.
 
 ### Coloring the output
 
@@ -391,12 +396,11 @@ status_code = Jasmine::Headless::Runner.run(
 If you use [Guard](https://github.com/guard/guard/), install [`guard-jasmine-headless-webkit`](http://github.com/guard/guard-jasmine-headless-webkit/)
 and run `guard init jasmine-headless-webkit` to add the necessary bits to your `Guardfile` to test a Rails 3.1 (or a well-structured Rails 3.0) app.
 
-### Rails 3.1 and the Asset Pipeline
+### guard-rails-assets
 
-Since your JS code can now flow through the Rails 3.1 asset pipeline, and since it's not easy for non-Rails apps to get access to that pipeline,
-testing your pipelined code in Rails 3.1 is a bit more difficult. The best way is to regenrate your code with each change and then run
-`jasmine-headless-webkit` on the code, and now, there's a Guard for that! [`guard-rails-assets`](http://github.com/dnagir/guard-rails-assets) will watch
-your app's code for changes and rebuild your pipelined JS code, ready to be tested with `jasmine-headless-webkit`:
+With Sprockets support now in `jasmine-headless-webkit`, there's less of a need for most users for `guard-rails-assets`, unless you really need to get
+at those ERB files in your project. [`guard-rails-assets`](http://github.com/dnagir/guard-rails-assets) is what you want to use in this case.
+It will watch your app's code for changes and rebuild your pipelined JS code, ready to be tested with `jasmine-headless-webkit`:
 
 {% highlight ruby %}
 guard 'rails-assets' do
@@ -411,7 +415,7 @@ end
 
 ### Jammit for JS templates
 
-If you like to use Jammit to shove together your JS templates into one file, you can use a Guard for that, too! [`guard-jammit`](http://github.com/guard/guard-jammit)
+If you're still using Jammit it shove your JS templates into one file, you can use a Guard for that, too! [`guard-jammit`](http://github.com/guard/guard-jammit)
 provides Jammit watching support, but the current version (as of 2011-06-18) does not support some changes to Jammit's internals. Use [my fork](http://github.com/johnbintz/guard-jammit)
 until that gets fixed.
 
@@ -425,10 +429,6 @@ guard 'jasmine-headless-webkit' do
   watch(%r{^spec/javascripts/.*\.coffee$})
 end
 {% endhighlight %}
-
-### Autotest
-
-Support for Autotest is *deprecated* and no new features will be added to the Autotest runners unless provided by other users.
 
 ## Rake tasks
 
