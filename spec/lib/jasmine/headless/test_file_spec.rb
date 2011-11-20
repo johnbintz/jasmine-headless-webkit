@@ -82,9 +82,11 @@ describe Jasmine::Headless::TestFile do
   describe '#dependencies' do
     include FakeFS::SpecHelpers
 
+    let(:directive) { 'require' }
+
     before do
       FileUtils.mkdir_p File.dirname(path)
-      File.open(path, 'wb') { |fh| fh.print "//= require '#{req}'\njavascript" }
+      File.open(path, 'wb') { |fh| fh.print "//= #{directive} '#{req}'\njavascript" }
     end
 
     context 'absolute' do
@@ -92,7 +94,17 @@ describe Jasmine::Headless::TestFile do
 
       subject { file.dependencies }
 
-      it { should == [ [ 'require', req ] ] }
+      context 'require' do
+        it { should == [ [ 'require', req ] ] }
+      end
+
+      context 'require_tree' do
+        let(:directive) { 'require_tree' }
+
+        it 'should raise an error' do
+          expect { subject }.to raise_error(Sprockets::ArgumentError, /relative/)
+        end
+      end
     end
 
     context 'relative' do

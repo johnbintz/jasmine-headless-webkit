@@ -24,6 +24,8 @@ module Jasmine::Headless
       @dependencies = processor.directives.collect do |_, type, name|
         if name[%r{^\.}]
           name = File.expand_path(File.join(File.dirname(path), name)).gsub(%r{^#{source_root}/}, '')
+        else
+          raise Sprockets::ArgumentError.new("require_tree needs a relative path: ./#{path}") if type == 'require_tree'
         end
 
         [ type, name ]

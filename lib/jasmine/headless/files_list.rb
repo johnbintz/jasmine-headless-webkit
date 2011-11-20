@@ -1,6 +1,7 @@
 require 'jasmine-core'
 require 'time'
 require 'multi_json'
+require 'set'
 
 module Jasmine::Headless
   class FilesList
@@ -35,6 +36,7 @@ module Jasmine::Headless
 
       @files = []
       @filtered_files = []
+      @checked_dependency = Set.new
 
       DEFAULT_FILES.each { |file| add_dependency('require', file, nil) }
 
@@ -96,7 +98,12 @@ module Jasmine::Headless
     end
 
     def add_dependencies(file, source_root)
-      TestFile.new(file, source_root).dependencies.each { |type, name| add_dependency(type, name, source_root) }
+      TestFile.new(file, source_root).dependencies.each do |type, name|
+        if !@checked_dependency.include?(name)
+          @checked_dependency << name
+          add_dependency(type, name, source_root)
+        end
+      end
     end
 
     EXTENSION_FILTER = %r{(#{(%w{.js .css} + Sprockets.engine_extensions).join('|')})$}
@@ -124,7 +131,11 @@ module Jasmine::Headless
           ok = (root == file)
           ok ||= File.basename(path.gsub("#{file}.", '')).split('.').all? { |part| ".#{part}"[EXTENSION_FILTER] }
 
-          return [ File.expand_path(path), File.expand_path(dir) ] if ok
+          expanded_path = File.expand_path(path)
+
+          if ok
+            return [ expanded_path, File.expand_path(dir) ]
+          end
         end
       end
 
