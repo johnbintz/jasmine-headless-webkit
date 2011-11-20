@@ -1,19 +1,20 @@
-(function() {
+
   if (!(typeof jasmine !== "undefined" && jasmine !== null)) {
     throw new Error("jasmine not loaded!");
   }
+
   jasmine.HeadlessConsoleReporter = (function() {
+
     function HeadlessConsoleReporter(callback) {
       this.callback = callback != null ? callback : null;
       this.results = [];
       this.failedCount = 0;
       this.length = 0;
     }
+
     HeadlessConsoleReporter.prototype.reportRunnerResults = function(runner) {
       var output, result, resultLine, runtime, _i, _len, _ref;
-      if (this.hasError()) {
-        return;
-      }
+      if (this.hasError()) return;
       runtime = (new Date() - this.startTime) / 1000.0;
       JHW.stdout.print("\n");
       resultLine = this._formatResultLine(runtime);
@@ -30,20 +31,18 @@
         result = _ref[_i];
         result.print();
       }
-      if (window.JHW) {
-        window.onbeforeunload = null;
-      }
+      if (window.JHW) window.onbeforeunload = null;
       return JHW.finishSuite();
     };
+
     HeadlessConsoleReporter.prototype.reportRunnerStarting = function(runner) {
       this.startTime = new Date();
       return JHW.stdout.puts("\nRunning Jasmine specs...".bright());
     };
+
     HeadlessConsoleReporter.prototype.reportSpecResults = function(spec) {
       var failureResult, foundLine, result, results, testCount, _i, _len, _ref;
-      if (this.hasError()) {
-        return;
-      }
+      if (this.hasError()) return;
       JHW.ping();
       results = spec.results();
       this.length++;
@@ -70,16 +69,20 @@
         return this.results.push(failureResult);
       }
     };
+
     HeadlessConsoleReporter.prototype.reportSpecStarting = function(spec) {
       if (this.hasError()) {
         spec.finish();
         return spec.suite.finish();
       }
     };
+
     HeadlessConsoleReporter.prototype.reportSuiteResults = function(suite) {};
+
     HeadlessConsoleReporter.prototype.hasError = function() {
       return JHW._hasErrors;
     };
+
     HeadlessConsoleReporter.prototype._formatResultLine = function(runtime) {
       var line;
       line = [];
@@ -91,6 +94,7 @@
       line.push((runtime === 1.0 ? "sec" : "secs") + '.');
       return line.join(' ');
     };
+
     return HeadlessConsoleReporter;
+
   })();
-}).call(this);

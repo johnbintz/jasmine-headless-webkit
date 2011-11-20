@@ -44,26 +44,37 @@ describe Jasmine::Headless::TestFile do
         end
       end
 
+      let(:other_klass) do
+        Class.new(Tilt::Template) do
+          def prepare ; end
+
+          def evaluate(scope, locals, &block)
+            data
+          end
+        end
+      end
+
       before do
         Sprockets.stubs(:engines).with('.tilt').returns(klass)
+        Sprockets.stubs(:engines).with('.jst').returns(other_klass)
       end
 
       context '.tilt' do
         let(:path) { 'path.tilt' }
 
-        it { should == "#{path} made it #{content}" }
+        it { should == %{#{path} made it #{content}} }
       end
 
       context '.tilt.tilt' do
         let(:path) { 'path.tilt.tilt' }
 
-        it { should == "path.tilt made it #{path} made it #{content}" }
+        it { should == %{path.tilt made it #{path} made it #{content}} }
       end
 
-      context '.js.tilt' do
-        let(:path) { 'path.js.tilt' }
+      context '.jst.tilt' do
+        let(:path) { 'path.jst.tilt' }
 
-        it { should == "#{path} made it #{content}" }
+        it { should == %{<script type="text/javascript">#{path} made it #{content}</script>} }
       end
     end
   end

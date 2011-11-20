@@ -57,7 +57,14 @@ module Jasmine::Headless
     end
 
     def search_paths
-      @search_paths ||= [ Jasmine::Core.path, File.expand_path(src_dir), File.expand_path(spec_dir) ] + self.class.vendor_asset_paths
+      return @search_paths if @search_paths
+
+      @search_paths = [ Jasmine::Core.path ]
+      @search_paths += [ src_dir ].flatten.collect { |dir| File.expand_path(dir) }
+      @search_paths << File.expand_path(spec_dir)
+      @search_paths += self.class.vendor_asset_paths
+
+      @search_paths
     end
 
     def has_spec_outside_scope?
@@ -111,14 +118,13 @@ module Jasmine::Headless
 
     def find_dependency(file)
       search_paths.each do |dir|
-        if file[EXTENSION_FILTER]
-          if File.file?(path = File.join(dir, file))
-            return [ File.expand_path(path), File.expand_path(dir) ]
-          end
-        else
-          if path = Dir[File.join(dir, "#{file}.*")].first
-            return [ File.expand_path(path), File.expand_path(dir) ]
-          end
+        Dir[File.join(dir, "#{file}*")].find_all { |path| File.file?(path) }.each do |path|
+          root = path.gsub(%r{^#{dir}/}, '')
+
+          ok = (root == file)
+          ok ||= File.basename(path.gsub("#{file}.", '')).split('.').all? { |part| ".#{part}"[EXTENSION_FILTER] }
+
+          return [ File.expand_path(path), File.expand_path(dir) ] if ok
         end
       end
 
@@ -176,15 +182,16 @@ module Jasmine::Headless
 
     def add_files(searches, type)
       searches.each do |search|
-        dir = @config[SEARCH_ROOTS[type]] || Dir.pwd
-        dir = File.expand_path(dir)
+        [ @config[SEARCH_ROOTS[type]] || Dir.pwd ].flatten.each do |dir|
+          dir = File.expand_path(dir)
 
-        path = File.expand_path(File.join(dir, search))
+          path = File.expand_path(File.join(dir, search))
 
-        found_files = expanded_dir(path) - files
+          found_files = expanded_dir(path) - files
 
-        found_files.each do |file|
-          type == 'spec_files' ? add_spec_file(file) : add_file(file, dir)
+          found_files.each do |file|
+            type == 'spec_files' ? add_spec_file(file) : add_file(file, dir)
+          end
         end
       end
 

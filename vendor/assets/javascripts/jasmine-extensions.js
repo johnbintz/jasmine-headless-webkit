@@ -1,8 +1,10 @@
 (function() {
   var getSplitName, pauseAndRun;
+
   if (!(typeof jasmine !== "undefined" && jasmine !== null)) {
     throw new Error("jasmine not laoded!");
   }
+
   if (window.JHW) {
     getSplitName = function(parts) {
       parts.push(String(this.description).replace(/[\n\r]/g, ' '));
@@ -98,4 +100,5 @@
       };
     }
   }
+
 }).call(this);

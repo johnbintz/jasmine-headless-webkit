@@ -2,6 +2,8 @@ require 'pathname'
 require 'sprockets'
 
 module Jasmine::Headless
+  autoload :CommandLine, 'jasmine/headless/command_line'
+
   autoload :CoffeeScriptCache, 'jasmine/headless/coffee_script_cache'
   autoload :SpecFileAnalyzer, 'jasmine/headless/spec_file_analyzer'
   autoload :CacheableAction, 'jasmine/headless/cacheable_action'

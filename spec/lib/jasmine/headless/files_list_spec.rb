@@ -87,6 +87,19 @@ describe Jasmine::Headless::FilesList do
 
       it_should_behave_like :reading_data
     end
+
+    context 'with multidimensional src dir' do
+      let(:config) { {
+        'src_dir' => [ src_dir ],
+        'spec_dir' => spec_dir,
+        'src_files' => [ [ 'js/first_file.js', 'js/*.js' ] ],
+        'spec_files' => [ '*_spec.js' ],
+        'helpers' => [ 'helper/*.js' ],
+        'stylesheets' => [ 'stylesheet/*.css' ]
+      } }
+
+      it_should_behave_like :reading_data
+    end
   end
 
   context 'with filtered specs' do
@@ -246,11 +259,11 @@ describe Jasmine::Headless::FilesList do
     let(:spec_dir) { 'spec dir' }
     let(:path) { 'path' }
 
-    context 'no vendored gem paths' do
-      before do
-        Jasmine::Headless::FilesList.stubs(:vendor_asset_paths).returns([])
-      end
+    before do
+      Jasmine::Headless::FilesList.stubs(:vendor_asset_paths).returns([])
+    end
 
+    context 'no vendored gem paths' do
       it 'should take the src dir and spec dirs' do
         files_list.search_paths.should == [ Jasmine::Core.path, File.expand_path(src_dir), File.expand_path(spec_dir) ]
       end
@@ -263,6 +276,17 @@ describe Jasmine::Headless::FilesList do
 
       it 'should add the vendor gem paths to the list' do
         files_list.search_paths.should == [ Jasmine::Core.path, File.expand_path(src_dir), File.expand_path(spec_dir), path ]
+      end
+    end
+
+    context 'src_dir is an array' do
+      let(:dir_1) { 'dir 1' }
+      let(:dir_2) { 'dir 2' }
+
+      let(:src_dir) { [ dir_1, dir_2 ] }
+
+      it 'should take the src dir and spec dirs' do
+        files_list.search_paths.should == [ Jasmine::Core.path, File.expand_path(dir_1), File.expand_path(dir_2), File.expand_path(spec_dir) ]
       end
     end
   end
@@ -293,31 +317,38 @@ describe Jasmine::Headless::FilesList do
     include FakeFS::SpecHelpers
 
     let(:dir) { File.expand_path('dir') }
+
     let(:filename) { 'file' }
     let(:file) { "#{filename}.js" }
 
     before do
-      files_list.stubs(:search_paths).returns([ dir ])
-
       FileUtils.mkdir_p dir
+
+      %w{file.sub.js file.js.coffee}.each do |file|
+        File.open(File.join(dir, file), 'wb')
+      end
+
+      files_list.stubs(:search_paths).returns([ dir ])
     end
 
-    context 'does not exist' do
-      it 'should not be found' do
-        files_list.find_dependency(file).should be_false
-      end
+    subject { files_list.find_dependency(search) }
+
+    context 'bad' do
+      let(:search) { 'bad' }
+
+      it { should be_false }
     end
 
-    context 'exists' do
-      let(:path) { File.join(dir, file) }
+    context 'file' do
+      let(:search) { 'file' }
 
-      before do
-        File.open(path, 'wb')
-      end
+      it { should == [ File.join(dir, 'file.js.coffee'), dir ] }
+    end
 
-      it 'should be found' do
-        files_list.find_dependency(filename).should == [ File.expand_path(path), dir ]
-      end
+    context 'file.sub' do
+      let(:search) { 'file.sub' }
+
+      it { should == [ File.join(dir, 'file.sub.js'), dir ] }
     end
   end
 end

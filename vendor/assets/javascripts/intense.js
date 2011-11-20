@@ -1,5 +1,6 @@
 (function() {
   var code, method, _ref;
+
   window.Intense = {
     colors: {
       black: 0,
@@ -29,9 +30,11 @@
     },
     useColors: true
   };
+
   _ref = Intense.methods;
   for (method in _ref) {
     code = _ref[method];
     String.prototype[method] = code;
   }
+
 }).call(this);

@@ -50,6 +50,7 @@ module Jasmine::Headless
       else
         if engine = Sprockets.engines(extension)
           data = engine.new(path) { data || read }.render(self)
+          data = %{<script type="text/javascript">#{data}</script>} if extension == '.jst'
 
           process_data_by_filename(path.gsub(%r{#{extension}$}, ''), data)
         else
