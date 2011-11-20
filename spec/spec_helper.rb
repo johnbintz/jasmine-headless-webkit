@@ -8,6 +8,7 @@ RSpec.configure do |c|
   c.before(:each) do
     Jasmine::Headless::CacheableAction.enabled = false
     Jasmine::Headless::FilesList.reset!
+    Jasmine::Headless::Runner.reset!
   end
 end
 

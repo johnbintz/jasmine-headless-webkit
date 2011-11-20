@@ -2,6 +2,7 @@ require 'jasmine-core'
 require 'time'
 require 'multi_json'
 require 'set'
+require 'sprockets'
 
 module Jasmine::Headless
   class FilesList
@@ -99,26 +100,35 @@ module Jasmine::Headless
 
     def add_dependencies(file, source_root)
       TestFile.new(file, source_root).dependencies.each do |type, name|
-        if !@checked_dependency.include?(name)
-          @checked_dependency << name
-          add_dependency(type, name, source_root)
-        end
+        add_dependency(type, name, source_root)
       end
     end
 
-    EXTENSION_FILTER = %r{(#{(%w{.js .css} + Sprockets.engine_extensions).join('|')})$}
+    def extension_filter
+      %r{(#{(%w{.js .css} + Sprockets.engine_extensions).join('|')})$}
+    end
 
     def add_dependency(type, file, source_root)
-      case type
+      files = case type
       when 'require'
-        if result = find_dependency(file)
-          add_file(*result)
+        if !@checked_dependency.include?(file)
+          @checked_dependency << file
+
+          [ file ]
+        else
+          []
         end
       when 'require_tree'
-        Dir[File.join(source_root, file, '**/*')].find_all { |path| File.file?(path) && path[EXTENSION_FILTER] }.sort.each do |tree_path|
-          if result = find_dependency(tree_path.gsub(%r{^#{source_root}/}, ''))
-            add_file(*result)
-          end
+        Dir[File.join(source_root, file, '**/*')].find_all { |path|
+          File.file?(path) && path[extension_filter] 
+        }.sort.collect { |path| path.gsub(%r{^#{source_root}/}, '') }
+      else
+        []
+      end
+
+      files.each do |file|
+        if result = find_dependency(file)
+          add_file(result[0], result[1], false)
         end
       end
     end
@@ -129,7 +139,7 @@ module Jasmine::Headless
           root = path.gsub(%r{^#{dir}/}, '')
 
           ok = (root == file)
-          ok ||= File.basename(path.gsub("#{file}.", '')).split('.').all? { |part| ".#{part}"[EXTENSION_FILTER] }
+          ok ||= File.basename(path.gsub("#{file}.", '')).split('.').all? { |part| ".#{part}"[extension_filter] }
 
           expanded_path = File.expand_path(path)
 
@@ -218,10 +228,12 @@ module Jasmine::Headless
     end
 
     def expanded_dir(path)
-      Dir[path].collect { |file| File.expand_path(file) }.find_all { |path| File.file?(path) && path[EXTENSION_FILTER] }
+      Dir[path].collect { |file| File.expand_path(file) }.find_all { |path| File.file?(path) && path[extension_filter] }
     end
 
-    def add_file(file, source_root)
+    def add_file(file, source_root, clear_dependencies = true)
+      @checked_dependency = Set.new if clear_dependencies
+
       add_dependencies(file, source_root)
 
       @files << file if !@files.include?(file)

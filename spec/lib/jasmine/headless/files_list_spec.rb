@@ -199,9 +199,12 @@ describe Jasmine::Headless::FilesList do
     let(:other_file) { 'other' }
     let(:path) { 'path' }
 
+    let(:set) { Set.new }
+
     before do
-      files_list.stubs(:find_dependency).with(file).returns(path)
+      files_list.stubs(:find_dependency).with(file).returns([ path, nil ])
       files_list.stubs(:find_dependency).with(other_file).returns(false)
+      files_list.instance_variable_set(:@checked_dependency, set)
     end
 
     context 'not found' do
@@ -211,16 +214,20 @@ describe Jasmine::Headless::FilesList do
 
       it 'should do nothing' do
         files_list.add_dependency('', other_file, nil)
+        set.should be_empty
       end
     end
 
     context 'require' do
-      before do
-        files_list.expects(:add_file).with(path, nil)
-      end
+      context 'not already added' do
+        before do
+          files_list.expects(:add_file).with(path, nil, false)
+        end
 
-      it 'should add the file to the front' do
-        files_list.add_dependency('require', file, nil)
+        it 'should add the file to the front' do
+          files_list.add_dependency('require', file, nil)
+          set.should include(file)
+        end
       end
     end
 
@@ -235,14 +242,15 @@ describe Jasmine::Headless::FilesList do
           File.open(path, 'wb')
 
           if path[%r{\.(js|css|coffee)$}]
-            files_list.expects(:find_dependency).with(path).returns(other_file)
-            files_list.expects(:add_file).with(other_file, nil)
+            files_list.expects(:find_dependency).with(path).returns([ other_file, nil ])
+            files_list.expects(:add_file).with(other_file, nil, false)
           end
         end
       end
 
       it 'should add the file to the front' do
         files_list.add_dependency('require_tree', '.', File.expand_path('.'))
+        set.should be_empty
       end
     end
   end
@@ -349,6 +357,32 @@ describe Jasmine::Headless::FilesList do
       let(:search) { 'file.sub' }
 
       it { should == [ File.join(dir, 'file.sub.js'), dir ] }
+    end
+  end
+
+  describe '#add_file' do
+    let(:set) { Set.new([ :one ]) }
+
+    before do
+      files_list.instance_variable_set(:@checked_dependency, set)
+
+      files_list.stubs(:add_dependencies)
+    end
+
+    context 'clear dependencies' do
+      it 'should clear dependency checking' do
+        files_list.send(:add_file, 'file', 'root')
+
+        files_list.instance_variable_get(:@checked_dependency).should == Set.new
+      end
+    end
+
+    context 'do not clear dependencies' do
+      it 'should clear dependency checking' do
+        files_list.send(:add_file, 'file', 'root', false)
+
+        files_list.instance_variable_get(:@checked_dependency).should == set
+      end
     end
   end
 end
