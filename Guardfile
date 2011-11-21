@@ -3,7 +3,6 @@
 #   watch('file/path') { `command(s)` }
 #
 
-if false
 guard 'coffeescript', :input => 'vendor/assets/coffeescripts', :output => 'vendor/assets/javascripts'
 
 guard 'shell' do
@@ -21,7 +20,6 @@ guard 'rspec', :version => 2, :all_on_start => false do
   watch(%r{^lib/(.+)\.rb})     { |m| "spec/lib/#{m[1]}_spec.rb" }
   watch(%r{^bin/(.+)})     { |m| "spec/bin/#{m[1]}_spec.rb" }
   watch('spec/spec_helper.rb') { "spec" }
-end
 end
 
 guard 'jasmine-headless-webkit', :all_on_start => false do

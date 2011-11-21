@@ -10,6 +10,9 @@
       this.results = [];
       this.failedCount = 0;
       this.length = 0;
+      this.timer = null;
+      this.position = 0;
+      this.positions = "|/-\\";
     }
 
     HeadlessConsoleReporter.prototype.reportRunnerResults = function(runner) {
@@ -74,6 +77,37 @@
       if (this.hasError()) {
         spec.finish();
         return spec.suite.finish();
+      }
+    };
+
+    HeadlessConsoleReporter.prototype.reportSpecWaiting = function() {
+      var first, runner;
+      var _this = this;
+      runner = null;
+      if (!this.timer) {
+        this.timer = true;
+        first = true;
+        runner = function() {
+          return _this.timer = setTimeout(function() {
+            if (_this.timer) {
+              if (!first) JHW.stdout.print(Intense.moveBack());
+              JHW.stdout.print(_this.positions.substr(_this.position, 1).foreground('yellow'));
+              _this.position += 1;
+              _this.position %= _this.positions.length;
+              first = false;
+              return runner();
+            }
+          }, 750);
+        };
+        return runner();
+      }
+    };
+
+    HeadlessConsoleReporter.prototype.reportSpecRunning = function() {
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
+        return JHW.stdout.print(Intense.moveBack());
       }
     };
 
