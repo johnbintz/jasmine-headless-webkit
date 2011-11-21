@@ -73,7 +73,11 @@ if window.JHW
 
     pauseAndRun = (onComplete) ->
       JHW.timerPause()
+      if this.env.reporter.reportSpecWaiting
+        this.env.reporter.reportSpecWaiting(this)
       this._execute ->
+        if this.env.reporter.reportSpecRunning
+          this.env.reporter.reportSpecRunning(this)
         JHW.timerDone()
         onComplete()
 

@@ -5,8 +5,6 @@ module Jasmine::Headless
         require 'coffee-script'
         require 'rainbow'
 
-        FilesList.reset!
-
         begin
           options = Options.from_command_line
           runner = Runner.new(options)

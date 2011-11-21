@@ -61,7 +61,7 @@ module Jasmine::Headless
       @potential_files_to_filter = []
 
       self.class.default_files.each do |file|
-        @required_files << RequiredFile.new(*path_searcher.find(file.dup), self)
+        @required_files << RequiredFile.new(*[ path_searcher.find(file.dup), self ].flatten)
       end
 
       use_config! if config?
@@ -205,7 +205,15 @@ module Jasmine::Headless
         end
       end
 
-      @required_files.uniq!(&:path)
+      filtered_required_files = []
+
+      @required_files.each do |file|
+        if !filtered_required_files.any? { |other_file| other_file == file }
+          filtered_required_files << file
+        end
+      end
+      
+      @required_files = filtered_required_files
     end
 
     def config?

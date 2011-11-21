@@ -62,7 +62,7 @@ module Jasmine::Headless
 
         files.collect do |file|
           if result = path_searcher.find(file)
-            self.class.new(*result, self)
+            self.class.new(*[ result, self ].flatten)
           else
             raise Sprockets::FileNotFound.new("Could not find #{file}, referenced from #{path}:#{line}")
           end
