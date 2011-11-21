@@ -2,7 +2,7 @@ if window.JHW
   window.console =
     log: (data) ->
       if typeof(jQuery) != 'undefined' && data instanceof jQuery
-        JHW.log(style_html($("<div />").append(data).html(), { indent_size: 2 }))
+        JHW.log(style_html($("<div />").append(data.clone()).html(), { indent_size: 2 }))
       else
         useJsDump = true
 
