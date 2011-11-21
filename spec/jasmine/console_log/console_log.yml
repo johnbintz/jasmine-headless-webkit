@@ -1,5 +1,5 @@
-
 src_files:
+  - spec/javascripts/support/jquery-1.6.2.min.js
   - spec/jasmine/console_log/console_log.js
 
 spec_files:
