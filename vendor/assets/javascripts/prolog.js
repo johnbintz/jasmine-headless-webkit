@@ -5,7 +5,7 @@
       log: function(data) {
         var dump, useJsDump;
         if (typeof jQuery !== 'undefined' && data instanceof jQuery) {
-          return JHW.log(style_html($("<div />").append(data).html(), {
+          return JHW.log(style_html($("<div />").append(data.clone()).html(), {
             indent_size: 2
           }));
         } else {
