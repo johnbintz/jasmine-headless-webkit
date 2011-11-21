@@ -15,7 +15,7 @@
       if (bestChoice.file) {
         output += (" (" + bestChoice.file + ":" + bestChoice.lineNumber + ")").foreground('blue');
       }
-      JHW.stdout.puts("\n\n" + output);
+      JHW.stdout.puts("\n" + output);
       _ref = this.results;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {

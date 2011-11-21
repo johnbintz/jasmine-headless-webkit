@@ -23,7 +23,15 @@
         if (window.JHW) {
           jasmine.getEnv().addReporter(new jasmine.HeadlessConsoleReporter());
         } else {
-          jasmine.getEnv().addReporter(new jasmine.HtmlReporter());
+          types = [ 'HtmlReporter', 'TrivialReporter' ];
+
+          for (var i = 0, j = types.length; i < j; ++i) {
+            var type = jasmine[types[i]]
+            if (type) {
+              jasmine.getEnv().addReporter(new type());
+              break;
+            }
+          }
         }
 
         jasmine.getEnv().execute();
