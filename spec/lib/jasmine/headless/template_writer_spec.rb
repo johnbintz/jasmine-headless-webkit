@@ -47,6 +47,8 @@ describe Jasmine::Headless::TemplateWriter do
     include FakeFS::SpecHelpers
 
     before do
+      Jasmine::Headless::FilesList.stubs(:default_files).returns([])
+
       File.stubs(:read).returns(nil)
 
       runner.stubs(:keep_runner).returns(true)
@@ -56,8 +58,8 @@ describe Jasmine::Headless::TemplateWriter do
     let(:files_list) { Jasmine::Headless::FilesList.new }
 
     before do
-      files_list.files << 'file.js'
-      files_list.filtered_files << 'file.js'
+      files_list.stubs(:files).returns([ 'file.js' ])
+      files_list.stubs(:filtered_files).returns([ 'file.js' ])
     end
 
     context 'no filter' do
@@ -70,7 +72,7 @@ describe Jasmine::Headless::TemplateWriter do
 
     context 'filtered files' do
       before do
-        files_list.instance_variable_get(:@files) << 'file2.js'
+        files_list.stubs(:files).returns([ 'file.js', 'file2.js' ])
       end
 
       it 'should write two files' do

@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require 'spec_helper'
 require 'fakefs/spec_helpers'
 require 'coffee-script'
@@ -23,10 +21,18 @@ describe Jasmine::Headless::FilesList do
     end
   end
 
+  def self.no_default_files!
+    before do
+      described_class.stubs(:default_files).returns([])
+    end
+  end
+
   describe '#use_config' do
     let(:files_list) { described_class.new(:config => config) }
 
     include FakeFS::SpecHelpers
+
+    no_default_files!
 
     let(:src_dir) { 'src' }
     let(:spec_dir) { 'spec' }
@@ -108,6 +114,8 @@ describe Jasmine::Headless::FilesList do
 
     include FakeFS::SpecHelpers
 
+    no_default_files!
+
     let(:config) { {
       'spec_files' => [ '*_spec.js' ],
       'spec_dir' => spec_dir
@@ -177,11 +185,10 @@ describe Jasmine::Headless::FilesList do
   describe '#spec_file_line_numbers' do
     include FakeFS::SpecHelpers
 
+    no_default_files!
+
     before do
-      files_list.instance_variable_set(:@spec_files, [
-                                       'test.coffee',
-                                       'test2.coffee'
-      ])
+      files_list.stubs(:spec_files).returns(['test.coffee', 'test2.coffee'])
 
       File.open('test.coffee', 'w') { |fh| fh.print "describe('cat')\ndescribe('cat')" }
       File.open('test2.coffee', 'w') { |fh| fh.print "no matches" }
@@ -194,68 +201,9 @@ describe Jasmine::Headless::FilesList do
     end
   end
 
-  describe '#add_dependency' do
-    let(:file) { 'file' }
-    let(:other_file) { 'other' }
-    let(:path) { 'path' }
-
-    let(:set) { Set.new }
-
-    before do
-      files_list.stubs(:find_dependency).with(file).returns([ path, nil ])
-      files_list.stubs(:find_dependency).with(other_file).returns(false)
-      files_list.instance_variable_set(:@checked_dependency, set)
-    end
-
-    context 'not found' do
-      before do
-        files_list.expects(:add_file).never
-      end
-
-      it 'should do nothing' do
-        files_list.add_dependency('', other_file, nil)
-        set.should be_empty
-      end
-    end
-
-    context 'require' do
-      context 'not already added' do
-        before do
-          files_list.expects(:add_file).with(path, nil, false)
-        end
-
-        it 'should add the file to the front' do
-          files_list.add_dependency('require', file, nil)
-          set.should include(file)
-        end
-      end
-    end
-
-    context 'require_tree' do
-      include FakeFS::SpecHelpers
-
-      let(:paths) { %w{one.js dir/two.coffee dir/three.css dir/subdir/four.js.erb other/five.css.erb} }
-
-      before do
-        paths.each do |path|
-          FileUtils.mkdir_p File.dirname(path)
-          File.open(path, 'wb')
-
-          if path[%r{\.(js|css|coffee)$}]
-            files_list.expects(:find_dependency).with(path).returns([ other_file, nil ])
-            files_list.expects(:add_file).with(other_file, nil, false)
-          end
-        end
-      end
-
-      it 'should add the file to the front' do
-        files_list.add_dependency('require_tree', '.', File.expand_path('.'))
-        set.should be_empty
-      end
-    end
-  end
-
   describe '#search_paths' do
+    no_default_files!
+
     let(:files_list) { described_class.new(:config => config) }
 
     let(:config) { {
@@ -321,68 +269,74 @@ describe Jasmine::Headless::FilesList do
     end
   end
 
-  describe '#find_dependency' do
-    include FakeFS::SpecHelpers
+  describe '#files' do
+    let(:path_one) { 'one' }
+    let(:path_two) { 'two' }
+    let(:path_three) { 'three' }
 
-    let(:dir) { File.expand_path('dir') }
-
-    let(:filename) { 'file' }
-    let(:file) { "#{filename}.js" }
+    let(:file_one) { stub(:file_paths => [ path_one, path_two ] ) }
+    let(:file_two) { stub(:file_paths => [ path_two, path_three ] ) }
 
     before do
-      FileUtils.mkdir_p dir
+      files_list.stubs(:required_files).returns([ file_one, file_two ])
+    end
 
-      %w{file.sub.js file.js.coffee}.each do |file|
-        File.open(File.join(dir, file), 'wb')
+    subject { files_list.files }
+
+    it { should == [ path_one, path_two, path_three ] }
+  end
+
+  describe '#filtered_files' do
+    let(:spec_dir) { 'spec' }
+
+    let(:file_one) { "#{spec_dir}/one" }
+    let(:file_two) { "#{spec_dir}/two" }
+    let(:file_three) { "#{spec_dir}/three" }
+    let(:file_four) { 'other/four' }
+
+    before do
+      files_list.stubs(:files).returns([
+        file_one,
+        file_two,
+        file_three,
+        file_four
+      ])
+
+      files_list.stubs(:potential_files_to_filter).returns([ file_one, file_two, file_three ])
+    end
+
+    subject { files_list.filtered_files }
+
+    context 'empty filter' do
+      before do
+        files_list.stubs(:spec_filter).returns([])
       end
 
-      files_list.stubs(:search_paths).returns([ dir ])
+      it { should == [ file_one, file_two, file_three, file_four ] }
     end
 
-    subject { files_list.find_dependency(search) }
+    context 'with filter' do
+      before do
+        files_list.stubs(:spec_filter).returns([ "#{spec_dir}/one", '**/tw*' ])
+      end
 
-    context 'bad' do
-      let(:search) { 'bad' }
-
-      it { should be_false }
-    end
-
-    context 'file' do
-      let(:search) { 'file' }
-
-      it { should == [ File.join(dir, 'file.js.coffee'), dir ] }
-    end
-
-    context 'file.sub' do
-      let(:search) { 'file.sub' }
-
-      it { should == [ File.join(dir, 'file.sub.js'), dir ] }
+      it { should == [ file_one, file_two, file_four ] }
     end
   end
 
-  describe '#add_file' do
-    let(:set) { Set.new([ :one ]) }
+  describe '#files_to_html' do
+    let(:file_one) { 'path/one' }
+    let(:file_two) { 'path/two' }
 
     before do
-      files_list.instance_variable_set(:@checked_dependency, set)
+      files_list.stubs(:files).returns([ file_one, file_two ])
+      files_list.stubs(:search_paths).returns([ 'path' ])
 
-      files_list.stubs(:add_dependencies)
+      Jasmine::Headless::RequiredFile.any_instance.stubs(:to_html).returns('made it')
     end
 
-    context 'clear dependencies' do
-      it 'should clear dependency checking' do
-        files_list.send(:add_file, 'file', 'root')
-
-        files_list.instance_variable_get(:@checked_dependency).should == Set.new
-      end
-    end
-
-    context 'do not clear dependencies' do
-      it 'should clear dependency checking' do
-        files_list.send(:add_file, 'file', 'root', false)
-
-        files_list.instance_variable_get(:@checked_dependency).should == set
-      end
+    it 'should render all the files' do
+      files_list.files_to_html.should == [ 'made it', 'made it' ]
     end
   end
 end

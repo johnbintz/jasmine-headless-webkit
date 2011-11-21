@@ -1,4 +1,4 @@
-//= require 'code'
+//= require 'things/code'
 
 describe('code', function() {
   it('should equal 1', function() {

@@ -11,7 +11,8 @@ module Jasmine::Headless
   autoload :Options, 'jasmine/headless/options'
   autoload :Task, 'jasmine/headless/task'
   autoload :FilesList, 'jasmine/headless/files_list'
-  autoload :TestFile, 'jasmine/headless/test_file'
+  autoload :RequiredFile, 'jasmine/headless/required_file'
+  autoload :PathSearcher, 'jasmine/headless/path_searcher'
 
   autoload :TemplateWriter, 'jasmine/headless/template_writer'
 

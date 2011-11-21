@@ -3,12 +3,11 @@ require 'fakefs/spec_helpers'
 
 RSpec.configure do |c|
   c.mock_with :mocha
-  c.backtrace_clean_patterns = []
+  #c.backtrace_clean_patterns = []
   
   c.before(:each) do
     Jasmine::Headless::CacheableAction.enabled = false
     Jasmine::Headless::FilesList.reset!
-    Jasmine::Headless::Runner.reset!
   end
 end
 
@@ -17,6 +16,14 @@ specrunner = 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner'
 if !File.file?(specrunner)
   Dir.chdir File.split(specrunner).first do
     system %{ruby extconf.rb}
+  end
+end
+
+class FakeFS::File
+  class << self
+    def fnmatch?(pattern, file)
+      RealFile.fnmatch?(pattern, file)
+    end
   end
 end
 

@@ -1,2 +1,2 @@
-//= require 'required'
+//= require 'things/required'
 

@@ -1,12 +1,23 @@
 require 'rainbow'
 require 'sprockets'
+require 'forwardable'
 
 module Jasmine::Headless
-  class TestFile
-    attr_reader :path, :source_root
+  class RequiredFile
+    extend Forwardable
 
-    def initialize(path, source_root = nil)
-      @path, @source_root = path, source_root
+    def_delegators :parent, :path_searcher, :extension_filter
+
+    attr_reader :path, :source_root, :parent
+    attr_writer :spec_file
+
+    def initialize(path, source_root, parent)
+      @path, @source_root, @parent = path, source_root, parent
+      @spec_file = false
+    end
+
+    def spec_file?
+      @spec_file
     end
 
     def ==(other)
@@ -17,19 +28,46 @@ module Jasmine::Headless
       process_data_by_filename(path)
     end
 
+    def has_dependencies?
+      !dependencies.empty?
+    end
+
+    def includes?(path)
+      @path == path || dependencies.any? { |dependency| dependency.includes?(path) }
+    end
+
+    def file_paths
+      (dependencies.collect(&:file_paths) + [ path ]).flatten
+    end
+
     def dependencies
       return @dependencies if @dependencies
 
       processor = Sprockets::DirectiveProcessor.new(path)
-      @dependencies = processor.directives.collect do |_, type, name|
+      @dependencies = processor.directives.collect do |line, type, name|
         if name[%r{^\.}]
           name = File.expand_path(File.join(File.dirname(path), name)).gsub(%r{^#{source_root}/}, '')
         else
           raise Sprockets::ArgumentError.new("require_tree needs a relative path: ./#{path}") if type == 'require_tree'
         end
 
-        [ type, name ]
-      end
+        files = case type
+        when 'require'
+          [ name ]
+        when 'require_tree'
+          Dir[File.join(source_root, name, '**/*')].find_all { |path|
+            File.file?(path) && path[extension_filter] 
+          }.sort.collect { |path| path.gsub(%r{^#{source_root}/}, '') }
+        end
+
+        files.collect do |file|
+          if result = path_searcher.find(file)
+            self.class.new(*result, self)
+          else
+            raise Sprockets::FileNotFound.new("Could not find #{file}, referenced from #{path}:#{line}")
+          end
+        end
+      end.flatten
     end
 
     def logical_path

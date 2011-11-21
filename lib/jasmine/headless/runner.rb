@@ -26,25 +26,6 @@ module Jasmine
       attr_reader :options
 
       class << self
-        def reset!
-          # register haml-sprockets if it's available...
-          %w{haml-sprockets}.each do |library|
-            begin
-              require library
-            rescue LoadError
-            end
-          end
-
-          # ...and unregister ones we don't want/need
-          Sprockets.instance_eval do
-            %w{less sass scss erb str}.each do |extension|
-              @engines.delete(".#{extension}")
-            end
-
-            register_engine '.coffee', Jasmine::Headless::CoffeeTemplate
-          end
-        end
-
         def run(options = {})
           options = Options.new(options) if !options.kind_of?(Options)
           new(options).run
@@ -88,9 +69,6 @@ module Jasmine
 
       def run
         Jasmine::Headless::CacheableAction.enabled = @options[:enable_cache]
-
-        Jasmine::Headless::FilesList.reset!
-        self.class.reset!
 
         files_list = Jasmine::Headless::FilesList.new(
           :config => jasmine_config,
