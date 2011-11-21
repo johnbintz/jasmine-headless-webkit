@@ -37,7 +37,7 @@ class jasmine.HeadlessConsoleReporter
 
   reportRunnerStarting: (runner) ->
     @startTime = new Date()
-    JHW.stdout.puts("\nRunning Jasmine specs...".bright())
+    JHW.stdout.puts("\nRunning Jasmine specs...".bright()) if !this.hasError()
 
   reportSpecResults: (spec) ->
     return if this.hasError()

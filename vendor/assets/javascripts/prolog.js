@@ -1,6 +1,5 @@
 (function() {
   var createHandle, handle, _i, _len, _ref;
-
   if (window.JHW) {
     window.console = {
       log: function(data) {
@@ -41,7 +40,9 @@
       e = e || window.event;
       JHW.hasError();
       JHW.stdout.puts('The code tried to leave the test page. Check for unhandled form submits and link clicks.');
-      if (e) e.returnValue = 'string';
+      if (e) {
+        e.returnValue = 'string';
+      }
       return 'string';
     };
     window.confirm = function(message) {
@@ -83,9 +84,6 @@
       return JHW.stdout.puts(msg);
     };
   }
-
   window.CoffeeScriptToFilename = {};
-
   window.CSTF = window.CoffeeScriptToFilename;
-
 }).call(this);
