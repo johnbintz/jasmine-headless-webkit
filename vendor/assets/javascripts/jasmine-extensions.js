@@ -1,11 +1,9 @@
 (function() {
   var generator, getSplitName, method, pauseAndRun, _i, _len, _ref;
   var __slice = Array.prototype.slice;
-
   if (!(typeof jasmine !== "undefined" && jasmine !== null)) {
     throw new Error("jasmine not laoded!");
   }
-
   if (window.JHW) {
     getSplitName = function(parts) {
       parts.push(String(this.description).replace(/[\n\r]/g, ' '));
@@ -112,11 +110,7 @@
             _results = [];
             for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
               reporter = _ref2[_j];
-              if (reporter[method] != null) {
-                _results.push(reporter[method].apply(reporter, args));
-              } else {
-                _results.push(void 0);
-              }
+              _results.push(reporter[method] != null ? reporter[method].apply(reporter, args) : void 0);
             }
             return _results;
           };
@@ -125,5 +119,4 @@
       }
     }
   }
-
 }).call(this);

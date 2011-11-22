@@ -11,7 +11,7 @@ class window.HeadlessReporterResult
     bestChoice = HeadlessReporterResult.findSpecLine(@splitName)
     output += " (#{bestChoice.file}:#{bestChoice.lineNumber})".foreground('blue') if bestChoice.file
 
-    JHW.stdout.puts "\n\n#{output}"
+    JHW.stdout.puts "\n#{output}"
     for result in @results
       output = result.message.foreground('red')
       if result.lineNumber
