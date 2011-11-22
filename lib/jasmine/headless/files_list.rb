@@ -42,6 +42,8 @@ module Jasmine::Headless
           end
 
           register_engine '.coffee', Jasmine::Headless::CoffeeTemplate
+          register_engine '.js', Jasmine::Headless::JSTemplate
+          register_engine '.css', Jasmine::Headless::CSSTemplate
         end
       end
 
@@ -61,18 +63,20 @@ module Jasmine::Headless
       @potential_files_to_filter = []
 
       self.class.default_files.each do |file|
-        @required_files << RequiredFile.new(*[ path_searcher.find(file.dup), self ].flatten)
+        @required_files << sprockets_environment.find_asset(file, :bundle => false)
       end
 
       use_config! if config?
     end
 
     def files
-      required_files.collect { |file| file.file_paths }.flatten.uniq
+      required_files.collect { |file| file.send(:required_assets).collect { |asset| asset.pathname.to_s } }.flatten.uniq
     end
 
     def spec_files
-      filter_for_requested_specs(required_files.find_all(&:spec_file?).collect(&:path))
+      filter_for_requested_specs(
+        files.find_all { |file| spec_dir.any? { |dir| file[dir] } }
+      )
     end
 
     def filtered_files
@@ -90,6 +94,17 @@ module Jasmine::Headless
       @search_paths
     end
 
+    def sprockets_environment
+      return @sprockets_environment if @sprockets_environment
+
+      @sprockets_environment = Sprockets::Environment.new
+      search_paths.each do |path|
+        @sprockets_environment.append_path(path)
+      end
+
+      @sprockets_environment
+    end
+
     def path_searcher
       @path_searcher ||= PathSearcher.new(self)
     end
@@ -98,10 +113,13 @@ module Jasmine::Headless
       if is_outside_scope = !spec_filter.empty?
         is_outside_scope = spec_dir.any? do |dir|
           spec_file_searches.any? do |search|
-            !spec_files.any? { |file| File.fnmatch?(File.join(dir, search), file) }
+            !spec_files.any? { |file| 
+              File.fnmatch?(File.join(dir, search), file)
+            }
           end
         end
       end
+
       is_outside_scope
     end
 
@@ -139,11 +157,7 @@ module Jasmine::Headless
           alert_time = nil
         end
 
-        search_paths.collect do |path|
-          if file[%r{^#{path}}]
-            Jasmine::Headless::RequiredFile.new(file, path, self).to_html
-          end
-        end.compact.first
+        sprockets_environment.find_asset(file, :bundle => false).to_s
       end.flatten.compact.reject(&:empty?)
     end
 
@@ -178,6 +192,16 @@ module Jasmine::Headless
           add_files(@searches[type] = data.flatten, type, dirs)
         end
       end
+
+      filtered_required_files = []
+
+      @required_files.each do |file|
+        if !filtered_required_files.any? { |other_file| other_file.logical_path == file.logical_path }
+          filtered_required_files << file
+        end
+      end
+
+      @required_files = filtered_required_files
     end
 
     def add_files(patterns, type, dirs)
@@ -186,34 +210,14 @@ module Jasmine::Headless
           search = File.expand_path(File.join(dir, search))
 
           Dir[search].find_all { |file| file[extension_filter] }.each do |path|
-            @required_files << (file = RequiredFile.new(path, dir, self))
-
-            if type == 'spec_files'
-              file.spec_file = true
-              @potential_files_to_filter << path
-            end
+            add_path(path, type) if File.file?(path)
           end
         end
       end
 
       if type == 'spec_files'
-        spec_filter.each do |path|
-          @required_files << (file = RequiredFile.new(path, nil, self))
-
-          file.spec_file = true
-          @potential_files_to_filter << path
-        end
+        spec_filter.each { |path| add_path(path, type) }
       end
-
-      filtered_required_files = []
-
-      @required_files.each do |file|
-        if !filtered_required_files.any? { |other_file| other_file == file }
-          filtered_required_files << file
-        end
-      end
-      
-      @required_files = filtered_required_files
     end
 
     def config?
@@ -228,8 +232,14 @@ module Jasmine::Headless
       %r{(#{(%w{.js .css} + Sprockets.engine_extensions).join('|')})$}
     end
 
-    def add_file(file)
-      @files << file
+    def add_path(path, type)
+      asset = sprockets_environment.find_asset(path, :bundle => false)
+
+      @required_files << asset
+
+      if type == 'spec_files'
+        @potential_files_to_filter << path
+      end
     end
 
     def include_spec_file?(file)

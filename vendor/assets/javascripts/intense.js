@@ -1,5 +1,6 @@
 (function() {
   var code, method, _ref;
+
   window.Intense = {
     colors: {
       black: 0,
@@ -29,15 +30,15 @@
     },
     useColors: true,
     moveBack: function(count) {
-      if (count == null) {
-        count = 1;
-      }
+      if (count == null) count = 1;
       return "\033[" + count + "D";
     }
   };
+
   _ref = Intense.methods;
   for (method in _ref) {
     code = _ref[method];
     String.prototype[method] = code;
   }
+
 }).call(this);

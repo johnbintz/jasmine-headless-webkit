@@ -27,160 +27,8 @@ describe Jasmine::Headless::FilesList do
     end
   end
 
-  describe '#use_config' do
-    let(:files_list) { described_class.new(:config => config) }
-
-    include FakeFS::SpecHelpers
-
-    no_default_files!
-
-    let(:src_dir) { 'src' }
-    let(:spec_dir) { 'spec' }
-
-    let(:first_file) { File.join(src_dir, 'js/first_file.js') }
-    let(:src_file) { File.join(src_dir, 'js/src_file.js') }
-    let(:spec_file) { File.join(spec_dir, 'spec_file_spec.js') }
-    let(:helper_file) { File.join(spec_dir, 'helper/helper_file.js') }
-    let(:stylesheet_file) { File.join(src_dir, 'stylesheet/blah.css') }
-
-    before do
-      [ first_file, src_file, spec_file, helper_file, stylesheet_file ].each do |file|
-        FileUtils.mkdir_p File.split(file).first
-        File.open(file, 'w')
-      end
-    end
-
-    shared_examples_for :reading_data do
-      let(:expected_files) do
-        [
-          File.expand_path(first_file),
-          File.expand_path(src_file),
-          File.expand_path(stylesheet_file),
-          File.expand_path(helper_file),
-          File.expand_path(spec_file)
-        ]
-      end
-
-      it 'should read the data from the jasmine.yml file and add the files' do
-        files_list.files.should == expected_files
-
-        files_list.spec_files.should == [ File.expand_path(spec_file) ]
-      end
-    end
-
-    context 'with normal list' do
-      let(:config) { {
-        'src_dir' => src_dir,
-        'spec_dir' => spec_dir,
-        'src_files' => [ 'js/first_file.js', 'js/*.js' ],
-        'spec_files' => [ '*_spec.js' ],
-        'helpers' => [ 'helper/*.js' ],
-        'stylesheets' => [ 'stylesheet/*.css' ]
-      } }
-
-      it_should_behave_like :reading_data
-    end
-
-    context 'with multidimensional list' do
-      let(:config) { {
-        'src_dir' => src_dir,
-        'spec_dir' => spec_dir,
-        'src_files' => [ [ 'js/first_file.js', 'js/*.js' ] ],
-        'spec_files' => [ '*_spec.js' ],
-        'helpers' => [ 'helper/*.js' ],
-        'stylesheets' => [ 'stylesheet/*.css' ]
-      } }
-
-      it_should_behave_like :reading_data
-    end
-
-    context 'with multidimensional src dir' do
-      let(:config) { {
-        'src_dir' => [ src_dir ],
-        'spec_dir' => spec_dir,
-        'src_files' => [ [ 'js/first_file.js', 'js/*.js' ] ],
-        'spec_files' => [ '*_spec.js' ],
-        'helpers' => [ 'helper/*.js' ],
-        'stylesheets' => [ 'stylesheet/*.css' ]
-      } }
-
-      it_should_behave_like :reading_data
-    end
-  end
-
-  context 'with filtered specs' do
-    let(:files_list) { Jasmine::Headless::FilesList.new(:only => filter, :config => config) }
-    let(:spec_dir) { 'spec' }
-
-    include FakeFS::SpecHelpers
-
-    no_default_files!
-
-    let(:config) { {
-      'spec_files' => [ '*_spec.js' ],
-      'spec_dir' => spec_dir
-    } }
-
-    let(:spec_files) { %w{one_spec.js two_spec.js whatever.js} }
-
-    before do
-      spec_files.each do |file|
-        FileUtils.mkdir_p spec_dir
-        File.open(File.join(spec_dir, file), 'w')
-      end
-    end
-
-    context 'empty filter' do
-      let(:filter) { [] }
-
-      it 'should return all files for filtered and all files' do
-        files_list.files.any? { |file| file['two_spec.js'] }.should be_true
-        files_list.filtered?.should be_false
-        files_list.should_not have_spec_outside_scope
-        files_list.spec_files.sort.should == %w{one_spec.js two_spec.js}.sort.collect { |file| File.expand_path(File.join(spec_dir, file)) }
-      end
-    end
-
-    context 'filter with a file that is matchable' do
-      let(:filter) { [ File.expand_path('spec/one_spec.js') ] }
-
-      it 'should return all files for files' do
-        files_list.files.any? { |file| file['two_spec.js'] }.should be_true
-        files_list.filtered?.should be_true
-        files_list.should_not have_spec_outside_scope
-        files_list.spec_files.should == filter
-      end
-
-      it 'should return only filtered files for filtered_files' do
-        files_list.filtered_files.any? { |file| file['two_spec.js'] }.should be_false
-        files_list.should_not have_spec_outside_scope
-      end
-    end
-
-    context 'filter with a glob' do
-      let(:filter) { [ File.expand_path('spec/one*') ] }
-
-      it 'should return all files for files' do
-        files_list.files.any? { |file| file['two_spec.js'] }.should be_true
-        files_list.filtered?.should be_true
-        files_list.should_not have_spec_outside_scope
-      end
-
-      it 'should return only filtered files for filtered_files' do
-        files_list.filtered_files.any? { |file| file['two_spec.js'] }.should be_false
-        files_list.should_not have_spec_outside_scope
-      end
-    end
-
-    context 'filter with a file that is not even there' do
-      let(:filter) { [ File.expand_path('spec/whatever.js') ] }
-
-      it 'should use the provided file' do
-        files_list.filtered_files.any? { |file| file['whatever.js'] }.should be_true
-        files_list.should have_spec_outside_scope
-      end
-    end
-  end
+  it 'should have tests for #use_config!'
+  it 'should have tests for #add_files'
 
   describe '#spec_file_line_numbers' do
     include FakeFS::SpecHelpers
@@ -274,8 +122,12 @@ describe Jasmine::Headless::FilesList do
     let(:path_two) { 'two' }
     let(:path_three) { 'three' }
 
-    let(:file_one) { stub(:file_paths => [ path_one, path_two ] ) }
-    let(:file_two) { stub(:file_paths => [ path_two, path_three ] ) }
+    let(:file_one) { stub(:required_assets => [ asset_one, asset_two ] ) }
+    let(:file_two) { stub(:required_assets => [ asset_two, asset_three ] ) }
+
+    let(:asset_one) { stub(:pathname => Pathname(path_one)) }
+    let(:asset_two) { stub(:pathname => Pathname(path_two)) }
+    let(:asset_three) { stub(:pathname => Pathname(path_three)) }
 
     before do
       files_list.stubs(:required_files).returns([ file_one, file_two ])
@@ -321,22 +173,6 @@ describe Jasmine::Headless::FilesList do
       end
 
       it { should == [ file_one, file_two, file_four ] }
-    end
-  end
-
-  describe '#files_to_html' do
-    let(:file_one) { 'path/one' }
-    let(:file_two) { 'path/two' }
-
-    before do
-      files_list.stubs(:files).returns([ file_one, file_two ])
-      files_list.stubs(:search_paths).returns([ 'path' ])
-
-      Jasmine::Headless::RequiredFile.any_instance.stubs(:to_html).returns('made it')
-    end
-
-    it 'should render all the files' do
-      files_list.files_to_html.should == [ 'made it', 'made it' ]
     end
   end
 end

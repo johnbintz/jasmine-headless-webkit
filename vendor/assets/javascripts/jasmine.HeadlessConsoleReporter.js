@@ -1,9 +1,10 @@
-(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
   if (!(typeof jasmine !== "undefined" && jasmine !== null)) {
     throw new Error("jasmine not loaded!");
   }
+
   jasmine.HeadlessConsoleReporter = (function() {
+
     function HeadlessConsoleReporter(callback) {
       this.callback = callback != null ? callback : null;
       this.results = [];
@@ -13,11 +14,10 @@
       this.position = 0;
       this.positions = "|/-\\";
     }
+
     HeadlessConsoleReporter.prototype.reportRunnerResults = function(runner) {
       var output, result, resultLine, runtime, _i, _len, _ref;
-      if (this.hasError()) {
-        return;
-      }
+      if (this.hasError()) return;
       runtime = (new Date() - this.startTime) / 1000.0;
       JHW.stdout.print("\n");
       resultLine = this._formatResultLine(runtime);
@@ -34,22 +34,20 @@
         result = _ref[_i];
         result.print();
       }
-      if (window.JHW) {
-        window.onbeforeunload = null;
-      }
+      if (window.JHW) window.onbeforeunload = null;
       return JHW.finishSuite();
     };
+
     HeadlessConsoleReporter.prototype.reportRunnerStarting = function(runner) {
       this.startTime = new Date();
       if (!this.hasError()) {
         return JHW.stdout.puts("\nRunning Jasmine specs...".bright());
       }
     };
+
     HeadlessConsoleReporter.prototype.reportSpecResults = function(spec) {
       var failureResult, foundLine, result, results, testCount, _i, _len, _ref;
-      if (this.hasError()) {
-        return;
-      }
+      if (this.hasError()) return;
       JHW.ping();
       results = spec.results();
       this.length++;
@@ -76,35 +74,37 @@
         return this.results.push(failureResult);
       }
     };
+
     HeadlessConsoleReporter.prototype.reportSpecStarting = function(spec) {
       if (this.hasError()) {
         spec.finish();
         return spec.suite.finish();
       }
     };
+
     HeadlessConsoleReporter.prototype.reportSpecWaiting = function() {
       var first, runner;
+      var _this = this;
       runner = null;
       if (!this.timer) {
         this.timer = true;
         first = true;
-        runner = __bind(function() {
-          return this.timer = setTimeout(__bind(function() {
-            if (this.timer) {
-              if (!first) {
-                JHW.stdout.print(Intense.moveBack());
-              }
-              JHW.stdout.print(this.positions.substr(this.position, 1).foreground('yellow'));
-              this.position += 1;
-              this.position %= this.positions.length;
+        runner = function() {
+          return _this.timer = setTimeout(function() {
+            if (_this.timer) {
+              if (!first) JHW.stdout.print(Intense.moveBack());
+              JHW.stdout.print(_this.positions.substr(_this.position, 1).foreground('yellow'));
+              _this.position += 1;
+              _this.position %= _this.positions.length;
               first = false;
               return runner();
             }
-          }, this), 750);
-        }, this);
+          }, 750);
+        };
         return runner();
       }
     };
+
     HeadlessConsoleReporter.prototype.reportSpecRunning = function() {
       if (this.timer) {
         clearTimeout(this.timer);
@@ -112,10 +112,13 @@
         return JHW.stdout.print(Intense.moveBack());
       }
     };
+
     HeadlessConsoleReporter.prototype.reportSuiteResults = function(suite) {};
+
     HeadlessConsoleReporter.prototype.hasError = function() {
       return JHW._hasErrors;
     };
+
     HeadlessConsoleReporter.prototype._formatResultLine = function(runtime) {
       var line;
       line = [];
@@ -127,6 +130,7 @@
       line.push((runtime === 1.0 ? "sec" : "secs") + '.');
       return line.join(' ');
     };
+
     return HeadlessConsoleReporter;
+
   })();
-}).call(this);

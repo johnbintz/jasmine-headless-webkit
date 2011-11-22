@@ -11,12 +11,12 @@ module Jasmine::Headless
   autoload :Options, 'jasmine/headless/options'
   autoload :Task, 'jasmine/headless/task'
   autoload :FilesList, 'jasmine/headless/files_list'
-  autoload :RequiredFile, 'jasmine/headless/required_file'
-  autoload :PathSearcher, 'jasmine/headless/path_searcher'
 
   autoload :TemplateWriter, 'jasmine/headless/template_writer'
 
   autoload :CoffeeTemplate, 'jasmine/headless/coffee_template'
+  autoload :JSTemplate, 'jasmine/headless/js_template'
+  autoload :CSSTemplate, 'jasmine/headless/css_template'
 
   autoload :Report, 'jasmine/headless/report'
   autoload :ReportMessage, 'jasmine/headless/report_message'

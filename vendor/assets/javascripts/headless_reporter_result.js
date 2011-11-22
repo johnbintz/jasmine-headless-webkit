@@ -1,13 +1,16 @@
-(function() {
+
   window.HeadlessReporterResult = (function() {
+
     function HeadlessReporterResult(name, splitName) {
       this.name = name;
       this.splitName = splitName;
       this.results = [];
     }
+
     HeadlessReporterResult.prototype.addResult = function(message) {
       return this.results.push(message);
     };
+
     HeadlessReporterResult.prototype.print = function() {
       var bestChoice, output, result, _i, _len, _ref, _results;
       output = this.name.foreground('red');
@@ -25,10 +28,15 @@
           output += (" (line ~" + (bestChoice.lineNumber + result.lineNumber) + ")").foreground('red').bright();
         }
         JHW.stdout.puts("  " + output);
-        _results.push(result.line != null ? JHW.stdout.puts(("    " + result.line).foreground('yellow')) : void 0);
+        if (result.line != null) {
+          _results.push(JHW.stdout.puts(("    " + result.line).foreground('yellow')));
+        } else {
+          _results.push(void 0);
+        }
       }
       return _results;
     };
+
     HeadlessReporterResult.findSpecLine = function(splitName) {
       var bestChoice, file, index, lastLine, line, lineNumber, lines, newLineNumberInfo, _i, _len, _ref;
       bestChoice = {
@@ -49,9 +57,7 @@
             for (_i = 0, _len = newLineNumberInfo.length; _i < _len; _i++) {
               line = newLineNumberInfo[_i];
               lastLine = line;
-              if (line > lineNumber) {
-                break;
-              }
+              if (line > lineNumber) break;
             }
             lineNumber = lastLine;
           }
@@ -67,6 +73,7 @@
       }
       return bestChoice;
     };
+
     return HeadlessReporterResult;
+
   })();
-}).call(this);
