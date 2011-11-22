@@ -53,6 +53,8 @@ describe Jasmine::Headless::TemplateWriter do
 
       runner.stubs(:keep_runner).returns(true)
       runner.stubs(:runner_filename).returns(false)
+
+      Sprockets::Environment.any_instance.stubs(:find_asset).returns(stub(:body => ''))
     end
 
     let(:files_list) { Jasmine::Headless::FilesList.new }

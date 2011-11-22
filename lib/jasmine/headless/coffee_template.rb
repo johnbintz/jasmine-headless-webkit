@@ -1,4 +1,5 @@
 require 'tilt/template'
+require 'rainbow'
 
 module Jasmine::Headless
   class CoffeeTemplate < Tilt::Template
