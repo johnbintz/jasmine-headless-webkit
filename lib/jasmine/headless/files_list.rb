@@ -44,6 +44,7 @@ module Jasmine::Headless
           register_engine '.coffee', Jasmine::Headless::CoffeeTemplate
           register_engine '.js', Jasmine::Headless::JSTemplate
           register_engine '.css', Jasmine::Headless::CSSTemplate
+          register_engine '.jst', Jasmine::Headless::JSTTemplate
         end
       end
 
@@ -102,6 +103,7 @@ module Jasmine::Headless
         @sprockets_environment.append_path(path)
       end
 
+      @sprockets_environment.unregister_postprocessor('application/javascript', Sprockets::SafetyColons)
       @sprockets_environment
     end
 
@@ -157,7 +159,7 @@ module Jasmine::Headless
           alert_time = nil
         end
 
-        sprockets_environment.find_asset(file, :bundle => false).to_s
+        sprockets_environment.find_asset(file, :bundle => false).body
       end.flatten.compact.reject(&:empty?)
     end
 

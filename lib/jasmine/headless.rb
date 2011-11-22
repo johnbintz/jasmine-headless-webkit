@@ -16,6 +16,7 @@ module Jasmine::Headless
 
   autoload :CoffeeTemplate, 'jasmine/headless/coffee_template'
   autoload :JSTemplate, 'jasmine/headless/js_template'
+  autoload :JSTTemplate, 'jasmine/headless/jst_template'
   autoload :CSSTemplate, 'jasmine/headless/css_template'
 
   autoload :Report, 'jasmine/headless/report'

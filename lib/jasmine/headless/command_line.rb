@@ -10,6 +10,8 @@ module Jasmine::Headless
           runner = Runner.new(options)
 
           if options[:do_list]
+            FilesList.reset!
+
             files_list = FilesList.new(:config => runner.jasmine_config)
             files_list.files.each { |file| puts file }
           else

@@ -7,7 +7,11 @@ module Jasmine::Headless
     def prepare ; end
 
     def evaluate(scope, locals, &block)
-      file ? %{<script type="text/javascript" src="#{file}"></script>} : data
+      if data['from="jhw"']
+        data
+      else
+        file ? %{<script type="text/javascript" src="#{file}"></script>} : data
+      end
     end
   end
 end
