@@ -134,11 +134,15 @@ describe Jasmine::Headless::RequiredFile do
     let(:path) { path_file }
     let(:path_file) { File.join(dir, 'path.js') }
     let(:req_file) { File.join(dir, "req.js") }
+    let(:other_file) { File.join(dir, "other.js") }
+
+    let(:content) { "//= #{directive} '#{req_name}'\njavascript" }
 
     before do
       FileUtils.mkdir_p dir
-      File.open(path_file, 'wb') { |fh| fh.print "//= #{directive} '#{req_name}'\njavascript" }
+      File.open(path_file, 'wb') { |fh| fh.print content }
       File.open(req_file, 'wb')
+      File.open(other_file, 'wb')
     end
 
     subject { file.dependencies }
@@ -193,6 +197,29 @@ describe Jasmine::Headless::RequiredFile do
           end
         end
       end
+    end
+
+    context 'require_self' do
+      subject { file.file_paths }
+
+      let(:content) do
+        <<-ENDTXT
+//= require #{dirname}/req
+//= require_self
+//= require #{dirname}/other
+ENDTXT
+      end
+
+      before do
+        path_searcher.expects(:find).with(File.join(dirname, 'req')).returns([ req_file, source_root ])
+        path_searcher.expects(:find).with(File.join(dirname, 'other')).returns([ other_file, source_root ])
+      end
+
+      it { should == [
+        req_file,
+        path_file,
+        other_file
+      ] }
     end
   end
 

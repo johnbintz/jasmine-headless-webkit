@@ -37,15 +37,26 @@ module Jasmine::Headless
     end
 
     def file_paths
-      (dependencies.collect(&:file_paths) + [ path ]).flatten
+      paths = dependencies.collect(&:file_paths).flatten
+
+      if @insert_after
+        paths.insert(paths.index(@insert_after) + 1, path)
+      else
+        paths << path
+      end
+
+      paths
     end
 
     def dependencies
       return @dependencies if @dependencies
 
       processor = Sprockets::DirectiveProcessor.new(path)
+
+      last_file_added = nil
+
       @dependencies = processor.directives.collect do |line, type, name|
-        if name[%r{^\.}]
+        if name && name[%r{^\.}]
           name = File.expand_path(File.join(File.dirname(path), name)).gsub(%r{^#{source_root}/}, '')
         else
           raise Sprockets::ArgumentError.new("require_tree needs a relative path: ./#{path}") if type == 'require_tree'
@@ -55,14 +66,21 @@ module Jasmine::Headless
         when 'require'
           [ name ]
         when 'require_tree'
-          Dir[File.join(source_root, name, '**/*')].find_all { |path|
-            File.file?(path) && path[extension_filter] 
+          Dir[File.join(source_root, name, '**/*')].find_all { |found_path|
+            found_path != path && File.file?(found_path) && found_path[extension_filter]
           }.sort.collect { |path| path.gsub(%r{^#{source_root}/}, '') }
+        when 'require_self'
+          @insert_after = last_file_added
+          []
+        else
+          []
         end
 
         files.collect do |file|
           if result = path_searcher.find(file)
-            self.class.new(*[ result, self ].flatten)
+            new_file = self.class.new(*[ result, self ].flatten)
+            last_file_added = new_file.path
+            new_file
           else
             raise Sprockets::FileNotFound.new("Could not find #{file}, referenced from #{path}:#{line}")
           end
