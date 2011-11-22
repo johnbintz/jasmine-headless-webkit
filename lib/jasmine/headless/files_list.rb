@@ -70,7 +70,7 @@ module Jasmine::Headless
     end
 
     def files
-      required_files.collect { |file| file.send(:required_assets).collect { |asset| asset.pathname.to_s } }.flatten.uniq
+      required_files.collect { |file| file.to_a.collect { |asset| asset.pathname.to_s } }.flatten.uniq
     end
 
     def spec_files
@@ -233,7 +233,7 @@ module Jasmine::Headless
     end
 
     def add_path(path, type)
-      asset = sprockets_environment.find_asset(path, :bundle => false)
+      asset = sprockets_environment.find_asset(path)
 
       @required_files << asset
 

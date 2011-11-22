@@ -122,8 +122,8 @@ describe Jasmine::Headless::FilesList do
     let(:path_two) { 'two' }
     let(:path_three) { 'three' }
 
-    let(:file_one) { stub(:required_assets => [ asset_one, asset_two ] ) }
-    let(:file_two) { stub(:required_assets => [ asset_two, asset_three ] ) }
+    let(:file_one) { stub(:to_a => [ asset_one, asset_two ] ) }
+    let(:file_two) { stub(:to_a => [ asset_two, asset_three ] ) }
 
     let(:asset_one) { stub(:pathname => Pathname(path_one)) }
     let(:asset_two) { stub(:pathname => Pathname(path_two)) }
