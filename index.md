@@ -238,7 +238,7 @@ spec_paths:
   - "**/*[Ss]pec.*"
 {% endhighlight %}
 
-This will include everything that Sprockets understanda in all your `src_dir` and `spec_dir` paths. At that point, use Sprockets `require`
+This will include everything that Sprockets understands in all your `src_dir` and `spec_dir` paths. At that point, use Sprockets `require`
 statements to define the include order of your files. Using the `--list` option on the command line to list the load order of files, combined
 with the `--runner-out` option to write HTML runner files to a place where the browser can easily get to them, is very helpful when moving to
 a Sprockets-managed project.
