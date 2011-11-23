@@ -28,8 +28,8 @@ they'll even work when running in the Jasmine gem's server with no changes to yo
 `jasmine-headless-webkit` also streamlines your workflow in other ways:
 
 * It integrates with [Guard](https://github.com/guard/guard) for a continuous testing setup when using [`guard-jasmine-headless-webkit`](https://github.com/guard/guard-jasmine-headless-webkit).
-* It compiles [CoffeeScript](http://jashkenas.github.com/coffee-script/), both for your tests and for your application logic.
 * It integrates with [Sprockets](https://github.com/sstephenson/sprockets) to handle code requires & preprocessing and JavaScript templates.
+* It compiles [CoffeeScript](http://jashkenas.github.com/coffee-script/), both for your tests and for your application logic.
 * It can be configured like RSpec, and its output is very similar to RSpec's output, so you don't need to learn too much new stuff to use and integrate it.
 * It provides cleaner debugging and backtrace output than a lot of other console-based test tools provide.
 * It's *fast*.
@@ -46,7 +46,7 @@ That depends on what you need:
 * If you're not using Rails and still want to unit test, the Jasmine gem or `jasmine-headless-webkit` is what you want.
 
 'round here, we focus on unit testing and mocking external interfaces. No using your app's views or routes, no hitting the app server to
-get resources, just mocking and stubbing.
+get resources, just mocking and stubbing the JavaScript code all by itself.
 
 ## How do I use this wonderful toy?
 
@@ -159,18 +159,6 @@ spec_dir: spec/javascripts
 It also brings in the same copy of the Jasmine library that the Jasmine gem includes, so if you're testing in both environments,
 you're guaranteed to get the same results in your tests.
 
-#### Caching, caching, caching
-
-`jasmine-headless-webkit` does two things that are CPU intensive (besides running tests): compiling CoffeeScript and analyzing
-spec files to get line number information for nicer spec failure messages (_did I mention you get really nice spec failure
-messages with `jasmine-headless-webkit`, too?_). These two operations are cached into the `.jhw-cache/` folder from where the
-runner is executed. When this cache is combined with running tests continuously using Guard, runtime overhead is reduced to almost
-nothing.
-
-Of course, being a cache, it takes time to warm up. The first time you run `jasmine-headless-webkit` on a big project, it can take
-several seconds to warm the cache. After that, enjoy an almost 20% speedup in runtime (tested on exactly one project's runtime,
-YMMV). This is new as of `0.7.0`.
-
 #### `*.coffee` in my `jasmine.yml` file?!
 
 Yes, `jasmine-headless-webkit` will support `*.coffee` files in `jasmine.yml`, which the normal Jasmine server currently
@@ -221,12 +209,58 @@ If you need to test server interaction, do one of the following:
 
 #### Sprockets support
 
-Nearly all of Sprockets is accessible to your test suite when using `jasmine-headless-webkit`. It's easier to list the parts that
-aren't accessible:
+Nearly all of Sprockets is accessible to your test suite when using `jasmine-headless-webkit`.
+It's easier to list the parts that aren't accessible:
 
 * `*.erb` files are not processed at all (and are actually ignored) because it's assumed the contents of those files depend on an
-  outside source, like a Rails app.
+  outside source, like a Rails app. That integration puts testing those files squarely in the "integration testing" realm, so
+  it's not valid to support them in a unit testing tool.
 * No CSS compilation happens, so no Sass or LESS.
+
+If any gems have `vendor/assets/javascripts` in their list of files, such as `jquery-rails`, those are put in the asset
+path along with the paths you define in `src_dir`:
+
+{% highlight yaml %}
+src_dir:
+  - app/assets/javascripts
+  - vendor/assets/javascripts
+{% endhighlight %}
+
+_Technically, `spec_dir` is in your asset path, too, but Jasmine's typical behavior of including `helpers` before `spec_dir` should
+give you all the include power you need for defining specs._
+
+In order for Sprockets support to work as intended, you should define your `src_paths` and `spec_paths` as such:
+
+{% highlight yaml %}
+src_paths:
+  - "**/*.*"
+spec_paths:
+  - "**/*[Ss]pec.*"
+{% endhighlight %}
+
+This will include everything that Sprockets understanda in all your `src_dir` and `spec_dir` paths. At that point, use Sprockets `require`
+statements to define the include order of your files. Using the `--list` option on the command line to list the load order of files, combined
+with the `--runner-out` option to write HTML runner files to a place where the browser can easily get to them, is very helpful when moving to
+a Sprockets-managed project.
+
+JavaScript Templates are supported too, including [haml-sprockets](https://github.com/dharanasoft/haml-sprockets). Use them as you would any other
+JavaScript file, and ensure the load order is right, and the necessary code in the JST namespace will be created.
+
+Since any gem with `vendor/assets/javascripts` is usable, that means Jasmine-specific gems are possible now. [jasmine-spec-extras](https://github.com/johnbintz/jasmine-spec-extras)
+is the first such gem, which provides `jasmine-jquery`, `sinon`, and any other useful Jasmine helpers, vendored into the gem so you can easily include
+them into your project without having to manually manage them yourself:
+
+{% highlight coffeescript %}
+#= require sinon
+#= require backbone
+
+describe "Spy thing", ->
+  it 'should fire a callback', ->
+    collection = new Backbone.Collection()
+    spy = sinon.spy()
+    collection.bind('reset', spy)
+    collection.reset()
+{% endhighlight %}
 
 If you have to use ERB to inject information into the JavaScript or CoffeeScript files in your project, I recommend that you move those
 injections to a file that is included separately from the code, or include them in `application.*.erb` like this:
@@ -242,6 +276,18 @@ MyLibrary.root_url = <%= api_root_path %>
 
 This support is still pretty early, so as myself and others discover the best way to set up code that can be used in both places, those
 practices will be outlined here.
+
+#### Caching, caching, caching
+
+`jasmine-headless-webkit` does two things that are CPU intensive (besides running tests): compiling CoffeeScript and analyzing
+spec files to get line number information for nicer spec failure messages (_did I mention you get really nice spec failure
+messages with `jasmine-headless-webkit`, too?_). These two operations are cached into the `.jhw-cache/` folder from where the
+runner is executed. When this cache is combined with running tests continuously using Guard, runtime overhead is reduced to almost
+nothing.
+
+Of course, being a cache, it takes time to warm up. The first time you run `jasmine-headless-webkit` on a big project, it can take
+several seconds to warm the cache. After that, enjoy an almost 20% speedup in runtime (tested on exactly one project's runtime,
+YMMV).
 
 #### What else works?
 

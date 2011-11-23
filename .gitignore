@@ -4,4 +4,4 @@ _site/
 .jhw-cache/
 ext/
 pkg/
-
+coverage/
