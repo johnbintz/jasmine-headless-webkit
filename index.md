@@ -274,7 +274,7 @@ injections to a file that is included separately from the code, or include them 
 MyLibrary.root_url = <%= api_root_path %>
 {% endhighlight %}
 
-This support is still pretty early, so as myself and others discover the best way to set up code that can be used in both places, those
+Sprockets support is still pretty new, so as myself and others discover the best way to set up code that can be used in both places, those
 practices will be outlined here.
 
 #### Caching, caching, caching
