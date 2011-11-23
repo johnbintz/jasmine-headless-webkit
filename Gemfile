@@ -15,3 +15,7 @@ gem 'mocha', '0.9.12'
 gem 'guard-jasmine-headless-webkit', :git => 'git://github.com/johnbintz/guard-jasmine-headless-webkit.git'
 gem 'facter'
 
+gem 'jquery-rails'
+gem 'ejs'
+
+gem 'simplecov'

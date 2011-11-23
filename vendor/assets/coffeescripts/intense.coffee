@@ -20,6 +20,7 @@ window.Intense = {
       else
         this
   useColors: true
+  moveBack: (count = 1) -> "\033[#{count}D"
 }
 
 for method, code of Intense.methods

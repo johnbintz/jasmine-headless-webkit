@@ -4,6 +4,8 @@ require 'coffee-script'
 require 'rainbow'
 
 require 'yaml'
+require 'sprockets'
+
 
 module Jasmine
   module Headless
@@ -23,9 +25,11 @@ module Jasmine
 
       attr_reader :options
 
-      def self.run(options = {})
-        options = Options.new(options) if !options.kind_of?(Options)
-        new(options).run
+      class << self
+        def run(options = {})
+          options = Options.new(options) if !options.kind_of?(Options)
+          new(options).run
+        end
       end
 
       def initialize(options)
@@ -65,8 +69,9 @@ module Jasmine
 
       def run
         Jasmine::Headless::CacheableAction.enabled = @options[:enable_cache]
+        FilesList.reset!
 
-        files_list = Jasmine::FilesList.new(
+        files_list = Jasmine::Headless::FilesList.new(
           :config => jasmine_config,
           :only => @options[:files]
         )

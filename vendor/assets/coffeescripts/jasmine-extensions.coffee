@@ -73,7 +73,10 @@ if window.JHW
 
     pauseAndRun = (onComplete) ->
       JHW.timerPause()
+      jasmine.getEnv().reporter.reportSpecWaiting()
+
       this._execute ->
+        jasmine.getEnv().reporter.reportSpecRunning()
         JHW.timerDone()
         onComplete()
 
@@ -88,3 +91,13 @@ if window.JHW
       result.expectations = jasmine.NestedResults.parseAndStore(arguments.callee.caller.caller.caller.toString())
 
       this.addResult_(result)
+
+    for method in [ "reportSpecWaiting", "reportSpecRunning" ]
+      generator = (method) ->
+        (args...) ->
+          for reporter in @subReporters_
+            if reporter[method]?
+              reporter[method](args...)
+
+      jasmine.MultiReporter.prototype[method] = generator(method)
+

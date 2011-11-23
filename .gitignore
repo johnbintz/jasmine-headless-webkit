@@ -14,3 +14,4 @@ jhw-test
 .jhw-cache/
 _site/
 jhw.*.html
+coverage/

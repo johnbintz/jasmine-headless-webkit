@@ -43,3 +43,22 @@ task :build_runner do
   end
 end
 
+desc "Generate vendored JS"
+task :generate_js do
+  require 'sprockets'
+
+  source = 'vendor/assets/coffeescripts'
+  target = 'vendor/assets/javascripts'
+
+  env = Sprockets::Environment.new { |s| s.append_path 'vendor/assets/coffeescripts' }
+
+  Dir[File.join(File.expand_path(source), '*.coffee')].each do |file|
+    file_target = file.gsub(source, target).gsub('.coffee', '.js')
+    puts "#{file} => #{file_target}"
+
+    File.open(file_target, 'wb') do |fh|
+      fh.print env.find_asset(File.expand_path(file)).to_s
+    end
+  end
+end
+

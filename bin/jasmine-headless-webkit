@@ -1,31 +1,11 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
-require 'rainbow'
 
-def gem_dir
-  File.expand_path('../..', __FILE__)
-end
+$: << File.expand_path('../../lib', __FILE__)
 
-$:.unshift(File.join(gem_dir, 'lib'))
 require 'jasmine-headless-webkit'
 require 'coffee-script'
 
-begin
-  options = Jasmine::Headless::Options.from_command_line
-  runner = Jasmine::Headless::Runner.new(options)
-
-  if options[:do_list]
-    files_list = Jasmine::FilesList.new(:config => runner.jasmine_config)
-    files_list.files.each { |file| puts file }
-  else
-    exit runner.run
-  end
-rescue CoffeeScript::CompilationError
-  exit 1
-rescue StandardError => e
-  $stderr.puts "[%s] %s (%s)" % [ "jasmine-headless-webkit".color(:red), e.message.color(:white), e.class.name.color(:yellow) ]
-  $stderr.puts e.backtrace.collect { |line| "  #{line}" }.join("\n")
-  exit 1
-end
+Jasmine::Headless::CommandLine.run!
 

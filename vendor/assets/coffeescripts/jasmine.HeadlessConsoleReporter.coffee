@@ -6,6 +6,9 @@ class jasmine.HeadlessConsoleReporter
     @results = []
     @failedCount = 0
     @length = 0
+    @timer = null
+    @position = 0
+    @positions = "|/-\\"
 
   reportRunnerResults: (runner) ->
     return if this.hasError()
@@ -34,7 +37,7 @@ class jasmine.HeadlessConsoleReporter
 
   reportRunnerStarting: (runner) ->
     @startTime = new Date()
-    JHW.stdout.puts("\nRunning Jasmine specs...".bright())
+    JHW.stdout.puts("\nRunning Jasmine specs...".bright()) if !this.hasError()
 
   reportSpecResults: (spec) ->
     return if this.hasError()
@@ -66,6 +69,33 @@ class jasmine.HeadlessConsoleReporter
     if this.hasError()
       spec.finish()
       spec.suite.finish()
+
+  reportSpecWaiting: ->
+    runner = null
+
+    if !@timer
+      @timer = true
+      first = true
+
+      runner = =>
+        @timer = setTimeout(
+          =>
+            if @timer
+              JHW.stdout.print(Intense.moveBack()) if !first
+              JHW.stdout.print(@positions.substr(@position, 1).foreground('yellow'))
+              @position += 1
+              @position %= @positions.length
+              first = false
+              runner()
+          , 750
+        )
+      runner()
+
+  reportSpecRunning: ->
+    if @timer
+      clearTimeout(@timer)
+      @timer = null
+      JHW.stdout.print(Intense.moveBack())
 
   reportSuiteResults: (suite) ->
   hasError: ->

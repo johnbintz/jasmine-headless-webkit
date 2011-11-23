@@ -1,11 +1,18 @@
+if ENV['COVERAGE']
+  require 'simplecov'
+  SimpleCov.start
+end
+
 require 'jasmine-headless-webkit'
 require 'fakefs/spec_helpers'
 
 RSpec.configure do |c|
   c.mock_with :mocha
+  #c.backtrace_clean_patterns = []
   
   c.before(:each) do
     Jasmine::Headless::CacheableAction.enabled = false
+    Jasmine::Headless::FilesList.reset!
   end
 end
 
@@ -14,6 +21,14 @@ specrunner = 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner'
 if !File.file?(specrunner)
   Dir.chdir File.split(specrunner).first do
     system %{ruby extconf.rb}
+  end
+end
+
+class FakeFS::File
+  class << self
+    def fnmatch?(pattern, file)
+      RealFile.fnmatch?(pattern, file)
+    end
   end
 end
 
@@ -51,4 +66,25 @@ module RSpec::Matchers
       File.file?(file)
     end
   end
+
+  define :contain_in_order_in_file_list do |*files|
+    match do |lines|
+      file_list = files.dup
+
+      lines.each do |line|
+        next if !file_list.first
+
+        if line[file_list.first]
+          file_list.shift
+        end
+      end
+
+      file_list.length == 0
+    end
+
+    failure_message_for_should do |lines|
+      %{expected\n#{lines.join("\n")}\nto contain the following files, in order:\n#{files.join("\n")}}
+    end
+  end
 end
+

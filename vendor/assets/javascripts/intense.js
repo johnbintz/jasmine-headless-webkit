@@ -28,7 +28,11 @@
         }
       }
     },
-    useColors: true
+    useColors: true,
+    moveBack: function(count) {
+      if (count == null) count = 1;
+      return "\033[" + count + "D";
+    }
   };
 
   _ref = Intense.methods;

@@ -1,5 +1,6 @@
 (function() {
-  var getSplitName, pauseAndRun;
+  var generator, getSplitName, method, pauseAndRun, _i, _len, _ref;
+  var __slice = Array.prototype.slice;
 
   if (!(typeof jasmine !== "undefined" && jasmine !== null)) {
     throw new Error("jasmine not laoded!");
@@ -85,7 +86,9 @@
       jasmine.WaitsForBlock.prototype._execute = jasmine.WaitsForBlock.prototype.execute;
       pauseAndRun = function(onComplete) {
         JHW.timerPause();
+        jasmine.getEnv().reporter.reportSpecWaiting();
         return this._execute(function() {
+          jasmine.getEnv().reporter.reportSpecRunning();
           JHW.timerDone();
           return onComplete();
         });
@@ -98,6 +101,28 @@
         result.expectations = jasmine.NestedResults.parseAndStore(arguments.callee.caller.caller.caller.toString());
         return this.addResult_(result);
       };
+      _ref = ["reportSpecWaiting", "reportSpecRunning"];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        method = _ref[_i];
+        generator = function(method) {
+          return function() {
+            var args, reporter, _j, _len2, _ref2, _results;
+            args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+            _ref2 = this.subReporters_;
+            _results = [];
+            for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+              reporter = _ref2[_j];
+              if (reporter[method] != null) {
+                _results.push(reporter[method].apply(reporter, args));
+              } else {
+                _results.push(void 0);
+              }
+            }
+            return _results;
+          };
+        };
+        jasmine.MultiReporter.prototype[method] = generator(method);
+      }
     }
   }
 
