@@ -107,10 +107,6 @@ module Jasmine::Headless
       @sprockets_environment
     end
 
-    def path_searcher
-      @path_searcher ||= PathSearcher.new(self)
-    end
-
     def has_spec_outside_scope?
       if is_outside_scope = !spec_filter.empty?
         is_outside_scope = spec_dir.any? do |dir|
@@ -242,10 +238,6 @@ module Jasmine::Headless
       if type == 'spec_files'
         @potential_files_to_filter << path
       end
-    end
-
-    def include_spec_file?(file)
-      spec_filter.empty? || spec_filter.include?(file)
     end
 
     def src_dir

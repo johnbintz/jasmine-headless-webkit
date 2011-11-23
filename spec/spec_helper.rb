@@ -1,3 +1,8 @@
+if ENV['COVERAGE']
+  require 'simplecov'
+  SimpleCov.start
+end
+
 require 'jasmine-headless-webkit'
 require 'fakefs/spec_helpers'
 

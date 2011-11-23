@@ -17,3 +17,5 @@ gem 'facter'
 
 gem 'jquery-rails'
 gem 'ejs'
+
+gem 'simplecov'
