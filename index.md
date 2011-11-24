@@ -229,12 +229,12 @@ src_dir:
 _Technically, `spec_dir` is in your asset path, too, but Jasmine's typical behavior of including `helpers` before `spec_dir` should
 give you all the include power you need for defining specs._
 
-In order for Sprockets support to work as intended, you should define your `src_paths` and `spec_paths` as such:
+In order for Sprockets support to work as intended, you should define your `src_files` and `spec_files` as such:
 
 {% highlight yaml %}
-src_paths:
+src_files:
   - "**/*.*"
-spec_paths:
+spec_files:
   - "**/*[Ss]pec.*"
 {% endhighlight %}
 
