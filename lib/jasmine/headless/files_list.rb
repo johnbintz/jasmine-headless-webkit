@@ -182,7 +182,11 @@ module Jasmine::Headless
 
     def add_files(patterns, type, dirs)
       dirs.product(patterns).each do |search|
-        Dir[File.join(*search)].find_all { |file| file[extension_filter] }.each do |path|
+        files = Dir[File.join(*search)].find_all { |file| file[extension_filter] }
+
+        files.sort! { |a, b| rand(3) - 1 } if type == 'spec_files'
+
+        files.each do |path|
           add_path(path, type) if File.file?(path)
         end
       end

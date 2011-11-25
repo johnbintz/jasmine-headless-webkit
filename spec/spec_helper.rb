@@ -8,7 +8,7 @@ require 'fakefs/spec_helpers'
 
 RSpec.configure do |c|
   c.mock_with :mocha
-  #c.backtrace_clean_patterns = []
+  c.backtrace_clean_patterns = []
   
   c.before(:each) do
     Jasmine::Headless::CacheableAction.enabled = false
@@ -40,6 +40,12 @@ class FakeFS::File
   class << self
     def fnmatch?(pattern, file)
       RealFile.fnmatch?(pattern, file)
+    end
+  end
+
+  class Stat
+    def file?
+      File.file?(@file)
     end
   end
 end

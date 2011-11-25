@@ -175,5 +175,29 @@ describe Jasmine::Headless::FilesList do
       it { should == [ file_one, file_two, file_four ] }
     end
   end
+
+  describe '#add_files' do
+    no_default_files!
+
+    let(:dir) { 'tmp' }
+
+    before do
+      srand(100)
+
+      FileUtils.mkdir_p dir
+
+      10.times do |index|
+        File.open(File.join(dir, "file-#{index}.js"), 'wb')
+      end
+    end
+
+    it 'should load spec files in a random order' do
+      files_list.send(:add_files, [ '*' ], 'spec_files', [ dir ])
+
+      files_list.files.collect { |name| name[%r{\d+}] }.should == %w{6 7 1 0 5 3 4 8 2 9}
+
+      FileUtils.rm_rf dir
+    end
+  end
 end
 
