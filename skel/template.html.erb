@@ -15,10 +15,12 @@
         log: function(msg) { JHW.stdout.puts(msg) }
       }
 
-      window._onload = window.onload
+      window._onload = window.onload;
 
       window.onload = function() {
-        if (window._onload) { window._onload() }
+        if (window._onload && (window._onload != window.onload)) {
+          window._onload();
+        }
 
         if (window.JHW) {
           jasmine.getEnv().addReporter(new jasmine.HeadlessConsoleReporter());
