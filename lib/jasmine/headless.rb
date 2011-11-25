@@ -10,7 +10,9 @@ module Jasmine::Headless
   autoload :Runner, 'jasmine/headless/runner'
   autoload :Options, 'jasmine/headless/options'
   autoload :Task, 'jasmine/headless/task'
+
   autoload :FilesList, 'jasmine/headless/files_list'
+  autoload :UniqueAssetList, 'jasmine/headless/unique_asset_list'
 
   autoload :TemplateWriter, 'jasmine/headless/template_writer'
 

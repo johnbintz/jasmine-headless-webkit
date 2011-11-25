@@ -13,15 +13,17 @@ module Jasmine::Headless
 
         require 'rubygems'
 
-        raise StandardError.new("A newer version of Rubygems is required to use vendored assets. Please upgrade.") if !Gem::Specification.respond_to?(:map)
+        raise StandardError.new("A newer version of Rubygems is required to use vendored assets. Please upgrade.") if !Gem::Specification.respond_to?(:each)
 
         @vendor_asset_paths = []
 
-        Gem::Specification.map { |spec|
+        Gem::Specification.each do |spec|
           path = File.join(spec.gem_dir, 'vendor/assets/javascripts')
 
-          File.directory?(path) ? path : nil
-        }.compact
+          @vendor_asset_paths << path if File.directory?(path)
+        end
+
+        @vendor_asset_paths
       end
 
       def reset!
@@ -60,7 +62,7 @@ module Jasmine::Headless
     def initialize(options = {})
       @options = options
 
-      @required_files = []
+      @required_files = UniqueAssetList.new
       @potential_files_to_filter = []
 
       self.class.default_files.each do |file|
@@ -71,7 +73,7 @@ module Jasmine::Headless
     end
 
     def files
-      required_files.collect { |file| file.to_a.collect { |asset| asset.pathname.to_s } }.flatten.uniq
+      required_files.flatten.collect { |asset| asset.pathname.to_s }.uniq
     end
 
     def spec_files
@@ -88,9 +90,9 @@ module Jasmine::Headless
       return @search_paths if @search_paths
 
       @search_paths = [ Jasmine::Core.path ]
+      @search_paths += self.class.vendor_asset_paths
       @search_paths += src_dir.collect { |dir| File.expand_path(dir) }
       @search_paths += spec_dir.collect { |dir| File.expand_path(dir) }
-      @search_paths += self.class.vendor_asset_paths
 
       @search_paths
     end
@@ -99,9 +101,7 @@ module Jasmine::Headless
       return @sprockets_environment if @sprockets_environment
 
       @sprockets_environment = Sprockets::Environment.new
-      search_paths.each do |path|
-        @sprockets_environment.append_path(path)
-      end
+      search_paths.each { |path| @sprockets_environment.append_path(path) }
 
       @sprockets_environment.unregister_postprocessor('application/javascript', Sprockets::SafetyColons)
       @sprockets_environment
@@ -111,9 +111,7 @@ module Jasmine::Headless
       if is_outside_scope = !spec_filter.empty?
         is_outside_scope = spec_dir.any? do |dir|
           spec_file_searches.any? do |search|
-            !spec_files.any? { |file| 
-              File.fnmatch?(File.join(dir, search), file)
-            }
+            !spec_files.any? { |file| File.fnmatch?(File.join(dir, search), file) }
           end
         end
       end
@@ -156,19 +154,11 @@ module Jasmine::Headless
         end
 
         sprockets_environment.find_asset(file, :bundle => false).body
-      end.flatten.compact.reject(&:empty?)
+      end.compact.reject(&:empty?)
     end
 
     def spec_filter
-      return @spec_filter if @spec_filter
-
-      @spec_filter = begin
-                       if @options[:only]
-                         @options[:only].collect { |path| expanded_dir(path) }.flatten
-                       else
-                         []
-                       end
-                     end
+      @spec_filter ||= (@options[:only] && @options[:only].collect { |path| expanded_dir(path) }.flatten) || []
     end
 
     SEARCH_ROOTS = {
@@ -185,31 +175,15 @@ module Jasmine::Headless
 
       %w{src_files stylesheets helpers spec_files}.each do |type|
         if data = @config[type]
-          dirs = send(SEARCH_ROOTS[type])
-
-          add_files(@searches[type] = data.flatten, type, dirs)
+          add_files(@searches[type] = data.flatten, type, send(SEARCH_ROOTS[type]))
         end
       end
-
-      filtered_required_files = []
-
-      @required_files.each do |file|
-        if !filtered_required_files.any? { |other_file| other_file.logical_path == file.logical_path }
-          filtered_required_files << file
-        end
-      end
-
-      @required_files = filtered_required_files
     end
 
     def add_files(patterns, type, dirs)
-      dirs.each do |dir|
-        patterns.each do |search|
-          search = File.expand_path(File.join(dir, search))
-
-          Dir[search].find_all { |file| file[extension_filter] }.each do |path|
-            add_path(path, type) if File.file?(path)
-          end
+      dirs.product(patterns).each do |search|
+        Dir[File.join(*search)].find_all { |file| file[extension_filter] }.each do |path|
+          add_path(path, type) if File.file?(path)
         end
       end
 
@@ -253,11 +227,7 @@ module Jasmine::Headless
     end
 
     def config_dir_or_pwd(dir)
-      found_dir = Dir.pwd
-
-      if @options[:config]
-        found_dir = @options[:config][dir] || found_dir
-      end
+      found_dir = (@options[:config] && @options[:config][dir]) || Dir.pwd
 
       [ found_dir ].flatten.collect { |dir| File.expand_path(dir) }
     end

@@ -14,6 +14,18 @@ RSpec.configure do |c|
     Jasmine::Headless::CacheableAction.enabled = false
     Jasmine::Headless::FilesList.reset!
   end
+
+  c.before(:each, :type => :integration) do
+    let(:report) { 'spec/report.txt' }
+
+    before do
+      FileUtils.rm_f report
+    end
+
+    after do
+      FileUtils.rm_f report
+    end
+  end
 end
 
 specrunner = 'ext/jasmine-webkit-specrunner/jasmine-webkit-specrunner'

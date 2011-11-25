@@ -79,7 +79,7 @@ describe Jasmine::Headless::FilesList do
       end
 
       it 'should add the vendor gem paths to the list' do
-        files_list.search_paths.should == [ Jasmine::Core.path, File.expand_path(src_dir), File.expand_path(spec_dir), path ]
+        files_list.search_paths.should == [ Jasmine::Core.path, path, File.expand_path(src_dir), File.expand_path(spec_dir) ]
       end
     end
 
@@ -125,12 +125,12 @@ describe Jasmine::Headless::FilesList do
     let(:file_one) { stub(:to_a => [ asset_one, asset_two ] ) }
     let(:file_two) { stub(:to_a => [ asset_two, asset_three ] ) }
 
-    let(:asset_one) { stub(:pathname => Pathname(path_one)) }
-    let(:asset_two) { stub(:pathname => Pathname(path_two)) }
-    let(:asset_three) { stub(:pathname => Pathname(path_three)) }
+    let(:asset_one) { stub(:pathname => Pathname(path_one), :to_ary => nil) }
+    let(:asset_two) { stub(:pathname => Pathname(path_two), :to_ary => nil) }
+    let(:asset_three) { stub(:pathname => Pathname(path_three), :to_ary => nil) }
 
     before do
-      files_list.stubs(:required_files).returns([ file_one, file_two ])
+      files_list.stubs(:required_files).returns(Jasmine::Headless::UniqueAssetList.new([ file_one, file_two ]))
     end
 
     subject { files_list.files }
