@@ -1,5 +1,3 @@
-require 'digest/sha1'
-
 module Jasmine::Headless
   class CacheableAction
     class << self
@@ -56,7 +54,7 @@ module Jasmine::Headless
     end
 
     def cache_file
-      @cache_file ||= File.join(self.class.cache_dir, self.class.cache_type, Digest::SHA1.hexdigest(file)) + '.js'
+      @cache_file ||= File.join(self.class.cache_dir, self.class.cache_type, file) + '.js'
     end
 
     def fresh?

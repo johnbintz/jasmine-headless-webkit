@@ -1,3 +1,5 @@
+#= require jquery
+
 describe 'console.log', ->
   it 'should not eat my precious jqueries', ->
     _log = JHW.log

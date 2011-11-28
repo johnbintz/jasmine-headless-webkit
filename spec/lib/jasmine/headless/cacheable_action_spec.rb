@@ -3,12 +3,15 @@ require 'spec_helper'
 describe Jasmine::Headless::CacheableAction do
   include FakeFS::SpecHelpers
 
-  let(:file) { 'file.whatever' }
+  let(:file) { 'dir/file.whatever' }
   let(:data) { 'data' }
   let(:compiled) { 'compiled' }
 
   before do
+    FileUtils.mkdir_p File.dirname(file)
+
     File.open(file, 'wb') { |fh| fh.print(data) }
+
     described_class.cache_dir = cache_dir
     described_class.cache_type = cache_type
   end
@@ -19,7 +22,7 @@ describe Jasmine::Headless::CacheableAction do
 
   let(:cache_type) { 'action' }
   let(:cache_dir) { 'cache' }
-  let(:cache_file) { File.join(cache_dir, cache_type, Digest::SHA1.hexdigest(file)) + '.js' }
+  let(:cache_file) { File.join(cache_dir, cache_type, file) + '.js' }
   let(:cache_file_data) { YAML.load(File.read(cache_file)) }
 
   let(:cache_object) { described_class.new(file) }
