@@ -92,6 +92,24 @@ describe Jasmine::Headless::Options do
       end
     end
 
+    context 'specify no seed' do
+      it 'should have a seed' do
+        options[:seed].should_not be_nil
+      end
+    end
+
+    context 'specify random order seed' do
+      let(:seed) { 12345 }
+
+      before do
+        ARGV.replace([ "--seed", seed ])
+      end
+
+      it 'should specify the seed' do
+        options[:seed].should == seed
+      end
+    end
+
     after do
       ARGV.replace(@argv)
     end

@@ -17,6 +17,7 @@ module Jasmine
         :do_list => false,
         :full_run => true,
         :enable_cache => true,
+        :seed => rand(10000),
         :files => []
       }
 
@@ -60,6 +61,8 @@ module Jasmine
           @options[:full_run] = false
         when '--list', '-l'
           @options[:do_list] = true
+        when '--seed'
+          @options[:seed] = arg.to_i
         end
       end
 
@@ -82,7 +85,8 @@ module Jasmine
           [ '--report', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--jasmine-config', '-j', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--no-full-run', GetoptLong::NO_ARGUMENT ],
-          [ '--list', '-l', GetoptLong::NO_ARGUMENT ]
+          [ '--list', '-l', GetoptLong::NO_ARGUMENT ],
+          [ '--seed', GetoptLong::REQUIRED_ARGUMENT ]
         )
 
         command_line_args.each { |*args| process_option(*args) }

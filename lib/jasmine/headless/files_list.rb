@@ -62,6 +62,8 @@ module Jasmine::Headless
     def initialize(options = {})
       @options = options
 
+      srand(@options[:seed]) if @options[:seed]
+
       @required_files = UniqueAssetList.new
       @potential_files_to_filter = []
 

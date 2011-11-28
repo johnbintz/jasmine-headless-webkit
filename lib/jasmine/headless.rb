@@ -32,3 +32,4 @@ module Jasmine::Headless
 end
 
 require 'jasmine/headless/errors'
+

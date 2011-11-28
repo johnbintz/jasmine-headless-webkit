@@ -177,13 +177,13 @@ describe Jasmine::Headless::FilesList do
   end
 
   describe '#add_files' do
+    let(:files_list) { described_class.new(:seed => 100) }
+
     no_default_files!
 
     let(:dir) { 'tmp' }
 
     before do
-      srand(100)
-
       FileUtils.mkdir_p dir
 
       10.times do |index|

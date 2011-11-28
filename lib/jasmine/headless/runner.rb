@@ -73,7 +73,8 @@ module Jasmine
 
         files_list = Jasmine::Headless::FilesList.new(
           :config => jasmine_config,
-          :only => @options[:files]
+          :only => @options[:files],
+          :seed => @options[:seed]
         )
 
         @_targets = template_writer.write!(files_list)
@@ -81,6 +82,9 @@ module Jasmine
         run_targets.pop if (!@options[:full_run] && files_list.filtered?) || files_list.has_spec_outside_scope?
 
         system jasmine_command(run_targets)
+
+        puts "\nTest ordering seed: --seed #{@options[:seed]}"
+
         @_status = $?.exitstatus
       ensure
         if @_targets && !runner_filename && (@options[:remove_html_file] || (@_status == 0))
