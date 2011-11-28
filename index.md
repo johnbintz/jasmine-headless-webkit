@@ -382,7 +382,7 @@ you can provide that path with `-j`.
 Spec files are shuffled into a random order before each run. This lets you find issues where spec files may depend on state
 established in prior executed spec files -- a bad thing. After each run, you'll get the random seed used to randomize the files:
 
-`Test random seed: --seed 1234`
+`Test ordering seed: --seed 1234`
 
 If you're getting weird results related to the particula order of a run of specs, pass that same seed value back in
 and get to work!
