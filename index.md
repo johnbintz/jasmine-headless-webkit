@@ -384,7 +384,7 @@ established in prior executed spec files -- a bad thing. After each run, you'll 
 
 `Test ordering seed: --seed 1234`
 
-If you're getting weird results related to the particula order of a run of specs, pass that same seed value back in
+If you're getting weird results related to the particular order of a run of specs, pass that same seed value back in
 and get to work!
 
 ### Running only certain spec files
