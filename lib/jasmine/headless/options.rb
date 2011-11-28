@@ -17,7 +17,6 @@ module Jasmine
         :do_list => false,
         :full_run => true,
         :enable_cache => true,
-        :seed => rand(10000),
         :files => []
       }
 
@@ -33,6 +32,8 @@ module Jasmine
 
       def initialize(opts = {})
         @options = DEFAULT_OPTIONS.dup
+        srand
+        @options[:seed] = rand(10000)
         read_defaults_files
         opts.each { |k, v| @options[k] = v if v }
       end
