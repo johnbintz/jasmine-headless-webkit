@@ -48,7 +48,7 @@ describe Jasmine::Headless::CacheableAction do
         FileUtils.mkdir_p(cache_dir)
 
         File.stubs(:mtime).with(file).returns(Time.at(10))
-        File.stubs(:mtime).with(cache_file).returns(Time.at(cache_file_mtime))
+        File.stubs(:mtime).with(File.expand_path(cache_file)).returns(Time.at(cache_file_mtime))
       end
 
       context 'cache empty' do

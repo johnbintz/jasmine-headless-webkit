@@ -12,10 +12,10 @@ module Jasmine::Headless
         cache = Jasmine::Headless::CoffeeScriptCache.new(file)
         source = cache.handle
         if cache.cached?
-          %{<script from="jhw" type="text/javascript" src="#{cache.cache_file}"></script>
+          %{<script type="text/javascript" src="#{cache.cache_file}"></script>
             <script type="text/javascript">window.CSTF['#{File.split(cache.cache_file).last}'] = '#{file}';</script>}
         else
-          %{<script from="jhw" type="text/javascript">#{source}</script>}
+          %{<script type="text/javascript">#{source}</script>}
         end
       rescue CoffeeScript::CompilationError => ne
         puts "[%s] %s: %s" % [ 'coffeescript'.color(:red), file.color(:yellow), "#{ne.message}".color(:white) ]

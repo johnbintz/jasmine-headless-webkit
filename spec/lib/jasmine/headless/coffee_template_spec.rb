@@ -39,7 +39,7 @@ describe Jasmine::Headless::CoffeeTemplate do
       end
 
       it 'should return the cached file' do
-        subject.should include(%{<script from="jhw" type="text/javascript" src="#{file_path}"></script>})
+        subject.should include(%{<script type="text/javascript" src="#{file_path}"></script>})
       end
     end
 
@@ -47,7 +47,7 @@ describe Jasmine::Headless::CoffeeTemplate do
       let(:cache_return) { false }
 
       it 'should return the generated js' do
-        subject.should include(%{<script from="jhw" type="text/javascript">#{source}</script>})
+        subject.should include(%{<script type="text/javascript">#{source}</script>})
       end
     end
   end

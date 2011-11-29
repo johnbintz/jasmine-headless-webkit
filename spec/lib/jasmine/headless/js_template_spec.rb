@@ -23,8 +23,8 @@ describe Jasmine::Headless::JSTemplate do
     it { should == %{<script type="text/javascript" src="#{file}"></script>} }
   end
 
-  context 'jhw content' do
-    let(:data) { 'from="jhw"' }
+  context 'script as first thing' do
+    let(:data) { '<script type="text/javascript"' }
 
     it { should == data }
   end

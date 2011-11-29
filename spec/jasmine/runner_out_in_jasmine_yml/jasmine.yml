@@ -1,0 +1,11 @@
+src_dir: spec/jasmine/runner_out_in_jasmine_yml
+spec_dir: spec/jasmine/runner_out_in_jasmine_yml
+
+src_files:
+- "*.js"
+
+spec_files:
+- "*_spec.coffee"
+
+runner_output: 'spec/temp_out.html'
+

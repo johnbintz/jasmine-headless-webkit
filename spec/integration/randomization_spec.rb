@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'sprockets' do
+describe 'randomize run order' do
   let(:seed) { 100 }
 
   it 'should randomize the run order' do
