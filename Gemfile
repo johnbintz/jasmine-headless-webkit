@@ -19,3 +19,5 @@ gem 'jquery-rails'
 gem 'ejs'
 
 gem 'simplecov'
+#gem 'perftools.rb'
+

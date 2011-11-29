@@ -203,7 +203,7 @@ module Jasmine::Headless
     end
 
     def expanded_dir(path)
-      Dir[path].collect { |file| File.expand_path(file) }.find_all { |path| File.file?(path) && path[extension_filter] }
+      Dir[path].find_all { |file| file[extension_filter] }.collect { |file| File.expand_path(file) }.find_all { |path| File.file?(path) }
     end
 
     def extension_filter
@@ -221,11 +221,11 @@ module Jasmine::Headless
     end
 
     def src_dir
-      config_dir_or_pwd('src_dir')
+      @src_dir ||= config_dir_or_pwd('src_dir')
     end
 
     def spec_dir
-      config_dir_or_pwd('spec_dir')
+      @spec_dir ||= config_dir_or_pwd('spec_dir')
     end
 
     def spec_file_searches

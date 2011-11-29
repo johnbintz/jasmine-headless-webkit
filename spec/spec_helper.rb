@@ -3,6 +3,11 @@ if ENV['COVERAGE']
   SimpleCov.start
 end
 
+if ENV['PROFILE']
+  require 'perftools'
+  PerfTools::CpuProfiler.start("/tmp/jhw-profile")
+end
+
 require 'jasmine-headless-webkit'
 require 'fakefs/spec_helpers'
 
