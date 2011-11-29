@@ -6,20 +6,21 @@ class window.HeadlessReporterResult
   addResult: (message) ->
     @results.push(message)
 
-  print: ->
-    output = @name.foreground('red')
+  toString: ->
+    output = "\n" + @name.foreground('red')
     bestChoice = HeadlessReporterResult.findSpecLine(@splitName)
     output += " (#{bestChoice.file}:#{bestChoice.lineNumber})".foreground('blue') if bestChoice.file
 
-    JHW.stdout.puts "\n#{output}"
     for result in @results
-      output = result.message.foreground('red')
+      line = result.message.foreground('red')
       if result.lineNumber
-        output += " (line ~#{bestChoice.lineNumber + result.lineNumber})".foreground('red').bright()
-      JHW.stdout.puts("  " + output)
+        line += " (line ~#{bestChoice.lineNumber + result.lineNumber})".foreground('red').bright()
+      output += "\n  #{line}"
 
       if result.line?
-        JHW.stdout.puts("    #{result.line}".foreground('yellow'))
+        output += "\n    #{result.line}".foreground('yellow')
+
+    output
 
   @findSpecLine: (splitName) ->
     bestChoice = { accuracy: 0, file: null, lineNumber: null }

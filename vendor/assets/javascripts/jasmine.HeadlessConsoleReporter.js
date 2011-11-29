@@ -32,7 +32,7 @@
       _ref = this.results;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         result = _ref[_i];
-        result.print();
+        JHW.stdout.puts(result.toString());
       }
       if (window.JHW) window.onbeforeunload = null;
       return JHW.finishSuite();

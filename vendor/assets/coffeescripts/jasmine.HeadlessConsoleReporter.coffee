@@ -28,7 +28,9 @@ class jasmine.HeadlessConsoleReporter
     output = "TOTAL||#{@length}||#{@failedCount}||#{runtime}||#{if JHW._hasErrors then "T" else "F"}"
 
     JHW.report.puts(output)
-    result.print() for result in @results
+
+    for result in @results
+      JHW.stdout.puts(result.toString())
 
     if window.JHW
       window.onbeforeunload = null

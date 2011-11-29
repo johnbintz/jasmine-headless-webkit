@@ -11,30 +11,26 @@
       return this.results.push(message);
     };
 
-    HeadlessReporterResult.prototype.print = function() {
-      var bestChoice, output, result, _i, _len, _ref, _results;
-      output = this.name.foreground('red');
+    HeadlessReporterResult.prototype.toString = function() {
+      var bestChoice, line, output, result, _i, _len, _ref;
+      output = "\n" + this.name.foreground('red');
       bestChoice = HeadlessReporterResult.findSpecLine(this.splitName);
       if (bestChoice.file) {
         output += (" (" + bestChoice.file + ":" + bestChoice.lineNumber + ")").foreground('blue');
       }
-      JHW.stdout.puts("\n" + output);
       _ref = this.results;
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         result = _ref[_i];
-        output = result.message.foreground('red');
+        line = result.message.foreground('red');
         if (result.lineNumber) {
-          output += (" (line ~" + (bestChoice.lineNumber + result.lineNumber) + ")").foreground('red').bright();
+          line += (" (line ~" + (bestChoice.lineNumber + result.lineNumber) + ")").foreground('red').bright();
         }
-        JHW.stdout.puts("  " + output);
+        output += "\n  " + line;
         if (result.line != null) {
-          _results.push(JHW.stdout.puts(("    " + result.line).foreground('yellow')));
-        } else {
-          _results.push(void 0);
+          output += ("\n    " + result.line).foreground('yellow');
         }
       }
-      return _results;
+      return output;
     };
 
     HeadlessReporterResult.findSpecLine = function(splitName) {
