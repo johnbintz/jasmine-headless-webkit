@@ -62,7 +62,7 @@ module Jasmine::Headless
     def initialize(options = {})
       @options = options
 
-      srand(@options[:seed]) if @options[:seed]
+      Kernel.srand(@options[:seed]) if @options[:seed]
 
       @required_files = UniqueAssetList.new
       @potential_files_to_filter = []
@@ -186,7 +186,7 @@ module Jasmine::Headless
       dirs.product(patterns).each do |search|
         files = Dir[File.join(*search)].find_all { |file| file[extension_filter] }
 
-        files.sort! { |a, b| rand(3) - 1 } if type == 'spec_files'
+        files.sort! { |a, b| Kernel.rand(3) - 1 } if type == 'spec_files'
 
         files.each do |path|
           add_path(path, type) if File.file?(path)
