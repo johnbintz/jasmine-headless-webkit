@@ -70,6 +70,7 @@
             lineNumber: lineNumber
           };
         }
+        if (index === splitName.length) break;
       }
       return bestChoice;
     };

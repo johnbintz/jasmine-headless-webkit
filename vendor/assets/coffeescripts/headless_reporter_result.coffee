@@ -43,4 +43,6 @@ class window.HeadlessReporterResult
       if index > bestChoice.accuracy
         bestChoice = { accuracy: index, file: file, lineNumber: lineNumber }
 
+      break if index == splitName.length
+
     bestChoice
