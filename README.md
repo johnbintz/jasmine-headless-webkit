@@ -5,6 +5,19 @@ Run your specs at sonic boom speed! No pesky reload button or page rendering slo
 http://johnbintz.github.com/jasmine-headless-webkit/ has the most up-to-date information on using
 this project. You can see the source of that site on the gh-pages branch.
 
+## For those who want to hack on the project...
+
+The best way to get everything running that you need for development and testing is
+to use Guard:
+
+``` bash
+bundle install
+bundle exec guard
+... build Qt runner ...
+... compile CoffeeScript to JS ...
+... run RSpec and JHW ...
+```
+
 ## License
 
 * Copyright (c) 2011 John Bintz
