@@ -1,7 +1,7 @@
 module Jasmine::Headless
   class UniqueAssetList < ::Array
     def <<(asset)
-      raise StandardError.new("Not an asset") if !asset.respond_to?(:logical_path)
+      raise InvalidUniqueAsset.new("Not an asset: #{asset.inspect}") if !asset.respond_to?(:logical_path)
 
       super if !self.any? { |other| asset.logical_path == other.logical_path }
     end
@@ -10,5 +10,7 @@ module Jasmine::Headless
       self.collect(&:to_a).flatten
     end
   end
+
+  class InvalidUniqueAsset < StandardError ; end
 end
 

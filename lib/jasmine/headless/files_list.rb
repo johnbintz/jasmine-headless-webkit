@@ -20,7 +20,7 @@ module Jasmine::Headless
         Gem::Specification.each do |spec|
           path = File.join(spec.gem_dir, 'vendor/assets/javascripts')
 
-          @vendor_asset_paths << path if File.directory?(path)
+          @vendor_asset_paths << path if File.directory?(path) && !@vendor_asset_paths.include?(path)
         end
 
         @vendor_asset_paths
@@ -68,7 +68,11 @@ module Jasmine::Headless
       @potential_files_to_filter = []
 
       self.class.default_files.each do |file|
-        @required_files << sprockets_environment.find_asset(file, :bundle => false)
+        begin
+          @required_files << sprockets_environment.find_asset(file, :bundle => false)
+        rescue InvalidUniqueAsset => e
+          raise StandardError.new("Not an asset: #{file}")
+        end
       end
 
       use_config! if config?
@@ -91,7 +95,7 @@ module Jasmine::Headless
     def search_paths
       return @search_paths if @search_paths
 
-      @search_paths = [ Jasmine::Core.path ]
+      @search_paths = [ Jasmine::Core.path, Jasmine::Headless.root.join('vendor/assets/javascripts').to_s ]
       @search_paths += self.class.vendor_asset_paths
       @search_paths += src_dir.collect { |dir| File.expand_path(dir) }
       @search_paths += spec_dir.collect { |dir| File.expand_path(dir) }

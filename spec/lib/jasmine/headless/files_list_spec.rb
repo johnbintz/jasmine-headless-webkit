@@ -67,9 +67,11 @@ describe Jasmine::Headless::FilesList do
       Jasmine::Headless::FilesList.stubs(:vendor_asset_paths).returns([])
     end
 
+    let(:vendor_path) { Jasmine::Headless.root.join('vendor/assets/javascripts').to_s }
+
     context 'no vendored gem paths' do
       it 'should take the src dir and spec dirs' do
-        files_list.search_paths.should == [ Jasmine::Core.path, File.expand_path(src_dir), File.expand_path(spec_dir) ]
+        files_list.search_paths.should == [ Jasmine::Core.path, vendor_path, File.expand_path(src_dir), File.expand_path(spec_dir) ]
       end
     end
 
@@ -79,7 +81,7 @@ describe Jasmine::Headless::FilesList do
       end
 
       it 'should add the vendor gem paths to the list' do
-        files_list.search_paths.should == [ Jasmine::Core.path, path, File.expand_path(src_dir), File.expand_path(spec_dir) ]
+        files_list.search_paths.should == [ Jasmine::Core.path, vendor_path, path, File.expand_path(src_dir), File.expand_path(spec_dir) ]
       end
     end
 
@@ -90,7 +92,7 @@ describe Jasmine::Headless::FilesList do
       let(:src_dir) { [ dir_1, dir_2 ] }
 
       it 'should take the src dir and spec dirs' do
-        files_list.search_paths.should == [ Jasmine::Core.path, File.expand_path(dir_1), File.expand_path(dir_2), File.expand_path(spec_dir) ]
+        files_list.search_paths.should == [ Jasmine::Core.path, vendor_path, File.expand_path(dir_1), File.expand_path(dir_2), File.expand_path(spec_dir) ]
       end
     end
   end
