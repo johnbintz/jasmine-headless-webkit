@@ -98,6 +98,7 @@ module Jasmine::Headless
       @search_paths = [ Jasmine::Core.path, Jasmine::Headless.root.join('vendor/assets/javascripts').to_s ]
       @search_paths += self.class.vendor_asset_paths
       @search_paths += src_dir.collect { |dir| File.expand_path(dir) }
+      @search_paths += asset_paths.collect { |dir| File.expand_path(dir) }
       @search_paths += spec_dir.collect { |dir| File.expand_path(dir) }
 
       @search_paths
@@ -230,6 +231,10 @@ module Jasmine::Headless
 
     def spec_dir
       @spec_dir ||= config_dir_or_pwd('spec_dir')
+    end
+
+    def asset_paths
+      @asset_paths ||= config_dir_or_pwd('asset_paths')
     end
 
     def spec_file_searches

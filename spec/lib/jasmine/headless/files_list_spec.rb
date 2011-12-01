@@ -56,11 +56,13 @@ describe Jasmine::Headless::FilesList do
 
     let(:config) { {
       'src_dir' => src_dir,
-      'spec_dir' => spec_dir
+      'spec_dir' => spec_dir,
+      'asset_paths' => asset_paths
     } }
 
     let(:src_dir) { 'src dir' }
     let(:spec_dir) { 'spec dir' }
+    let(:asset_paths) { [] }
     let(:path) { 'path' }
 
     before do
@@ -85,14 +87,25 @@ describe Jasmine::Headless::FilesList do
       end
     end
 
-    context 'src_dir is an array' do
+    context 'multiple dirs' do
       let(:dir_1) { 'dir 1' }
       let(:dir_2) { 'dir 2' }
 
-      let(:src_dir) { [ dir_1, dir_2 ] }
+      context 'src_dir is an array' do
+        let(:src_dir) { [ dir_1, dir_2 ] }
 
-      it 'should take the src dir and spec dirs' do
-        files_list.search_paths.should == [ Jasmine::Core.path, vendor_path, File.expand_path(dir_1), File.expand_path(dir_2), File.expand_path(spec_dir) ]
+        it 'should take the src dir and spec dirs' do
+          files_list.search_paths.should == [ Jasmine::Core.path, vendor_path, File.expand_path(dir_1), File.expand_path(dir_2), File.expand_path(spec_dir) ]
+        end
+      end
+
+      context 'asset_paths has entries' do
+        let(:src_dir) { dir_1 }
+        let(:asset_paths) { [ dir_2 ] }
+
+        it 'should take the src dir and spec dirs' do
+          files_list.search_paths.should == [ Jasmine::Core.path, vendor_path, File.expand_path(dir_1), File.expand_path(dir_2), File.expand_path(spec_dir) ]
+        end
       end
     end
   end
