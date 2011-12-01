@@ -222,12 +222,23 @@ path along with the paths you define in `src_dir`:
 
 {% highlight yaml %}
 src_dir:
-  - app/assets/javascripts
-  - vendor/assets/javascripts
+- app/assets/javascripts
+- vendor/assets/javascripts
 {% endhighlight %}
 
 _Technically, `spec_dir` is in your asset path, too, but Jasmine's typical behavior of including `helpers` before `spec_dir` should
 give you all the include power you need for defining specs._
+
+If you want to keep `src_dir` as a string for backwards compatibility, you can add additional asset paths with, you guessed it, `asset_paths`:
+
+{% highlight yaml %}
+src_dir: app/assets/javascripts
+
+asset_paths:
+- vendor/assets/javascripts
+{% endhighlight %}
+
+`asset_paths` are added to the Sprockets asset paths after `src_dir`.
 
 In order for Sprockets support to work as intended, you should define your `src_files` and `spec_files` as such:
 
