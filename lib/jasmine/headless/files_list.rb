@@ -120,9 +120,7 @@ module Jasmine::Headless
           spec_file_searches.any? do |search|
             !spec_files.any? do |file|
               target = File.join(dir, search)
-              p target
-
-              File.fnmatch?(target, file) || File.fnmatch?(target.gsub(%{^**/}, '').tap { |o| p o }, file)
+              File.fnmatch?(target, file) || File.fnmatch?(target.gsub(%{^**/}, ''), file)
             end
           end
         end
