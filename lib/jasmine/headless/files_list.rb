@@ -118,7 +118,12 @@ module Jasmine::Headless
       if is_outside_scope = !spec_filter.empty?
         is_outside_scope = spec_dir.any? do |dir|
           spec_file_searches.any? do |search|
-            !spec_files.any? { |file| File.fnmatch?(File.join(dir, search), file) }
+            !spec_files.any? do |file|
+              target = File.join(dir, search)
+              p target
+
+              File.fnmatch?(target, file) || File.fnmatch?(target.gsub(%{^**/}, '').tap { |o| p o }, file)
+            end
           end
         end
       end

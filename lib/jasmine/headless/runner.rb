@@ -78,8 +78,14 @@ module Jasmine
         )
 
         @_targets = template_writer.write!(files_list)
+
         run_targets = @_targets.dup
-        run_targets.pop if (!@options[:full_run] && files_list.filtered?) || files_list.has_spec_outside_scope?
+
+        if run_targets.length == 2
+          if (!@options[:full_run] && files_list.filtered?) || files_list.has_spec_outside_scope?
+            run_targets.pop
+          end
+        end
 
         system jasmine_command(run_targets)
 
