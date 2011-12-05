@@ -6,6 +6,7 @@ require 'sprockets'
 require 'sprockets/engines'
 
 module Jasmine::Headless
+  
   class FilesList
     class << self
       def vendor_asset_paths
@@ -39,8 +40,8 @@ module Jasmine::Headless
 
         # ...and unregister ones we don't want/need
         Sprockets.instance_eval do
-          %w{less sass scss erb str}.each do |extension|
-            @engines.delete(".#{extension}")
+         EXCLUDED_FORMATS.each do |extension|
+            register_engine ".#{extension}", Jasmine::Headless::NilTemplate
           end
 
           register_engine '.coffee', Jasmine::Headless::CoffeeTemplate
