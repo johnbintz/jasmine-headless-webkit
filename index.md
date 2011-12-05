@@ -2,7 +2,6 @@
 title: jasmine-headless-webkit -- The fastest way to run your Jasmine specs!
 layout: default
 ---
-
 # Jasmine Headless WebKit
 ## Run your Jasmine specs at sonic boom speed!
 
