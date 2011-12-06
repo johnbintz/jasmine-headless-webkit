@@ -204,14 +204,22 @@ describe Jasmine::Headless::FilesList do
       10.times do |index|
         File.open(File.join(dir, "file-#{index}.js"), 'wb')
       end
+
+      File.open(File.join(dir, 'file.js.erb'), 'wb')
+    end
+
+    before do
+      files_list.send(:add_files, [ '*' ], 'spec_files', [ dir ])
     end
 
     it 'should load spec files in a random order' do
-      files_list.send(:add_files, [ '*' ], 'spec_files', [ dir ])
-
       files_list.files.collect { |name| name[%r{\d+}] }.should == %w{6 7 1 0 5 3 4 8 2 9}
 
       FileUtils.rm_rf dir
+    end
+
+    it 'should not load an excluded format' do
+      files_list.files.any? { |file| file['.erb'] }.should be_false
     end
   end
 end

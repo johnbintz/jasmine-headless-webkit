@@ -6,8 +6,9 @@ require 'sprockets'
 require 'sprockets/engines'
 
 module Jasmine::Headless
-  
   class FilesList
+    include FileChecker
+
     class << self
       def vendor_asset_paths
         return @vendor_asset_paths if @vendor_asset_paths
@@ -40,7 +41,7 @@ module Jasmine::Headless
 
         # ...and unregister ones we don't want/need
         Sprockets.instance_eval do
-         EXCLUDED_FORMATS.each do |extension|
+          EXCLUDED_FORMATS.each do |extension|
             register_engine ".#{extension}", Jasmine::Headless::NilTemplate
           end
 
@@ -53,6 +54,12 @@ module Jasmine::Headless
 
       def default_files
         %w{jasmine.js jasmine-html jasmine.css jasmine-extensions intense headless_reporter_result jasmine.HeadlessConsoleReporter jsDump beautify-html}
+      end
+
+      def extension_filter
+        extensions = (%w{.js .css} + Sprockets.engine_extensions)
+
+        %r{(#{extensions.join('|')})$}
       end
     end
 
@@ -212,11 +219,17 @@ module Jasmine::Headless
     end
 
     def expanded_dir(path)
-      Dir[path].find_all { |file| file[extension_filter] }.collect { |file| File.expand_path(file) }.find_all { |path| File.file?(path) }
+      Dir[path].find_all { |file|
+        file[extension_filter] && !alert_if_bad_format?(file)
+      }.collect {
+        |file| File.expand_path(file)
+      }.find_all {
+        |path| File.file?(path)
+      }
     end
 
     def extension_filter
-      %r{(#{(%w{.js .css} + Sprockets.engine_extensions).join('|')})$}
+      self.class.extension_filter
     end
 
     def add_path(path, type)
