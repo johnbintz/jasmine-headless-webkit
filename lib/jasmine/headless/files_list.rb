@@ -10,26 +10,34 @@ module Jasmine::Headless
     include FileChecker
 
     class << self
-      def vendor_asset_paths
-        return @vendor_asset_paths if @vendor_asset_paths
+      def asset_paths
+        return @asset_paths if @asset_paths
 
         require 'rubygems'
 
         raise StandardError.new("A newer version of Rubygems is required to use vendored assets. Please upgrade.") if !Gem::Specification.respond_to?(:each)
 
-        @vendor_asset_paths = []
+        @asset_paths = []
 
-        Gem::Specification.each do |spec|
-          path = File.join(spec.gem_dir, 'vendor/assets/javascripts')
+        Gem::Specification.each { |gemspec| @asset_paths += get_paths_from_gemspec(gemspec) }
 
-          @vendor_asset_paths << path if File.directory?(path) && !@vendor_asset_paths.include?(path)
-        end
+        @asset_paths
+      end
 
-        @vendor_asset_paths
+      def get_paths_from_gemspec(gemspec)
+        %w{vendor lib app}.collect do |dir|
+          path = File.join(gemspec.gem_dir, dir, "assets/javascripts")
+
+          if File.directory?(path) && !@asset_paths.include?(path)
+            path
+          else
+            nil
+          end
+        end.compact
       end
 
       def reset!
-        @vendor_asset_paths = nil
+        @asset_paths = nil
 
         # register haml-sprockets if it's available...
         %w{haml-sprockets}.each do |library|
@@ -104,7 +112,7 @@ module Jasmine::Headless
       return @search_paths if @search_paths
 
       @search_paths = [ Jasmine::Core.path, Jasmine::Headless.root.join('vendor/assets/javascripts').to_s ]
-      @search_paths += self.class.vendor_asset_paths
+      @search_paths += self.class.asset_paths
       @search_paths += src_dir.collect { |dir| File.expand_path(dir) }
       @search_paths += asset_paths.collect { |dir| File.expand_path(dir) }
       @search_paths += spec_dir.collect { |dir| File.expand_path(dir) }
