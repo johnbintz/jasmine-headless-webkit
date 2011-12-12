@@ -62,14 +62,10 @@ void Runner::handleError(const QString &message, int lineNumber, const QString &
 
 void Runner::loadSpec()
 {
-  if (reportFileName.isEmpty()) {
-    outputFile = 0;
-    ts = 0;
-  } else {
-    outputFile = new QFile(reportFileName);
+  if (!reportFileName.isEmpty()) {
+    QFile *outputFile = new QFile(reportFileName);
     outputFile->open(QIODevice::WriteOnly);
-
-    ts = new QTextStream(outputFile);
+    outputFiles.enqueue(outputFile);
   }
 
   page.mainFrame()->load(runnerFiles.dequeue());
@@ -131,9 +127,14 @@ void Runner::print(const QString &fh, const QString &content) {
     std::cerr.flush();
   }
 
-  if (fh == "report" && outputFile) {
-    *ts << qPrintable(content);
-    ts->flush();
+  if (fh == "report") {
+    QListIterator<QFile *> iterator(outputFiles);
+
+    while (iterator.hasNext()) {
+      QTextStream ts(iterator.next());
+      ts << qPrintable(content);
+      ts.flush();
+    }
   }
 }
 
@@ -149,8 +150,10 @@ void Runner::timerEvent() {
     QApplication::instance()->exit(1);
 
   if (isFinished && runs > 2) {
-    if (outputFile) {
-      outputFile->close();
+    QListIterator<QFile *> iterator(outputFiles);
+
+    while (iterator.hasNext()) {
+      iterator.next()->close();
     }
 
     int exitCode = 0;

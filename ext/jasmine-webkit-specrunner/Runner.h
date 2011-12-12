@@ -56,8 +56,9 @@ class Runner: public QObject {
 
     void loadSpec();
 
+    QQueue<QFile *> outputFiles;
+
     QFile *outputFile;
-    QTextStream *ts;
 };
 
 #endif
