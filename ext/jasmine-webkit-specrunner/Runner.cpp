@@ -139,6 +139,7 @@ void Runner::print(const QString &fh, const QString &content) {
 
 void Runner::finishSuite() {
   isFinished = true;
+  runs = 0;
 }
 
 void Runner::timerEvent() {
@@ -147,7 +148,7 @@ void Runner::timerEvent() {
   if (hasErrors && runs > 2)
     QApplication::instance()->exit(1);
 
-  if (isFinished) {
+  if (isFinished && runs > 2) {
     if (outputFile) {
       outputFile->close();
     }

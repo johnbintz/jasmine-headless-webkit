@@ -1,8 +1,9 @@
 src_files:
-  - 'spec/javascripts/support/jquery-1.6.2.min.js'
-  - 'vendor/assets/coffeescripts/*.coffee'
+  - '**/*'
 
-spec_files: [ 'spec/javascripts/*_spec.coffee' ]
-src_dir: .
-spec_dir: .
+spec_files: [ '**/*_spec.coffee' ]
+src_dir: vendor/assets/javascripts
+spec_dir: spec/javascripts
+helpers:
+  - 'helpers/**.*'
 

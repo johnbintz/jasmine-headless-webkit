@@ -24,6 +24,7 @@
 
         if (window.JHW) {
           jasmine.getEnv().addReporter(new jasmine.HeadlessConsoleReporter());
+          jasmine.getEnv().addReporter(new jasmine.HeadlessFileReporter());
         } else {
           types = [ 'HtmlReporter', 'TrivialReporter' ];
 

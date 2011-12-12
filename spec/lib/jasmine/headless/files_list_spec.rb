@@ -14,6 +14,8 @@ describe Jasmine::Headless::FilesList do
         File.expand_path('vendor/assets/javascripts/jasmine-extensions.js'),
         File.expand_path('vendor/assets/javascripts/intense.js'),
         File.expand_path('vendor/assets/javascripts/headless_reporter_result.js'),
+        File.expand_path('vendor/assets/javascripts/jasmine.HeadlessReporter.js'),
+        File.expand_path('vendor/assets/javascripts/jasmine.HeadlessFileReporter.js'),
         File.expand_path('vendor/assets/javascripts/jasmine.HeadlessConsoleReporter.js'),
         File.expand_path('vendor/assets/javascripts/jsDump.js'),
         File.expand_path('vendor/assets/javascripts/beautify-html.js'),

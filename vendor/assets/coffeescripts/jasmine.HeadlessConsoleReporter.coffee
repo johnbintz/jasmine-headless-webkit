@@ -1,33 +1,23 @@
-if !jasmine?
-  throw new Error("jasmine not loaded!")
-
-class jasmine.HeadlessConsoleReporter
+#= require jasmine.HeadlessReporter.js
+#
+class jasmine.HeadlessConsoleReporter extends jasmine.HeadlessReporter
   constructor: (@callback = null) ->
-    @results = []
-    @failedCount = 0
-    @length = 0
-    @timer = null
+    super(@callback)
+
     @position = 0
     @positions = "|/-\\"
 
   reportRunnerResults: (runner) ->
-    return if this.hasError()
-
-    runtime = (new Date() - @startTime) / 1000.0
+    super()
 
     JHW.stdout.print("\n")
 
-    resultLine = this._formatResultLine(runtime)
+    resultLine = this.formatResultLine(this._runtime())
 
     if @failedCount == 0
       JHW.stdout.puts("PASS: #{resultLine}".foreground('green'))
     else
       JHW.stdout.puts("FAIL: #{resultLine}".foreground('red'))
-      JHW.hasSpecFailure()
-
-    output = "TOTAL||#{@length}||#{@failedCount}||#{runtime}||#{if JHW._hasErrors then "T" else "F"}"
-
-    JHW.report.puts(output)
 
     for result in @results
       JHW.stdout.puts(result.toString())
@@ -35,63 +25,37 @@ class jasmine.HeadlessConsoleReporter
     if window.JHW
       window.onbeforeunload = null
 
-    JHW.finishSuite()
-
   reportRunnerStarting: (runner) ->
-    @startTime = new Date()
+    super(runner)
     JHW.stdout.puts("\nRunning Jasmine specs...".bright()) if !this.hasError()
 
   reportSpecResults: (spec) ->
-    return if this.hasError()
-    JHW.ping()
+    super(spec)
 
-    results = spec.results()
+    this._reportSpecResult(spec, {
+      success: (results) =>
+        JHW.stdout.print('.'.foreground('green'))
+      failure: (results) =>
+        JHW.stdout.print('F'.foreground('red'))
 
-    @length++
-    if results.passed()
-      JHW.stdout.print('.'.foreground('green'))
-      JHW.report.puts("PASS||" + spec.getJHWSpecInformation())
-    else
-      JHW.stdout.print('F'.foreground('red'))
-      JHW.report.puts("FAIL||" + spec.getJHWSpecInformation())
+        failureResult = new HeadlessReporterResult(spec.getFullName(), spec.getSpecSplitName())
+        testCount = 1
 
-      @failedCount++
-      failureResult = new HeadlessReporterResult(spec.getFullName(), spec.getSpecSplitName())
-      testCount = 1
-
-      for result in results.getItems()
-        if result.type == 'expect' and !result.passed_
-          if foundLine = result.expectations[testCount - 1]
-            [ result.line, result.lineNumber ] = foundLine
-          failureResult.addResult(result)
-        testCount += 1
-      @results.push(failureResult)
-
-  reportSpecStarting: (spec) ->
-    if this.hasError()
-      spec.finish()
-      spec.suite.finish()
+        for result in results.getItems()
+          if result.type == 'expect' and !result.passed_
+            if foundLine = result.expectations[testCount - 1]
+              [ result.line, result.lineNumber ] = foundLine
+            failureResult.addResult(result)
+          testCount += 1
+        @results.push(failureResult)
+    })
 
   reportSpecWaiting: ->
-    runner = null
-
     if !@timer
       @timer = true
-      first = true
+      @first = true
 
-      runner = =>
-        @timer = setTimeout(
-          =>
-            if @timer
-              JHW.stdout.print(Intense.moveBack()) if !first
-              JHW.stdout.print(@positions.substr(@position, 1).foreground('yellow'))
-              @position += 1
-              @position %= @positions.length
-              first = false
-              runner()
-          , 750
-        )
-      runner()
+      this._waitRunner()
 
   reportSpecRunning: ->
     if @timer
@@ -99,11 +63,7 @@ class jasmine.HeadlessConsoleReporter
       @timer = null
       JHW.stdout.print(Intense.moveBack())
 
-  reportSuiteResults: (suite) ->
-  hasError: ->
-    JHW._hasErrors
-
-  _formatResultLine: (runtime) ->
+  formatResultLine: (runtime) ->
     line = []
     line.push(@length)
     line.push((if @length == 1 then "test" else "tests") + ',')
@@ -116,3 +76,15 @@ class jasmine.HeadlessConsoleReporter
 
     line.join(' ')
 
+  _waitRunner: =>
+    @timer = setTimeout(
+      =>
+        if @timer
+          JHW.stdout.print(Intense.moveBack()) if !@first
+          JHW.stdout.print(@positions.substr(@position, 1).foreground('yellow'))
+          @position += 1
+          @position %= @positions.length
+          @first = false
+          this._waitRunner()
+      , 750
+    )
