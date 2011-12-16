@@ -4,6 +4,7 @@ require 'coffee-script'
 require 'rainbow'
 
 require 'yaml'
+require 'erb'
 require 'sprockets'
 
 
@@ -112,7 +113,7 @@ module Jasmine
       def jasmine_config_data
         raise JasmineConfigNotFound.new("Jasmine config not found. I tried #{@options[:jasmine_config]}.") if !File.file?(@options[:jasmine_config])
 
-        YAML.load_file(@options[:jasmine_config])
+        YAML.load(ERB.new(File.read(@options[:jasmine_config])).result(binding))
       end
     end
   end
