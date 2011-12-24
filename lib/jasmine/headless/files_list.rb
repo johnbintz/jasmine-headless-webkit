@@ -185,15 +185,11 @@ module Jasmine::Headless
     def to_html(files)
       alert_time = Time.now + PLEASE_WAIT_IM_WORKING_TIME
 
-      p self.class.extension_filter
-
       files.collect do |file|
         if alert_time && alert_time < Time.now
           puts "Rebuilding cache, please wait..."
           alert_time = nil
         end
-
-        p file
 
         sprockets_environment.find_asset(file, :bundle => false).body
       end.compact.reject(&:empty?)
