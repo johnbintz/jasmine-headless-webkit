@@ -39,12 +39,24 @@ module Jasmine::Headless
       def reset!
         @asset_paths = nil
 
-        # register haml-sprockets if it's available...
-        %w{haml-sprockets}.each do |library|
+        # register haml-sprockets and handlebars_assets if it's available...
+        %w{haml-sprockets handlebars_assets}.each do |library|
           begin
             require library
           rescue LoadError
           end
+        end
+
+        begin
+          require 'bundler'
+
+          envs = [ :default ]
+          %w{JHW_ENV RAILS_ENV RACK_ENV RAILS_GROUPS}.each do |env|
+            envs << ENV[env].to_sym if ENV[env]
+          end
+
+          Bundler.require(*envs)
+        rescue LoadError
         end
 
         # ...and unregister ones we don't want/need
@@ -173,11 +185,15 @@ module Jasmine::Headless
     def to_html(files)
       alert_time = Time.now + PLEASE_WAIT_IM_WORKING_TIME
 
+      p self.class.extension_filter
+
       files.collect do |file|
         if alert_time && alert_time < Time.now
           puts "Rebuilding cache, please wait..."
           alert_time = nil
         end
+
+        p file
 
         sprockets_environment.find_asset(file, :bundle => false).body
       end.compact.reject(&:empty?)
