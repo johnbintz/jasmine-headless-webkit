@@ -37,12 +37,16 @@ describe Jasmine::Headless::Runner do
     context 'file exists' do
       before do
         File.open(Jasmine::Headless::Runner::RUNNER, 'w')
-        File.open(config_filename, 'w') { |fh| fh.print YAML.dump('test' => 'hello') }
+        File.open(config_filename, 'w') { |fh| fh.print YAML.dump('test' => 'hello', 'erb' => '<%= "erb" %>') }
       end
 
       it 'should load the jasmine config' do
         runner.jasmine_config['test'].should == 'hello'
         runner.jasmine_config['spec_dir'].should == 'spec/javascripts'
+      end
+
+      it 'should execute ERB in the config file' do
+        runner.jasmine_config['erb'].should == 'erb'
       end
     end
 
