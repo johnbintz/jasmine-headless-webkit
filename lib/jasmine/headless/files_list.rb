@@ -21,6 +21,8 @@ module Jasmine::Headless
 
         Gem::Specification.each { |gemspec| @asset_paths += get_paths_from_gemspec(gemspec) }
 
+        add_haml_coffee_compiled_asset_path(@asset_paths) if defined?(HamlCoffeeAssets)
+
         @asset_paths
       end
 
@@ -40,7 +42,7 @@ module Jasmine::Headless
         @asset_paths = nil
 
         # register haml-sprockets and handlebars_assets if it's available...
-        %w{haml-sprockets handlebars_assets}.each do |library|
+        %w{haml-sprockets handlebars_assets haml_coffee_assets}.each do |library|
           begin
             require library
           rescue LoadError
@@ -57,6 +59,7 @@ module Jasmine::Headless
 
           Bundler.require(*envs)
         rescue LoadError
+        rescue StandardError => e #e.g. undefined constant errors, etc
         end
 
         # ...and unregister ones we don't want/need
@@ -69,7 +72,59 @@ module Jasmine::Headless
           register_engine '.js', Jasmine::Headless::JSTemplate
           register_engine '.css', Jasmine::Headless::CSSTemplate
           register_engine '.jst', Jasmine::Headless::JSTTemplate
+
+          if defined?(HamlCoffeeAssets)
+            register_engine '.hamlc', HamlCoffeeAssets::HamlCoffeeTemplate
+
+            begin
+              options = HamlCoffeeAssets::Engine::DEFAULT_CONFIG
+
+              # this assumes you are running out of your project root!
+              # in this file, define HamlCoffeeAssets::Engine::CONFIG as a hash of options
+              require File.join(Dir.pwd, "config/haml_coffee_assets.rb")
+              options.merge!(HamlCoffeeAssets::Engine::APP_CONFIG)
+
+              HamlCoffeeAssets::HamlCoffee.configure do |config|
+                config.namespace             = options[:namespace]
+                config.format                = options[:format]
+                config.uglify                = options[:uglify]
+                config.basename              = options[:basename]
+                config.escapeHtml            = options[:escapeHtml]
+                config.escapeAttributes      = options[:escapeAttributes]
+                config.cleanValue            = options[:cleanValue]
+                config.customHtmlEscape      = options[:customHtmlEscape]
+                config.customCleanValue      = options[:customCleanValue]
+                config.customPreserve        = options[:customPreserve]
+                config.customFindAndPreserve = options[:customFindAndPreserve]
+                config.preserveTags          = options[:preserve]
+                config.selfCloseTags         = options[:autoclose]
+                config.context               = options[:context]
+              end
+            rescue StandardError => e
+            end
+          end
         end
+      end
+
+      def add_haml_coffee_compiled_asset_path(asset_paths)
+        # find the gem asset path that contains the hamlcoffee.js.coffee.erb
+        haml_coffee_gem_asset_path =  asset_paths.find { |path| path =~ /haml_coffee_assets/ }
+
+        # compile the erb file into hamlcoffee.js.coffee
+        compiled_haml_coffee_template = ERB.new(File.read(File.join(haml_coffee_gem_asset_path, "hamlcoffee.js.coffee.erb"))).result(binding)
+
+        # create a tmp directory to put the compiled code in
+        # this assumes you are running out of your project root!
+        FileUtils.mkdir_p (tmp_haml_coffee_assets_path = File.join(Dir.pwd, "tmp/haml_coffee_assets/javascripts"))
+        File.open(File.join(tmp_haml_coffee_assets_path, "hamlcoffee.js.coffee"), 'w') do |f|
+          f.write compiled_haml_coffee_template
+        end
+
+        # add the new asset path containing the compiled file
+        asset_paths << tmp_haml_coffee_assets_path
+
+        # remove the original asset path from the gem, let you get the 'Skipping File' warning for the erb
+        asset_paths.reject! { |path| path == haml_coffee_gem_asset_path }
       end
 
       def default_files
