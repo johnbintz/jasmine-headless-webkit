@@ -110,6 +110,45 @@ describe Jasmine::Headless::Options do
       end
     end
 
+    let(:test_reporter) { 'TestReporter' }
+    let(:file) { 'file' }
+
+    context 'no reporters' do
+      it 'should have the default reporter' do
+        options[:reporters].should == [ [ 'HeadlessConsoleReporter' ] ]
+      end
+    end
+
+    context 'one reporter' do
+      context 'stdout' do
+        before do
+          ARGV.replace([ "--format", test_reporter ])
+        end
+
+        it 'should have the new reporter on stdout' do
+          options[:reporters].should == [ [ test_reporter ] ]
+
+          options.reporters.should == [ [ test_reporter, 'stdout' ] ]
+        end
+      end
+
+      context 'file' do
+        before do
+          ARGV.replace([ "--format", test_reporter, '--out', file ])
+        end
+
+        it 'should have the new reporter on stdout' do
+          options[:reporters].should == [ [ test_reporter, file ] ]
+
+          options.reporters.should == [ [ test_reporter, 'report:0', file ] ]
+        end
+      end
+    end
+
+    context 'two reporters' do
+
+    end
+
     after do
       ARGV.replace(@argv)
     end

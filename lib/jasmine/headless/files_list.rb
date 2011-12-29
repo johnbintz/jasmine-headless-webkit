@@ -47,16 +47,13 @@ module Jasmine::Headless
           end
         end
 
-        begin
-          require 'bundler'
+        if ENV['JHW_ENV']
+          begin
+            require 'bundler'
 
-          envs = [ :default ]
-          %w{JHW_ENV RAILS_ENV RACK_ENV RAILS_GROUPS}.each do |env|
-            envs << ENV[env].to_sym if ENV[env]
+            Bundler.require(ENV['JHW_ENV'].to_sym)
+          rescue LoadError
           end
-
-          Bundler.require(*envs)
-        rescue LoadError
         end
 
         # ...and unregister ones we don't want/need

@@ -17,7 +17,10 @@ module Jasmine
         :do_list => false,
         :full_run => true,
         :enable_cache => true,
-        :files => []
+        :files => [],
+        :reporters => [
+          [ 'HeadlessConsoleReporter' ]
+        ]
       }
 
       DEFAULTS_FILE = File.join(Dir.pwd, '.jasmine-headless-webkit')
@@ -64,6 +67,10 @@ module Jasmine
           @options[:do_list] = true
         when '--seed'
           @options[:seed] = arg.to_i
+        when '--format', '-f'
+          add_reporter(arg)
+        when '--out'
+          @options[:reporters].last << arg
         end
       end
 
@@ -80,17 +87,46 @@ module Jasmine
           [ '--colors', '-c', GetoptLong::NO_ARGUMENT ],
           [ '--no-colors', GetoptLong::NO_ARGUMENT ],
           [ '--cache', GetoptLong::NO_ARGUMENT ],
-          [ '--no-t stcache', GetoptLong::NO_ARGUMENT ],
+          [ '--no-cache', GetoptLong::NO_ARGUMENT ],
           [ '--keep', GetoptLong::NO_ARGUMENT ],
           [ '--runner-out', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--report', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--jasmine-config', '-j', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--no-full-run', GetoptLong::NO_ARGUMENT ],
           [ '--list', '-l', GetoptLong::NO_ARGUMENT ],
-          [ '--seed', GetoptLong::REQUIRED_ARGUMENT ]
+          [ '--seed', GetoptLong::REQUIRED_ARGUMENT ],
+          [ '--format', '-f', GetoptLong::REQUIRED_ARGUMENT ],
+          [ '--out', GetoptLong::REQUIRED_ARGUMENT ]
         )
 
         command_line_args.each { |*args| process_option(*args) }
+      end
+
+      def reporters
+        file_index = 0
+
+        @options[:reporters].collect do |reporter, file|
+          output = [ reporter ]
+          if file
+            output << "report:#{file_index}"
+            output << file
+            file_index += 1
+          else
+            output << "stdout"
+          end
+
+          output
+        end
+      end
+
+      private
+      def add_reporter(name)
+        if !@added_reporter
+          @options[:reporters] = []
+          @added_reporter = true
+        end
+
+        @options[:reporters] << [ name ]
       end
     end
   end
