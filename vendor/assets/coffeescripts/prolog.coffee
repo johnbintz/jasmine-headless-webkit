@@ -30,7 +30,7 @@ if window.JHW
     e = e || window.event
 
     JHW.hasError()
-    JHW.stdout.puts('The code tried to leave the test page. Check for unhandled form submits and link clicks.')
+    JHW.print('stdout', "The code tried to leave the test page. Check for unhandled form submits and link clicks.\n")
 
     if e
       e.returnValue = 'string'
@@ -38,35 +38,31 @@ if window.JHW
     return 'string'
 
   window.confirm = (message) ->
-    JHW.stderr.puts("#{"[confirm]".foreground('red')} jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm. Returning true.")
+    JHW.print('stdout', "#{"[confirm]".foreground('red')} jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm. Returning true.\n")
     true
 
   window.alert = (message) ->
-    JHW.stderr.puts("[alert] ".foreground('red') + message)
+    JHW.print('stdout', "[alert] ".foreground('red') + message + "\n")
 
   JHW._hasErrors = false
   JHW._handleError = (message, lineNumber, sourceURL) ->
-    JHW.stderr.puts(message)
+    JHW.print('stderr', message + "\n")
     JHW._hasErrors = true
     false
 
   JHW._setColors = (useColors) ->
     Intense.useColors = useColors
 
-  createHandle = (handle) ->
-    JHW[handle] =
-      print: (content) -> JHW.print(handle, content)
-      puts: (content) -> JHW.print(handle, content + "\n")
-
-  createHandle(handle) for handle in [ 'stdout', 'stderr', 'report' ]
-
   JHW._usedConsole = false
 
   JHW.log = (msg) ->
     JHW.hasUsedConsole()
-    JHW.report.puts("CONSOLE||#{msg}")
+
+    for reporter in jasmine.getEnv().reporter.subReporters_
+      reporter.consoleLogUsed(msg) if reporter.consoleLogUsed?
+
     JHW._usedConsole = true
-    JHW.stdout.puts(msg)
+    JHW.print('stdout', msg + "\n")
 
 window.CoffeeScriptToFilename = {}
 window.CSTF = window.CoffeeScriptToFilename

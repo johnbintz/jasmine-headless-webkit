@@ -60,8 +60,13 @@ module Jasmine::Headless
       }.collect(&:filename).uniq.compact
     end
 
-    private
+    def seed
+      if seed = report.find { |entry| entry.respond_to?(:seed) }
+        seed.seed
+      end
+    end
 
+    private
     def last_total
       @report.reverse.find { |entry| entry.respond_to?(:total) }
     end

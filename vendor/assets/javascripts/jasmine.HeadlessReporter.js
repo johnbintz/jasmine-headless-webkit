@@ -1,3 +1,5 @@
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   if (!(typeof jasmine !== "undefined" && jasmine !== null)) {
     throw new Error("jasmine not loaded!");
@@ -5,8 +7,10 @@
 
   jasmine.HeadlessReporter = (function() {
 
-    function HeadlessReporter(callback) {
-      this.callback = callback != null ? callback : null;
+    function HeadlessReporter(outputTarget) {
+      this.outputTarget = outputTarget != null ? outputTarget : null;
+      this.puts = __bind(this.puts, this);
+      this.print = __bind(this.print, this);
       this.results = [];
       this.failedCount = 0;
       this.length = 0;
@@ -33,7 +37,8 @@
     HeadlessReporter.prototype.reportRunnerResults = function(runner) {
       if (this.hasError()) return;
       if (this.failedCount !== 0) JHW.hasSpecFailure();
-      return JHW.finishSuite();
+      JHW.finishSuite();
+      if (window.JHW) return window.onbeforeunload = null;
     };
 
     HeadlessReporter.prototype.reportSpecResults = function(spec) {
@@ -57,6 +62,16 @@
       return (new Date() - this.startTime) / 1000.0;
     };
 
+    HeadlessReporter.prototype.print = function(output) {
+      return JHW.print(this.outputTarget, output);
+    };
+
+    HeadlessReporter.prototype.puts = function(output) {
+      return JHW.print(this.outputTarget, output + "\n");
+    };
+
     return HeadlessReporter;
 
   })();
+
+}).call(this);

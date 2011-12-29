@@ -62,8 +62,10 @@ void Runner::handleError(const QString &message, int lineNumber, const QString &
 
 void Runner::loadSpec()
 {
-  if (!reportFileName.isEmpty()) {
-    QFile *outputFile = new QFile(reportFileName);
+  QVectorIterator<QString> iterator(reportFiles);
+
+  while (iterator.hasNext()) {
+    QFile *outputFile = new QFile(iterator.next());
     outputFile->open(QIODevice::WriteOnly);
     outputFiles.enqueue(outputFile);
   }
@@ -100,8 +102,8 @@ void Runner::hasSpecFailure() {
   _hasSpecFailure = true;
 }
 
-void Runner::reportFile(const QString &file) {
-  reportFileName = file;
+void Runner::setReportFiles(QStack<QString> &files) {
+  reportFiles = files;
 }
 
 void Runner::timerPause() {
@@ -116,6 +118,14 @@ void Runner::ping() {
   runs = 0;
 }
 
+void Runner::setSeed(QString s) {
+  seed = s;
+}
+
+QString Runner::getSeed() {
+  return seed;
+}
+
 void Runner::print(const QString &fh, const QString &content) {
   if (fh == "stdout") {
     std::cout << qPrintable(content);
@@ -127,14 +137,12 @@ void Runner::print(const QString &fh, const QString &content) {
     std::cerr.flush();
   }
 
-  if (fh == "report") {
-    QListIterator<QFile *> iterator(outputFiles);
+  if (fh.contains("report")) {
+    int index = (int)fh.split(":").last().toUInt();
 
-    while (iterator.hasNext()) {
-      QTextStream ts(iterator.next());
-      ts << qPrintable(content);
-      ts.flush();
-    }
+    QTextStream ts(outputFiles.at(index));
+    ts << qPrintable(content);
+    ts.flush();
   }
 }
 
@@ -150,10 +158,8 @@ void Runner::timerEvent() {
     QApplication::instance()->exit(1);
 
   if (isFinished && runs > 2) {
-    QListIterator<QFile *> iterator(outputFiles);
-
-    while (iterator.hasNext()) {
-      iterator.next()->close();
+    while (!outputFiles.isEmpty()) {
+      outputFiles.dequeue()->close();
     }
 
     int exitCode = 0;

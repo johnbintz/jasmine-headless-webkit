@@ -13,7 +13,12 @@
       var output;
       HeadlessFileReporter.__super__.reportRunnerResults.call(this, runner);
       output = "TOTAL||" + this.length + "||" + this.failedCount + "||" + (this._runtime()) + "||" + (JHW._hasErrors ? "T" : "F");
-      return JHW.report.puts(output);
+      this.puts(output);
+      return this.puts("SEED||" + (JHW.getSeed()));
+    };
+
+    HeadlessFileReporter.prototype.consoleLogUsed = function(msg) {
+      return this.puts("CONSOLE||" + msg);
     };
 
     HeadlessFileReporter.prototype.reportSpecResults = function(spec) {
@@ -21,10 +26,10 @@
       HeadlessFileReporter.__super__.reportSpecResults.call(this, spec);
       return this._reportSpecResult(spec, {
         success: function(results) {
-          return JHW.report.puts("PASS||" + spec.getJHWSpecInformation());
+          return _this.puts("PASS||" + spec.getJHWSpecInformation());
         },
         failure: function(results) {
-          return JHW.report.puts("FAIL||" + spec.getJHWSpecInformation());
+          return _this.puts("FAIL||" + spec.getJHWSpecInformation());
         }
       });
     };

@@ -2,6 +2,9 @@ require 'spec_helper'
 
 describe Jasmine::Headless::Report do
   include FakeFS::SpecHelpers
+  
+  let(:report) { described_class.new(file) }
+  let(:file) { 'file' }
 
   let(:file) { 'report.txt' }
 
@@ -74,6 +77,19 @@ REPORT
         report[0].should == Jasmine::Headless::ReportMessage::Console.new("test\ntest2")
       end
     end
+  end
+
+  describe '#seed' do
+    subject { report.seed }
+
+    let(:seed) { stub(:seed => seed_number) }
+    let(:seed_number) { 1 }
+
+    before do
+      report.stubs(:report).returns([ seed ])
+    end
+
+    it { should == seed_number }
   end
 end
 

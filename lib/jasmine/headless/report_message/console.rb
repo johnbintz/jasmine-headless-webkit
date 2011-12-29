@@ -1,9 +1,7 @@
 module Jasmine::Headless::ReportMessage
   class Console
-    class << self
-      def new_from_parts(parts)
-        new(parts.first)
-      end
+    def self.new_from_parts(parts)
+      new(parts.first)
     end
 
     attr_reader :message

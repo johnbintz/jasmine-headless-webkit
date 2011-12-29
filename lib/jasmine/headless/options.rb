@@ -13,7 +13,6 @@ module Jasmine
         :remove_html_file => true,
         :runner_output_filename => false,
         :jasmine_config => 'spec/javascripts/support/jasmine.yml',
-        :report => false,
         :do_list => false,
         :full_run => true,
         :enable_cache => true,
@@ -25,6 +24,8 @@ module Jasmine
 
       DEFAULTS_FILE = File.join(Dir.pwd, '.jasmine-headless-webkit')
       GLOBAL_DEFAULTS_FILE = File.expand_path('~/.jasmine-headless-webkit')
+
+      REPORT_DEPRECATED_MESSAGE = "--report is deprecated. Use --format HeadlessFileReporter --out <filename>"
 
       def self.from_command_line
         options = new
@@ -56,7 +57,10 @@ module Jasmine
         when '--keep'
           @options[:remove_html_file] = false
         when '--report'
-          @options[:report] = arg
+          warn REPORT_DEPRECATED_MESSAGE
+
+          add_reporter('HeadlessFileReporter', arg)
+          add_reporter('HeadlessConsoleReporter')
         when '--runner-out'
           @options[:runner_output_filename] = arg
         when '--jasmine-config', '-j'
@@ -70,7 +74,7 @@ module Jasmine
         when '--format', '-f'
           add_reporter(arg)
         when '--out'
-          @options[:reporters].last << arg
+          add_reporter_file(arg)
         end
       end
 
@@ -119,14 +123,28 @@ module Jasmine
         end
       end
 
+      def file_reporters
+        reporters.find_all { |reporter| reporter[1]["report:"] }
+      end
+
       private
-      def add_reporter(name)
+      def add_reporter(name, file = nil)
         if !@added_reporter
           @options[:reporters] = []
           @added_reporter = true
         end
 
+        if (parts = name.split(':')).length == 2
+          name, file = parts
+        end
+
         @options[:reporters] << [ name ]
+
+        add_reporter_file(file) if file
+      end
+
+      def add_reporter_file(file)
+        @options[:reporters].last << file
       end
     end
   end

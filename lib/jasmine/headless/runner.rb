@@ -34,14 +34,6 @@ module Jasmine
       end
 
       def initialize(options)
-        if !File.file?(RUNNER)
-          $stderr.puts "No runner found, attempting to compile..."
-          Dir.chdir RUNNER_DIR do
-            system %{ruby extconf.rb}
-          end
-          raise NoRunnerError if !File.file?(RUNNER)
-        end
-
         @options = options
       end
 
@@ -60,25 +52,25 @@ module Jasmine
       end
 
       def jasmine_command(*targets)
-        [
-          RUNNER,
-          @options[:colors] ? '-c' : nil,
-          @options[:report] ? "-r #{@options[:report]}" : nil,
-          *targets
-        ].compact.join(" ")
+        command = [ RUNNER ]
+
+        command << "-s #{options[:seed]}"
+        command << '-c' if options[:colors]
+
+        options.file_reporters.each do |reporter, identifier, file|
+          command << "-r #{file}"
+        end
+
+        command += targets
+
+        command.compact.join(' ')
       end
 
       def run
         Jasmine::Headless::CacheableAction.enabled = @options[:enable_cache]
         FilesList.reset!
 
-        files_list = Jasmine::Headless::FilesList.new(
-          :config => jasmine_config,
-          :only => @options[:files],
-          :seed => @options[:seed]
-        )
-
-        @_targets = template_writer.write!(files_list)
+        @_targets = template_writer.write
 
         run_targets = @_targets.dup
 
@@ -89,8 +81,6 @@ module Jasmine
         end
 
         system jasmine_command(run_targets)
-
-        puts "\nTest ordering seed: --seed #{@options[:seed]}"
 
         @_status = $?.exitstatus
       ensure
@@ -107,6 +97,14 @@ module Jasmine
             false
           end
         end
+      end
+
+      def files_list
+        @files_list ||= Jasmine::Headless::FilesList.new(
+          :config => jasmine_config,
+          :only => @options[:files],
+          :seed => @options[:seed]
+        )
       end
 
       private

@@ -29,34 +29,40 @@
 
 int main(int argc, char** argv)
 {
-  char *reporter = NULL;
-  char showColors = false;
+  bool showColors = false;
+  QString seed;
+
+  QStack<QString> reporterFiles;
 
   int c, index;
 
-  while ((c = getopt(argc, argv, "cr:")) != -1) {
+  while ((c = getopt(argc, argv, "cr:s:")) != -1) {
     switch(c) {
       case 'c':
         showColors = true;
         break;
       case 'r':
-        reporter = optarg;
+        reporterFiles.push(QString(optarg));
+        break;
+      case 's':
+        seed = QString(optarg);
         break;
     }
   }
 
   if (optind == argc) {
     std::cerr << "Run Jasmine's SpecRunner headlessly" << std::endl << std::endl;
-    std::cerr << "  specrunner [-c] [-r <report file>] specrunner.html ..." << std::endl;
+    std::cerr << "  specrunner [-c] [-s seed] [-r report file ...] specrunner.html ..." << std::endl;
     return 1;
   }
 
   QApplication app(argc, argv);
   app.setApplicationName("jasmine-headless-webkit");
   Runner runner;
-  runner.setColors(showColors);
 
-  runner.reportFile(reporter);
+  runner.setColors(showColors);
+  runner.setReportFiles(reporterFiles);
+  runner.setSeed(seed);
 
   for (index = optind; index < argc; index++) {
     runner.addFile(QString::fromLocal8Bit(argv[index]));

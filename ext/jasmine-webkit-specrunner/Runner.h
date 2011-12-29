@@ -20,7 +20,9 @@ class Runner: public QObject {
 
     Runner();
     void setColors(bool colors);
-    void reportFile(const QString &file);
+    void setReportFiles(QStack<QString> &files);
+    void setSeed(QString s);
+
     void addFile(const QString &spec);
     void go();
 
@@ -30,6 +32,9 @@ class Runner: public QObject {
     void hasUsedConsole();
     void hasError();
     void hasSpecFailure();
+
+    QString getSeed();
+
     void print(const QString &fh, const QString &content);
     void finishSuite();
     void ping();
@@ -50,15 +55,14 @@ class Runner: public QObject {
     bool isFinished;
     bool useColors;
 
-    QQueue<QString> runnerFiles;
+    QString seed;
 
-    QString reportFileName;
+    QQueue<QString> runnerFiles;
+    QStack<QString> reportFiles;
 
     void loadSpec();
 
     QQueue<QFile *> outputFiles;
-
-    QFile *outputFile;
 };
 
 #endif

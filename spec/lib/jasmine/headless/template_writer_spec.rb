@@ -43,46 +43,50 @@ describe Jasmine::Headless::TemplateWriter do
     end
   end
 
-  describe '#write!' do
-    include FakeFS::SpecHelpers
+  describe '#render' do
+    subject { template_writer.render }
+
+    let(:all_files) { 'all files' }
+    let(:template) { 'template' }
 
     before do
-      Jasmine::Headless::FilesList.stubs(:default_files).returns([])
+      template_writer.stubs(:all_files).returns(all_files)
 
-      File.stubs(:read).returns(nil)
-
-      runner.stubs(:keep_runner).returns(true)
-      runner.stubs(:runner_filename).returns(false)
-
-      Sprockets::Environment.any_instance.stubs(:find_asset).returns(stub(:body => ''))
+      template_writer.expects(:template_for).with(all_files).returns(template)
     end
 
-    let(:files_list) { Jasmine::Headless::FilesList.new }
+    it { should == template }
+  end
+
+  describe '#all_files' do
+    subject { template_writer.all_files }
+
+    let(:files_list) { stub }
+    let(:files) { 'files' }
 
     before do
-      files_list.stubs(:files).returns([ 'file.js' ])
-      files_list.stubs(:filtered_files).returns([ 'file.js' ])
+      template_writer.stubs(:files_list).returns(files_list)
+
+      files_list.stubs(:files_to_html).returns(files)
     end
 
-    context 'no filter' do
-      it 'should write one file' do
-        template_writer.write!(files_list).should == [
-          "jhw.#{$$}.html"
-        ]
-      end
+    it { should == files }
+  end
+
+  describe '#jhw_reporters' do
+    subject { template_writer.jhw_reporters }
+
+    let(:reporter) { 'reporter' }
+    let(:output) { 'output' }
+
+    before do
+      template_writer.stubs(:reporters).returns([
+        [ reporter, output ]
+      ])
     end
 
-    context 'filtered files' do
-      before do
-        files_list.stubs(:files).returns([ 'file.js', 'file2.js' ])
-      end
-
-      it 'should write two files' do
-        template_writer.write!(files_list).should == [
-          "jhw.#{$$}.filter.html", "jhw.#{$$}.html"
-        ]
-      end
-    end
+    it { should include(reporter) }
+    it { should include(output) }
   end
 end
 

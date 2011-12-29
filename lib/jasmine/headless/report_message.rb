@@ -6,6 +6,7 @@ module Jasmine::Headless
     autoload :Console, 'jasmine/headless/report_message/console'
     autoload :Error, 'jasmine/headless/report_message/error'
     autoload :Total, 'jasmine/headless/report_message/total'
+    autoload :Seed, 'jasmine/headless/report_message/seed'
   end
 end
 

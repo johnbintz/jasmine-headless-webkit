@@ -1,11 +1,9 @@
 module Jasmine::Headless::ReportMessage
   class Spec
-    class << self
-      def new_from_parts(parts)
-        file_info = parts.pop
+    def self.new_from_parts(parts)
+      file_info = parts.pop
 
-        new(parts.join(' '), file_info)
-      end
+      new(parts.join(' '), file_info)
     end
 
     attr_reader :statement, :file_info

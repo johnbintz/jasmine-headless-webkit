@@ -12,7 +12,7 @@
   <body>
     <script type="text/javascript">
       jasmine.getEnv().console = {
-        log: function(msg) { JHW.stdout.puts(msg) }
+        log: function(msg) { JHW.print('stdout', msg + "\n"); }
       }
 
       window._onload = window.onload;
@@ -23,8 +23,7 @@
         }
 
         if (window.JHW) {
-          jasmine.getEnv().addReporter(new jasmine.HeadlessConsoleReporter());
-          jasmine.getEnv().addReporter(new jasmine.HeadlessFileReporter());
+          <%= jhw_reporters %>
         } else {
           types = [ 'HtmlReporter', 'TrivialReporter' ];
 

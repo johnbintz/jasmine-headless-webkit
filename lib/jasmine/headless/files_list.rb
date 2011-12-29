@@ -72,7 +72,9 @@ module Jasmine::Headless
       def default_files
         %w{jasmine.js jasmine-html jasmine.css jasmine-extensions
            intense headless_reporter_result jasmine.HeadlessReporter
-           jasmine.HeadlessFileReporter jasmine.HeadlessConsoleReporter jsDump beautify-html}
+           jasmine.HeadlessFileReporter jasmine.HeadlessConsoleReporter
+           jasmine.HeadlessTAPReporter
+           jsDump beautify-html}
       end
 
       def extension_filter
@@ -84,7 +86,7 @@ module Jasmine::Headless
 
     PLEASE_WAIT_IM_WORKING_TIME = 2
 
-    attr_reader :required_files, :potential_files_to_filter
+    attr_reader :options, :required_files, :potential_files_to_filter
 
     def initialize(options = {})
       @options = options
@@ -184,15 +186,11 @@ module Jasmine::Headless
     def to_html(files)
       alert_time = Time.now + PLEASE_WAIT_IM_WORKING_TIME
 
-      p self.class.extension_filter
-
       files.collect do |file|
         if alert_time && alert_time < Time.now
           puts "Rebuilding cache, please wait..."
           alert_time = nil
         end
-
-        p file
 
         sprockets_environment.find_asset(file, :bundle => false).body
       end.compact.reject(&:empty?)

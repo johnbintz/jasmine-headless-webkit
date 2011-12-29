@@ -16,25 +16,25 @@
     HeadlessConsoleReporter.prototype.reportRunnerResults = function(runner) {
       var result, resultLine, _i, _len, _ref;
       HeadlessConsoleReporter.__super__.reportRunnerResults.call(this);
-      JHW.stdout.print("\n");
+      this.print("\n");
       resultLine = this.formatResultLine(this._runtime());
       if (this.failedCount === 0) {
-        JHW.stdout.puts(("PASS: " + resultLine).foreground('green'));
+        this.puts(("PASS: " + resultLine).foreground('green'));
       } else {
-        JHW.stdout.puts(("FAIL: " + resultLine).foreground('red'));
+        this.puts(("FAIL: " + resultLine).foreground('red'));
       }
       _ref = this.results;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         result = _ref[_i];
-        JHW.stdout.puts(result.toString());
+        this.puts(result.toString());
       }
-      if (window.JHW) return window.onbeforeunload = null;
+      return this.puts("\nTest ordering seed: --seed " + (JHW.getSeed()));
     };
 
     HeadlessConsoleReporter.prototype.reportRunnerStarting = function(runner) {
       HeadlessConsoleReporter.__super__.reportRunnerStarting.call(this, runner);
       if (!this.hasError()) {
-        return JHW.stdout.puts("\nRunning Jasmine specs...".bright());
+        return this.puts("\nRunning Jasmine specs...".bright());
       }
     };
 
@@ -43,11 +43,11 @@
       HeadlessConsoleReporter.__super__.reportSpecResults.call(this, spec);
       return this._reportSpecResult(spec, {
         success: function(results) {
-          return JHW.stdout.print('.'.foreground('green'));
+          return _this.print('.'.foreground('green'));
         },
         failure: function(results) {
           var failureResult, foundLine, result, testCount, _i, _len, _ref;
-          JHW.stdout.print('F'.foreground('red'));
+          _this.print('F'.foreground('red'));
           failureResult = new HeadlessReporterResult(spec.getFullName(), spec.getSpecSplitName());
           testCount = 1;
           _ref = results.getItems();
@@ -78,7 +78,7 @@
       if (this.timer) {
         clearTimeout(this.timer);
         this.timer = null;
-        return JHW.stdout.print(Intense.moveBack());
+        return this.print(Intense.moveBack());
       }
     };
 
@@ -98,8 +98,8 @@
       var _this = this;
       return this.timer = setTimeout(function() {
         if (_this.timer) {
-          if (!_this.first) JHW.stdout.print(Intense.moveBack());
-          JHW.stdout.print(_this.positions.substr(_this.position, 1).foreground('yellow'));
+          if (!_this.first) _this.print(Intense.moveBack());
+          _this.print(_this.positions.substr(_this.position, 1).foreground('yellow'));
           _this.position += 1;
           _this.position %= _this.positions.length;
           _this.first = false;

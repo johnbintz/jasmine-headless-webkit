@@ -30,6 +30,7 @@ namespace :spec do
   task :platforms do
     rvm_bundle
     rvm_bundle "exec rspec spec"
+    rvm_bundle "exec cucumber"
     raise SpecError.new if $?.exitstatus != 0
   end
 end
