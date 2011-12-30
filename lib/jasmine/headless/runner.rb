@@ -103,8 +103,9 @@ module Jasmine
       def files_list
         @files_list ||= Jasmine::Headless::FilesList.new(
           :config => jasmine_config,
-          :only => @options[:files],
-          :seed => @options[:seed]
+          :only => options[:files],
+          :seed => options[:seed],
+          :reporters => options.reporters
         )
       end
 

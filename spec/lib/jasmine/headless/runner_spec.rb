@@ -167,10 +167,13 @@ describe Jasmine::Headless::Runner do
     let(:only) { 'only' }
     let(:seed) { 12345 }
     let(:jasmine_config) { 'jasmine config' }
+    let(:reporters) { [] }
 
     before do
       runner.stubs(:options).returns(options)
       runner.stubs(:jasmine_config).returns(jasmine_config)
+
+      options.stubs(:reporters).returns(reporters)
     end
 
     it { should be_a_kind_of(Jasmine::Headless::FilesList) }
@@ -179,6 +182,7 @@ describe Jasmine::Headless::Runner do
       subject.options[:config].should == jasmine_config
       subject.options[:only].should == only
       subject.options[:seed].should == seed
+      subject.options[:reporters].should == reporters
     end
   end
 end

@@ -72,8 +72,6 @@ module Jasmine::Headless
       def default_files
         %w{jasmine.js jasmine-html jasmine.css jasmine-extensions
            intense headless_reporter_result jasmine.HeadlessReporter
-           jasmine.HeadlessReporter.File jasmine.HeadlessReporter.Console
-           jasmine.HeadlessReporter.Tap
            jsDump beautify-html}
       end
 
@@ -91,20 +89,28 @@ module Jasmine::Headless
     def initialize(options = {})
       @options = options
 
-      Kernel.srand(@options[:seed]) if @options[:seed]
+      Kernel.srand(options[:seed]) if options[:seed]
 
       @required_files = UniqueAssetList.new
       @potential_files_to_filter = []
 
+      load_initial_assets
+
+      use_config if config?
+    end
+
+    def load_initial_assets
       self.class.default_files.each do |file|
         begin
-          @required_files << sprockets_environment.find_asset(file, :bundle => false)
+          add_path(file)
         rescue InvalidUniqueAsset => e
           raise StandardError.new("Not an asset: #{file}")
         end
       end
 
-      use_config! if config?
+      (options[:reporters] || []).each do |reporter, identifier, file|
+        add_path("jasmine.HeadlessReporter.#{reporter}")
+      end
     end
 
     def files
@@ -207,7 +213,7 @@ module Jasmine::Headless
       'spec_files' => 'spec_dir'
     }
 
-    def use_config!
+    def use_config
       @config = @options[:config].dup
       @searches = {}
       @potential_files_to_filter = []
@@ -253,7 +259,7 @@ module Jasmine::Headless
       self.class.extension_filter
     end
 
-    def add_path(path, type)
+    def add_path(path, type = nil)
       asset = sprockets_environment.find_asset(path)
 
       @required_files << asset
