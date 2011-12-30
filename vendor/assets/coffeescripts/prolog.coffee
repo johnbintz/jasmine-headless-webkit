@@ -26,35 +26,41 @@ if window.JHW
       console.log(data)
       data
 
+  puts = (message) ->
+    JHW.print('stdout', message + "\n")
+
+  # handle unloading
   window.onbeforeunload = (e) ->
     e = e || window.event
 
     JHW.hasError()
-    JHW.print('stdout', "The code tried to leave the test page. Check for unhandled form submits and link clicks.\n")
+    puts "The code tried to leave the test page. Check for unhandled form submits and link clicks."
 
-    if e
-      e.returnValue = 'string'
+    e.returnValue = 'string' if e
 
     return 'string'
 
-  window.confirm = (message) ->
-    JHW.print('stdout', "#{"[confirm]".foreground('red')} jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm. Returning true.\n")
-    true
-
-  window.alert = (message) ->
-    JHW.print('stdout', "[alert] ".foreground('red') + message + "\n")
-
+  # script errors
   JHW._hasErrors = false
   JHW._handleError = (message, lineNumber, sourceURL) ->
     JHW.print('stderr', message + "\n")
     JHW._hasErrors = true
     false
 
-  JHW._setColors = (useColors) ->
-    Intense.useColors = useColors
+  # dialogs
+  window.confirm = (message) ->
+    puts "#{"[confirm]".foreground('red')} jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm. Returning true."
 
+    true
+
+  window.alert = (message) ->
+    puts "[alert] ".foreground('red') + message
+
+  # color support
+  JHW._setColors = (useColors) -> Intense.useColors = useColors
+
+  # console.log support
   JHW._usedConsole = false
-
   JHW.log = (msg) ->
     JHW.hasUsedConsole()
 
@@ -62,7 +68,8 @@ if window.JHW
       reporter.consoleLogUsed(msg) if reporter.consoleLogUsed?
 
     JHW._usedConsole = true
-    JHW.print('stdout', msg + "\n")
+
+    puts msg
 
 window.CoffeeScriptToFilename = {}
 window.CSTF = window.CoffeeScriptToFilename

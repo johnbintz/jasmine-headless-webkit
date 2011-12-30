@@ -1,4 +1,6 @@
-class jasmine.HeadlessTAPReporter extends jasmine.HeadlessReporter
+#= require jasmine.HeadlessReporter.js
+
+class jasmine.HeadlessReporter.Tap extends jasmine.HeadlessReporter
   constructor: (@outputTarget = null) ->
     super(@outputTarget)
 

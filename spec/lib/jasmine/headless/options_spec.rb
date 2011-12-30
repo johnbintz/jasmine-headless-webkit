@@ -56,7 +56,7 @@ describe Jasmine::Headless::Options do
 
         options.process_option("--report", file)
 
-        options[:reporters].should == [ [ 'HeadlessFileReporter', file ], [ 'HeadlessConsoleReporter' ] ]
+        options[:reporters].should == [ [ 'File', file ], [ 'Console' ] ]
       end
     end
 
@@ -144,7 +144,7 @@ describe Jasmine::Headless::Options do
 
     context 'no reporters' do
       it 'should have the default reporter' do
-        options[:reporters].should == [ [ 'HeadlessConsoleReporter' ] ]
+        options[:reporters].should == [ [ 'Console' ] ]
       end
     end
 

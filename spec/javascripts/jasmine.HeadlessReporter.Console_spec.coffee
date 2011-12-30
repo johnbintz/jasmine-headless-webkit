@@ -1,10 +1,8 @@
-describe 'HeadlessReporterResult', ->
-
-describe 'jasmine.HeadlessConsoleReporter', ->
+describe 'jasmine.HeadlessReporter', ->
   reporter = null
 
   beforeEach ->
-    reporter = new jasmine.HeadlessConsoleReporter()
+    reporter = new jasmine.HeadlessReporter.Console()
 
   describe '#formatResultLine', ->
     context 'length = 1', ->

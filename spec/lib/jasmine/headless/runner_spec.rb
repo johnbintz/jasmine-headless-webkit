@@ -93,45 +93,6 @@ describe Jasmine::Headless::Runner do
     end
   end
 
-  context 'real tests' do
-    let(:report) { 'spec/report.txt' }
-
-    before do
-      FileUtils.rm_f report
-    end
-
-    after do
-      FileUtils.rm_f report
-    end
-
-    it 'should succeed with error code 0' do
-      Jasmine::Headless::Runner.run(
-        :jasmine_config => 'spec/jasmine/success/success.yml',
-        :reporters => [
-          [ 'HeadlessFileReporter', report ]
-        ]
-      ).should == 0
-
-      report.should be_a_report_containing(1, 0, false)
-    end
-
-    it 'should succeed but with javascript error' do
-      Jasmine::Headless::Runner.run(:jasmine_config => 'spec/jasmine/success_with_error/success_with_error.yml').should == 1
-    end
-
-    it 'should fail on one test' do
-      Jasmine::Headless::Runner.run(
-        :jasmine_config => 'spec/jasmine/failure/failure.yml',
-        :reporters => [
-          [ 'HeadlessFileReporter', report ]
-        ]
-      ).should == 1
-
-      report.should be_a_report_containing(1, 1, false)
-      report.should contain_a_failing_spec(['failure', 'should fail with error code of 1'])
-    end
-  end
-
   describe '#runner_filename' do
     let(:runner_filename) { runner.runner_filename }
     let(:yaml_output) { 'yaml output' }

@@ -1,6 +1,6 @@
-describe 'jasmine.HeadlessTAPReporter', ->
+describe 'jasmine.HeadlessReporter.Tap', ->
   beforeEach ->
-    @reporter = new jasmine.HeadlessTAPReporter()
+    @reporter = new jasmine.HeadlessReporter.Tap()
 
   describe '#reportRunnerResults', ->
     it 'should write nothing for nothing', ->

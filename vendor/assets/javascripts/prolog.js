@@ -1,3 +1,5 @@
+(function() {
+  var puts;
 
   if (window.JHW) {
     window.console = {
@@ -35,25 +37,28 @@
         return data;
       }
     };
+    puts = function(message) {
+      return JHW.print('stdout', message + "\n");
+    };
     window.onbeforeunload = function(e) {
       e = e || window.event;
       JHW.hasError();
-      JHW.print('stdout', "The code tried to leave the test page. Check for unhandled form submits and link clicks.\n");
+      puts("The code tried to leave the test page. Check for unhandled form submits and link clicks.");
       if (e) e.returnValue = 'string';
       return 'string';
-    };
-    window.confirm = function(message) {
-      JHW.print('stdout', "" + ("[confirm]".foreground('red')) + " jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm. Returning true.\n");
-      return true;
-    };
-    window.alert = function(message) {
-      return JHW.print('stdout', "[alert] ".foreground('red') + message + "\n");
     };
     JHW._hasErrors = false;
     JHW._handleError = function(message, lineNumber, sourceURL) {
       JHW.print('stderr', message + "\n");
       JHW._hasErrors = true;
       return false;
+    };
+    window.confirm = function(message) {
+      puts("" + ("[confirm]".foreground('red')) + " jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm. Returning true.");
+      return true;
+    };
+    window.alert = function(message) {
+      return puts("[alert] ".foreground('red') + message);
     };
     JHW._setColors = function(useColors) {
       return Intense.useColors = useColors;
@@ -68,10 +73,12 @@
         if (reporter.consoleLogUsed != null) reporter.consoleLogUsed(msg);
       }
       JHW._usedConsole = true;
-      return JHW.print('stdout', msg + "\n");
+      return puts(msg);
     };
   }
 
   window.CoffeeScriptToFilename = {};
 
   window.CSTF = window.CoffeeScriptToFilename;
+
+}).call(this);

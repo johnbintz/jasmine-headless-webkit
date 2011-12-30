@@ -18,7 +18,7 @@ module Jasmine
         :enable_cache => true,
         :files => [],
         :reporters => [
-          [ 'HeadlessConsoleReporter' ]
+          [ 'Console' ]
         ]
       }
 
@@ -59,8 +59,8 @@ module Jasmine
         when '--report'
           warn REPORT_DEPRECATED_MESSAGE
 
-          add_reporter('HeadlessFileReporter', arg)
-          add_reporter('HeadlessConsoleReporter')
+          add_reporter('File', arg)
+          add_reporter('Console')
         when '--runner-out'
           @options[:runner_output_filename] = arg
         when '--jasmine-config', '-j'

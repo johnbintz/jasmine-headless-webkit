@@ -1,21 +1,21 @@
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  jasmine.HeadlessConsoleReporter = (function() {
+  jasmine.HeadlessReporter.Console = (function() {
 
-    __extends(HeadlessConsoleReporter, jasmine.HeadlessReporter);
+    __extends(Console, jasmine.HeadlessReporter);
 
-    function HeadlessConsoleReporter(callback) {
+    function Console(callback) {
       this.callback = callback != null ? callback : null;
       this._waitRunner = __bind(this._waitRunner, this);
-      HeadlessConsoleReporter.__super__.constructor.call(this, this.callback);
+      Console.__super__.constructor.call(this, this.callback);
       this.position = 0;
       this.positions = "|/-\\";
     }
 
-    HeadlessConsoleReporter.prototype.reportRunnerResults = function(runner) {
+    Console.prototype.reportRunnerResults = function(runner) {
       var result, resultLine, _i, _len, _ref;
-      HeadlessConsoleReporter.__super__.reportRunnerResults.call(this);
+      Console.__super__.reportRunnerResults.call(this);
       this.print("\n");
       resultLine = this.formatResultLine(this._runtime());
       if (this.failedCount === 0) {
@@ -31,16 +31,16 @@
       return this.puts("\nTest ordering seed: --seed " + (JHW.getSeed()));
     };
 
-    HeadlessConsoleReporter.prototype.reportRunnerStarting = function(runner) {
-      HeadlessConsoleReporter.__super__.reportRunnerStarting.call(this, runner);
+    Console.prototype.reportRunnerStarting = function(runner) {
+      Console.__super__.reportRunnerStarting.call(this, runner);
       if (!this.hasError()) {
         return this.puts("\nRunning Jasmine specs...".bright());
       }
     };
 
-    HeadlessConsoleReporter.prototype.reportSpecResults = function(spec) {
+    Console.prototype.reportSpecResults = function(spec) {
       var _this = this;
-      HeadlessConsoleReporter.__super__.reportSpecResults.call(this, spec);
+      Console.__super__.reportSpecResults.call(this, spec);
       return this._reportSpecResult(spec, {
         success: function(results) {
           return _this.print('.'.foreground('green'));
@@ -66,7 +66,7 @@
       });
     };
 
-    HeadlessConsoleReporter.prototype.reportSpecWaiting = function() {
+    Console.prototype.reportSpecWaiting = function() {
       if (!this.timer) {
         this.timer = true;
         this.first = true;
@@ -74,7 +74,7 @@
       }
     };
 
-    HeadlessConsoleReporter.prototype.reportSpecRunning = function() {
+    Console.prototype.reportSpecRunning = function() {
       if (this.timer) {
         clearTimeout(this.timer);
         this.timer = null;
@@ -82,7 +82,7 @@
       }
     };
 
-    HeadlessConsoleReporter.prototype.formatResultLine = function(runtime) {
+    Console.prototype.formatResultLine = function(runtime) {
       var line;
       line = [];
       line.push(this.length);
@@ -94,7 +94,7 @@
       return line.join(' ');
     };
 
-    HeadlessConsoleReporter.prototype._waitRunner = function() {
+    Console.prototype._waitRunner = function() {
       var _this = this;
       return this.timer = setTimeout(function() {
         if (_this.timer) {
@@ -108,7 +108,7 @@
       }, 750);
     };
 
-    return HeadlessConsoleReporter;
+    return Console;
 
   })();
 

@@ -28,12 +28,13 @@ module Jasmine
 
       class << self
         def run(options = {})
-          options = Options.new(options) if !options.kind_of?(Options)
           new(options).run
         end
       end
 
       def initialize(options)
+        options = Options.new(options) if !options.kind_of?(Options)
+
         @options = options
       end
 
