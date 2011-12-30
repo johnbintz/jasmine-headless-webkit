@@ -75,6 +75,10 @@ module Jasmine
           add_reporter(arg)
         when '--out'
           add_reporter_file(arg)
+        when '-h', '--help'
+          print_help
+
+          exit
         end
       end
 
@@ -100,7 +104,8 @@ module Jasmine
           [ '--list', '-l', GetoptLong::NO_ARGUMENT ],
           [ '--seed', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--format', '-f', GetoptLong::REQUIRED_ARGUMENT ],
-          [ '--out', GetoptLong::REQUIRED_ARGUMENT ]
+          [ '--out', GetoptLong::REQUIRED_ARGUMENT ],
+          [ '-h', '--help', GetoptLong::NO_ARGUMENT ]
         )
 
         command_line_args.each { |*args| process_option(*args) }
@@ -145,6 +150,41 @@ module Jasmine
 
       def add_reporter_file(file)
         @options[:reporters].last << file
+      end
+
+      def print_help
+        options = [
+          [ '-c, --colors', 'Enable colors (default: disabled)' ],
+          [ '-nc, --no-colors', 'Disable colors' ],
+          [ '--cache', 'Enable cache (default: enabled)' ],
+          [ '--no-cache', 'Disable cache' ],
+          [ '--keep', 'Keep runner files on failure' ],
+          [ '--runner-out <filename>', 'Write runner to specified filename' ],
+          [ '-j, --jasmine-config <config file>', 'Jasmine Yaml config to use' ],
+          [ '--no-full-run', 'Do not perform a full spec run after a successful targeted spec run' ],
+          [ '-l, --list', 'List files in the order they will be required' ],
+          [ '--seed', 'Random order seed for spec file ordering' ],
+          [ '-f, --format <reporter<:filename>>', 'Specify an output reporter and possibly output filename' ],
+          [ '--out <filename>', 'Specify output filename for last defined reporter' ],
+          [ '-h, --help', "You're looking at it" ]
+        ]
+
+        longest_length = options.collect(&:first).collect(&:length).max
+
+        puts <<-HELP
+Usage: #{$0} [ options ] [ spec files ]
+
+Options:
+#{options.collect { |option, description| "  #{option.ljust(longest_length)}  #{description}" }.join("\n")}
+
+Available reporters:
+  Console  Write out spec results to the console in a progress format (default)
+  File     Write spec results in jasmine-headless-webkit ReportFile format
+  Tap      Write spec results in TAP format
+
+Add reporters to the jasmine.HeadlessReporter object to access them
+  (ex: jasmine.HeadlessReporter.Teamcity for the Teamcity reporter)
+HELP
       end
     end
   end
