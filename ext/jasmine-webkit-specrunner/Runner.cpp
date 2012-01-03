@@ -70,7 +70,7 @@ void Runner::loadSpec()
     outputFiles.enqueue(outputFile);
   }
 
-  page.mainFrame()->load(runnerFiles.dequeue());
+  page.mainFrame()->load(QUrl::fromLocalFile(runnerFiles.dequeue()));
   ticker.start();
 }
 

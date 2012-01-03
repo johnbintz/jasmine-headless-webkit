@@ -62,7 +62,7 @@ module Jasmine
           command << "-r #{file}"
         end
 
-        command += targets
+        command += targets.flatten.collect { |target| File.expand_path(target) }
 
         command.compact.join(' ')
       end
