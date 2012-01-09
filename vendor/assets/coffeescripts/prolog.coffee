@@ -48,8 +48,13 @@ if window.JHW
     false
 
   # dialogs
-  window.confirm = (message) ->
-    puts "#{"[confirm]".foreground('red')} jasmine-headless-webkit can't handle confirm() yet! You should mock window.confirm. Returning true."
+  window.confirm = ->
+    puts "#{"[confirm]".foreground('red')} You should mock window.confirm. Returning true."
+
+    true
+
+  window.prompt =  ->
+    puts "#{"[prompt]".foreground('red')} You should mock window.prompt. Returning true."
 
     true
 

@@ -11,6 +11,5 @@ void Page::javaScriptConsoleMessage(const QString & message, int lineNumber, con
 }
 
 void Page::javaScriptAlert(QWebFrame *, const QString &) {}
-bool Page::javaScriptConfirm(QWebFrame *, const QString &) {
-  return false;
-}
+bool Page::javaScriptConfirm(QWebFrame *, const QString &) { return false; }
+bool Page::javaScriptPrompt(QWebFrame *, const QString &, const QString &, QString *) { return false; }

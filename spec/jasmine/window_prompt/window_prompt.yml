@@ -1,0 +1,4 @@
+src_dir: spec/jasmine/window_prompt
+src_files: 
+- '**/*.js'
+
