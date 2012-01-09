@@ -1,0 +1,4 @@
+#!/bin/bash
+
+penchant gemfile remote --switch-back
+

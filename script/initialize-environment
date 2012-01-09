@@ -5,7 +5,7 @@ if File.file?('Gemfile.erb')
 
   Dir.chdir '..' do
     File.readlines(File.join(pwd, 'Gemfile.erb')).find_all { |line| line[':git'] }.each do |line|
-      repo = line[%r{:git => (['"])(.*)\1}, 2]
+      repo = line[%r{:git => (['"])([^'"]+)\1}, 2]
 
       puts "Installing #{repo}"
       system %{git clone #{repo}}
