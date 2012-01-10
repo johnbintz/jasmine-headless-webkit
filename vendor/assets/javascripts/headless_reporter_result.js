@@ -1,3 +1,4 @@
+(function() {
 
   window.HeadlessReporterResult = (function() {
 
@@ -74,3 +75,5 @@
     return HeadlessReporterResult;
 
   })();
+
+}).call(this);

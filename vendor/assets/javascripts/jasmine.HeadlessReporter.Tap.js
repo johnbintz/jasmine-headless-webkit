@@ -1,9 +1,10 @@
 (function() {
-  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+  var __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  jasmine.HeadlessReporter.Tap = (function() {
+  jasmine.HeadlessReporter.Tap = (function(_super) {
 
-    __extends(Tap, jasmine.HeadlessReporter);
+    __extends(Tap, _super);
 
     function Tap(outputTarget) {
       this.outputTarget = outputTarget != null ? outputTarget : null;
@@ -18,8 +19,8 @@
     };
 
     Tap.prototype.reportSpecResults = function(spec) {
-      var description, index;
-      var _this = this;
+      var description, index,
+        _this = this;
       Tap.__super__.reportSpecResults.call(this, spec);
       index = this.output.length + 1;
       description = spec.getSpecSplitName().join(' ');
@@ -35,6 +36,6 @@
 
     return Tap;
 
-  })();
+  })(jasmine.HeadlessReporter);
 
 }).call(this);

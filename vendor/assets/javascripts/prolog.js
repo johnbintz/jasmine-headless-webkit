@@ -1,5 +1,6 @@
 (function() {
   var puts;
+
   if (window.JHW) {
     window.console = {
       log: function(data) {
@@ -43,9 +44,7 @@
       e = e || window.event;
       JHW.hasError();
       puts("The code tried to leave the test page. Check for unhandled form submits and link clicks.");
-      if (e) {
-        e.returnValue = 'string';
-      }
+      if (e) e.returnValue = 'string';
       return 'string';
     };
     JHW._hasErrors = false;
@@ -75,14 +74,15 @@
       _ref = jasmine.getEnv().reporter.subReporters_;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         reporter = _ref[_i];
-        if (reporter.consoleLogUsed != null) {
-          reporter.consoleLogUsed(msg);
-        }
+        if (reporter.consoleLogUsed != null) reporter.consoleLogUsed(msg);
       }
       JHW._usedConsole = true;
       return puts(msg);
     };
   }
+
   window.CoffeeScriptToFilename = {};
+
   window.CSTF = window.CoffeeScriptToFilename;
+
 }).call(this);

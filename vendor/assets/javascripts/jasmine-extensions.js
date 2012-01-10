@@ -1,6 +1,6 @@
 (function() {
-  var generator, getSplitName, method, pauseAndRun, _i, _len, _ref;
-  var __slice = Array.prototype.slice;
+  var generator, getSplitName, method, pauseAndRun, _i, _len, _ref,
+    __slice = Array.prototype.slice;
 
   if (!(typeof jasmine !== "undefined" && jasmine !== null)) {
     throw new Error("jasmine not laoded!");
