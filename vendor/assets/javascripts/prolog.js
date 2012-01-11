@@ -82,6 +82,21 @@
       JHW._usedConsole = true;
       return puts(msg);
     };
+    JHW.createCoffeeScriptFileException = function(e) {
+      var filename, realFilename;
+      if (e && e.sourceURL && window.CoffeeScriptToFilename) {
+        filename = e.sourceURL.split('/').pop();
+        if (realFilename = window.CoffeeScriptToFilename[filename]) {
+          e = {
+            name: e.name,
+            message: e.message,
+            lineNumber: "~" + String(e.line),
+            sourceURL: realFilename
+          };
+        }
+      }
+      return e;
+    };
   }
 
   window.CoffeeScriptToFilename = {};

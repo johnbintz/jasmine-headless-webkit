@@ -79,6 +79,19 @@ if window.JHW
 
     puts msg
 
+  JHW.createCoffeeScriptFileException = (e) ->
+    if e and e.sourceURL and window.CoffeeScriptToFilename
+      filename = e.sourceURL.split('/').pop()
+      if realFilename = window.CoffeeScriptToFilename[filename]
+        e = {
+          name: e.name,
+          message: e.message,
+          lineNumber: "~" + String(e.line),
+          sourceURL: realFilename
+        }
+
+    e
+
 window.CoffeeScriptToFilename = {}
 window.CSTF = window.CoffeeScriptToFilename
 

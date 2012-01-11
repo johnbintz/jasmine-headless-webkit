@@ -45,3 +45,13 @@ class jasmine.HeadlessReporter.Verbose extends jasmine.HeadlessReporter.ConsoleB
 
   colorLine: (line, color) =>
     line.foreground(color)
+
+  reportException: (e) =>
+    e = JHW.createCoffeeScriptFileException(e)
+    
+    output = e.message
+    if e.sourceURL && e.lineNumber
+      output = "#{e.sourceURL}:~#{e.lineNumber} #{output}"
+
+    this.puts(output.foreground('yellow'))
+

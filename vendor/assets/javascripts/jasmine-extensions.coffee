@@ -30,15 +30,7 @@ if window.JHW
     this.env.reporter.reportSpecResults(this)
 
   jasmine.Spec.prototype.fail = (e) ->
-    if e and e.sourceURL and window.CoffeeScriptToFilename
-      filename = e.sourceURL.split('/').pop()
-      if realFilename = window.CoffeeScriptToFilename[filename]
-        e = {
-          name: e.name,
-          message: e.message,
-          lineNumber: "~" + String(e.line),
-          sourceURL: realFilename
-        }
+    e = JHW.createCoffeeScriptFileException(e)
 
     expectationResult = new jasmine.ExpectationResult({
       passed: false,
@@ -46,6 +38,8 @@ if window.JHW
       trace: { stack: e.stack }
     })
     @results_.addResult(expectationResult)
+
+    this.env.reporter.reportException(e)
 
   jasmine.NestedResults.isValidSpecLine = (line) ->
     line.match(/^\s*expect/) != null || line.match(/^\s*return\s*expect/) != null
@@ -92,7 +86,7 @@ if window.JHW
 
       this.addResult_(result)
 
-    for method in [ "reportSpecWaiting", "reportSpecRunning" ]
+    for method in [ "reportSpecWaiting", "reportSpecRunning", "reportException" ]
       generator = (method) ->
         (args...) ->
           for reporter in @subReporters_
