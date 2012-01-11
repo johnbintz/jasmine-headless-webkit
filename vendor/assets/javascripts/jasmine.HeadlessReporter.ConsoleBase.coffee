@@ -1,4 +1,4 @@
-#= require jasmine.HeadlessReporter.js
+#= require jasmine.HeadlessReporter
 
 class jasmine.HeadlessReporter.ConsoleBase extends jasmine.HeadlessReporter
   constructor: (@callback = null) ->

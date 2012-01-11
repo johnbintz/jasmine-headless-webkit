@@ -11,7 +11,9 @@ class jasmine.HeadlessReporter.Verbose extends jasmine.HeadlessReporter.ConsoleB
     currentLastNames = (@lastNames || []).slice(0)
     @lastNames = spec.getSpecSplitName()
 
-    this.puts(this.indentSpec(@lastNames, currentLastNames, color).join("\n"))
+    for line in this.indentSpec(@lastNames, currentLastNames, color)
+      if line? and !_.isEmpty(line)
+        this.puts(line)
 
   indentSpec: (current, last, color) =>
     last = last.slice(0)

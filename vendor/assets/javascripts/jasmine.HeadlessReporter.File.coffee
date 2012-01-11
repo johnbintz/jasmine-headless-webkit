@@ -1,4 +1,4 @@
-#= require jasmine.HeadlessReporter.js
+#= require jasmine.HeadlessReporter
 #
 class jasmine.HeadlessReporter.File extends jasmine.HeadlessReporter
   reportRunnerResults: (runner) ->
