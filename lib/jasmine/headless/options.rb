@@ -17,9 +17,8 @@ module Jasmine
         :full_run => true,
         :enable_cache => true,
         :files => [],
-        :reporters => [
-          [ 'Console' ]
-        ]
+        :reporters => [ [ 'Console' ] ],
+        :quiet => false
       }
 
       DEFAULTS_FILE = File.join(Dir.pwd, '.jasmine-headless-webkit')
@@ -39,6 +38,7 @@ module Jasmine
         srand
         @options[:seed] = rand(10000)
         read_defaults_files
+
         opts.each { |k, v| @options[k] = v if v }
       end
 
@@ -69,6 +69,8 @@ module Jasmine
           @options[:full_run] = false
         when '--list', '-l'
           @options[:do_list] = true
+        when '--quiet', '-q'
+          @options[:quiet] = true
         when '--seed'
           @options[:seed] = arg.to_i
         when '--format', '-f'
@@ -105,7 +107,8 @@ module Jasmine
           [ '--seed', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--format', '-f', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--out', GetoptLong::REQUIRED_ARGUMENT ],
-          [ '-h', '--help', GetoptLong::NO_ARGUMENT ]
+          [ '-h', '--help', GetoptLong::NO_ARGUMENT ],
+          [ '-q', '--quiet', GetoptLong::NO_ARGUMENT ]
         )
 
         command_line_args.each { |*args| process_option(*args) }
@@ -166,6 +169,7 @@ module Jasmine
           [ '--seed', 'Random order seed for spec file ordering' ],
           [ '-f, --format <reporter<:filename>>', 'Specify an output reporter and possibly output filename' ],
           [ '--out <filename>', 'Specify output filename for last defined reporter' ],
+          [ '-q, --quiet', "Silence most non-test related warnings" ],
           [ '-h, --help', "You're looking at it" ]
         ]
 
@@ -179,6 +183,7 @@ Options:
 
 Available reporters:
   Console  Write out spec results to the console in a progress format (default)
+  Verbose  Write out spec results to the console in a verbose format
   File     Write spec results in jasmine-headless-webkit ReportFile format
   Tap      Write spec results in TAP format
 

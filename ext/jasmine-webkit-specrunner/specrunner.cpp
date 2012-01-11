@@ -30,16 +30,19 @@
 int main(int argc, char** argv)
 {
   bool showColors = false;
+  bool isQuiet = false;
   QString seed;
-
   QStack<QString> reporterFiles;
 
   int c, index;
 
-  while ((c = getopt(argc, argv, "cr:s:")) != -1) {
+  while ((c = getopt(argc, argv, "cr:s:q")) != -1) {
     switch(c) {
       case 'c':
         showColors = true;
+        break;
+      case 'q':
+        isQuiet = true;
         break;
       case 'r':
         reporterFiles.push(QString(optarg));
@@ -61,6 +64,7 @@ int main(int argc, char** argv)
   Runner runner;
 
   runner.setColors(showColors);
+  runner.setQuiet(isQuiet);
   runner.setReportFiles(reporterFiles);
   runner.setSeed(seed);
 

@@ -22,6 +22,7 @@ class Runner: public QObject {
     void setColors(bool colors);
     void setReportFiles(QStack<QString> &files);
     void setSeed(QString s);
+    void setQuiet(bool q);
 
     void addFile(const QString &spec);
     void go();
@@ -33,6 +34,7 @@ class Runner: public QObject {
     void hasError();
     void hasSpecFailure();
 
+    bool isQuiet();
     QString getSeed();
 
     void print(const QString &fh, const QString &content);
@@ -54,6 +56,7 @@ class Runner: public QObject {
     bool usedConsole;
     bool isFinished;
     bool useColors;
+    bool quiet;
 
     QString seed;
 

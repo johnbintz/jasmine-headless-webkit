@@ -29,12 +29,15 @@ if window.JHW
   puts = (message) ->
     JHW.print('stdout', message + "\n")
 
+  warn = (message) ->
+    puts(message) if !JHW.isQuiet()
+
   # handle unloading
   window.onbeforeunload = (e) ->
     e = e || window.event
 
     JHW.hasError()
-    puts "The code tried to leave the test page. Check for unhandled form submits and link clicks."
+    warn "The code tried to leave the test page. Check for unhandled form submits and link clicks."
 
     e.returnValue = 'string' if e
 
@@ -49,17 +52,17 @@ if window.JHW
 
   # dialogs
   window.confirm = ->
-    puts "#{"[confirm]".foreground('red')} You should mock window.confirm. Returning true."
+    warn "#{"[confirm]".foreground('red')} You should mock window.confirm. Returning true."
 
     true
 
   window.prompt =  ->
-    puts "#{"[prompt]".foreground('red')} You should mock window.prompt. Returning true."
+    warn "#{"[prompt]".foreground('red')} You should mock window.prompt. Returning true."
 
     true
 
   window.alert = (message) ->
-    puts "[alert] ".foreground('red') + message
+    warn "[alert] ".foreground('red') + message
 
   # color support
   JHW._setColors = (useColors) -> Intense.useColors = useColors

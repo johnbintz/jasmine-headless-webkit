@@ -57,6 +57,7 @@ module Jasmine
 
         command << "-s #{options[:seed]}"
         command << '-c' if options[:colors]
+        command << '-q' if options[:quiet]
 
         options.file_reporters.each do |reporter, identifier, file|
           command << "-r #{file}"
@@ -69,6 +70,7 @@ module Jasmine
 
       def run
         Jasmine::Headless::CacheableAction.enabled = @options[:enable_cache]
+        Jasmine::Headless.show_warnings = !@options[:quiet]
         FilesList.reset!
 
         @_targets = template_writer.write

@@ -1,25 +1,41 @@
 require 'spec_helper'
 
 describe Jasmine::Headless::FileChecker do
-  include FakeFS::SpecHelpers
-
   let(:test_class) do
     object = Object.new
     object.class.send(:include, Jasmine::Headless::FileChecker)
     object
   end
 
-  context "bad_format?" do
-    it "should return false wth correct format" do
-      test_class.bad_format?('foobar.js').should be_false
+  describe "#bad_format?" do
+    subject { test_class.bad_format?(file) }
+
+    before do
+      test_class.stubs(:excluded_formats).returns(%w{erb string})
     end
 
-    it "should return false wth wrong format" do
-      test_class.bad_format?('foobar.js.erb').should be_true
+    context 'nil' do
+      let(:file) { nil }
+
+      it { should be_nil }
     end
 
-    it "should check for the whole extension" do
-      test_class.bad_format?('foobar.string.js').should be_false
+    context 'allowed format' do
+      let(:file) { 'foobar.js' }
+
+      it { should be_false }
+    end
+
+    context 'unallowed format' do
+      let(:file) { 'foobar.erb' }
+
+      it { should be_true }
+    end
+
+    context 'check whole extension' do
+      let(:file) { 'foobar.string.js' }
+
+      it { should be_true }
     end
   end
 end

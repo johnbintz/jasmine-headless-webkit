@@ -91,6 +91,15 @@ describe Jasmine::Headless::Runner do
       it_should_have_basics
       it { should include("-r #{file}") }
     end
+
+    context 'quiet' do
+      before do
+        options[:quiet] = true
+      end
+
+      it_should_have_basics
+      it { should include("-q") }
+    end
   end
 
   describe '#runner_filename' do

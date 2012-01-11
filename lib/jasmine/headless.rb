@@ -35,6 +35,24 @@ module Jasmine
       def root
         @root ||= Pathname(File.expand_path('../../..', __FILE__))
       end
+
+      def warn(message)
+        output.puts message if show_warnings?
+      end
+
+      def show_warnings=(show)
+        @show_warnings = show
+      end
+
+      def show_warnings?
+        @show_warnings = true if @show_warnings.nil?
+
+        @show_warnings
+      end
+
+      def output
+        $stdout
+      end
     end
   end
 end

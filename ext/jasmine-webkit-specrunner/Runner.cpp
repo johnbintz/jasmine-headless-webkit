@@ -18,6 +18,7 @@ Runner::Runner() : QObject()
   , usedConsole(false)
   , isFinished(false)
   , useColors(false)
+  , quiet(false)
   {
   page.settings()->enablePersistentStorage();
   ticker.setInterval(TIMER_TICK);
@@ -122,8 +123,16 @@ void Runner::setSeed(QString s) {
   seed = s;
 }
 
+void Runner::setQuiet(bool q) {
+  quiet = q;
+}
+
 QString Runner::getSeed() {
   return seed;
+}
+
+bool Runner::isQuiet() {
+  return quiet;
 }
 
 void Runner::print(const QString &fh, const QString &content) {

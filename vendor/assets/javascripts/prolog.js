@@ -1,5 +1,6 @@
 (function() {
-  var puts;
+  var puts, warn;
+
   if (window.JHW) {
     window.console = {
       log: function(data) {
@@ -39,13 +40,14 @@
     puts = function(message) {
       return JHW.print('stdout', message + "\n");
     };
+    warn = function(message) {
+      if (!JHW.isQuiet()) return puts(message);
+    };
     window.onbeforeunload = function(e) {
       e = e || window.event;
       JHW.hasError();
-      puts("The code tried to leave the test page. Check for unhandled form submits and link clicks.");
-      if (e) {
-        e.returnValue = 'string';
-      }
+      warn("The code tried to leave the test page. Check for unhandled form submits and link clicks.");
+      if (e) e.returnValue = 'string';
       return 'string';
     };
     JHW._hasErrors = false;
@@ -55,15 +57,15 @@
       return false;
     };
     window.confirm = function() {
-      puts("" + ("[confirm]".foreground('red')) + " You should mock window.confirm. Returning true.");
+      warn("" + ("[confirm]".foreground('red')) + " You should mock window.confirm. Returning true.");
       return true;
     };
     window.prompt = function() {
-      puts("" + ("[prompt]".foreground('red')) + " You should mock window.prompt. Returning true.");
+      warn("" + ("[prompt]".foreground('red')) + " You should mock window.prompt. Returning true.");
       return true;
     };
     window.alert = function(message) {
-      return puts("[alert] ".foreground('red') + message);
+      return warn("[alert] ".foreground('red') + message);
     };
     JHW._setColors = function(useColors) {
       return Intense.useColors = useColors;
@@ -75,14 +77,15 @@
       _ref = jasmine.getEnv().reporter.subReporters_;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         reporter = _ref[_i];
-        if (reporter.consoleLogUsed != null) {
-          reporter.consoleLogUsed(msg);
-        }
+        if (reporter.consoleLogUsed != null) reporter.consoleLogUsed(msg);
       }
       JHW._usedConsole = true;
       return puts(msg);
     };
   }
+
   window.CoffeeScriptToFilename = {};
+
   window.CSTF = window.CoffeeScriptToFilename;
+
 }).call(this);

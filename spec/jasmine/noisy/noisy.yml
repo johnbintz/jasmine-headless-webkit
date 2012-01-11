@@ -1,0 +1,8 @@
+src_dir: spec/jasmine/noisy
+src_files:
+- '**/*'
+
+spec_dir: spec/jasmine/noisy
+spec_files:
+- '**/*'
+
