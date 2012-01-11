@@ -6,6 +6,8 @@
     __extends(Verbose, jasmine.HeadlessReporter.ConsoleBase);
 
     function Verbose() {
+      this.colorLine = __bind(this.colorLine, this);
+      this.indentLines = __bind(this.indentLines, this);
       this.indentSpec = __bind(this.indentSpec, this);
       this.displaySpec = __bind(this.displaySpec, this);
       this.displayFailure = __bind(this.displayFailure, this);
@@ -29,16 +31,38 @@
     };
 
     Verbose.prototype.indentSpec = function(current, last, color) {
-      var indent, name, output, _i, _len;
+      var lines, name, _i, _len;
       last = last.slice(0);
-      output = [];
-      indent = '';
+      lines = [];
       for (_i = 0, _len = current.length; _i < _len; _i++) {
         name = current[_i];
-        if (last.shift() !== name) output.push(indent + name.foreground(color));
+        if (last.shift() !== name) {
+          lines.push(name);
+        } else {
+          lines.push(null);
+        }
+      }
+      return this.indentLines(lines, color);
+    };
+
+    Verbose.prototype.indentLines = function(lines, color) {
+      var indent, line, output, outputLine, _i, _len;
+      indent = '';
+      output = [];
+      for (_i = 0, _len = lines.length; _i < _len; _i++) {
+        line = lines[_i];
+        if (line != null) {
+          outputLine = indent;
+          outputLine += this.colorLine(line, color);
+          output.push(outputLine);
+        }
         indent += '  ';
       }
       return output;
+    };
+
+    Verbose.prototype.colorLine = function(line, color) {
+      return line.foreground(color);
     };
 
     return Verbose;

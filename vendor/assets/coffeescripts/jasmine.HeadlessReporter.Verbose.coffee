@@ -16,11 +16,30 @@ class jasmine.HeadlessReporter.Verbose extends jasmine.HeadlessReporter.ConsoleB
   indentSpec: (current, last, color) =>
     last = last.slice(0)
 
+    lines = []
+
+    for name in current
+      if last.shift() != name
+        lines.push(name)
+      else
+        lines.push(null)
+
+    this.indentLines(lines, color)
+
+  indentLines: (lines, color) =>
+    indent = ''
+
     output = []
 
-    indent = ''
-    for name in current
-      output.push(indent + name.foreground(color)) if last.shift() != name
+    for line in lines
+      if line?
+        outputLine = indent
+        outputLine += this.colorLine(line, color)
+
+        output.push(outputLine)
       indent += '  '
 
     output
+
+  colorLine: (line, color) =>
+    line.foreground(color)
