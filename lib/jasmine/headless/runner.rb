@@ -150,6 +150,8 @@ module Jasmine
           sleep 0.1
         end
 
+        Jasmine::Headless.warn "HTTP powered specs!"
+
         yield
 
         Thread.kill(server)

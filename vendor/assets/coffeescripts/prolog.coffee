@@ -80,15 +80,18 @@ if window.JHW
     puts msg
 
   JHW.createCoffeeScriptFileException = (e) ->
-    if e and e.sourceURL and window.CoffeeScriptToFilename
+    if e and e.sourceURL
       filename = e.sourceURL.split('/').pop()
-      if realFilename = window.CoffeeScriptToFilename[filename]
-        e = {
-          name: e.name,
-          message: e.message,
-          lineNumber: "~" + String(e.line),
-          sourceURL: realFilename
-        }
+
+      e =
+        name: e.name
+        message: e.message
+        sourceURL: e.sourceURL
+        lineNumber: e.line
+
+      if window.CoffeeScriptToFilename and realFilename = window.CoffeeScriptToFilename[filename]
+        e.sourceURL = realFilename
+        e.lineNumber = "~" + String(e.line)
 
     e
 
