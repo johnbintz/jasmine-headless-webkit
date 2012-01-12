@@ -64,7 +64,11 @@ module Jasmine
 
         command += targets.flatten.collect do |target|
           target = File.expand_path(target)
-          target = server_uri + target if options[:use_server]
+          if options[:use_server]
+            target = server_uri + target
+          else
+            target = "file://" + target
+          end
           target
         end
 

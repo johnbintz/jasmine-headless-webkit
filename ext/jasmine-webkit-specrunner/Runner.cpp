@@ -71,7 +71,9 @@ void Runner::loadSpec()
     outputFiles.enqueue(outputFile);
   }
 
-  page.mainFrame()->load(runnerFiles.dequeue());
+  QString runnerFile = runnerFiles.dequeue();
+
+  page.mainFrame()->load(runnerFile);
   ticker.start();
 }
 

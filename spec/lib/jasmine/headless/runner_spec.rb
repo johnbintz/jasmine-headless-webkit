@@ -70,7 +70,7 @@ describe Jasmine::Headless::Runner do
     end
 
     def self.it_should_have_basics
-      it { should include(target) }
+      it { should include('file://' + File.expand_path(target)) }
     end
 
     context 'colors' do
