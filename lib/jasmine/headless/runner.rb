@@ -7,7 +7,6 @@ require 'yaml'
 require 'erb'
 require 'sprockets'
 
-
 module Jasmine
   module Headless
     class Runner
@@ -63,7 +62,11 @@ module Jasmine
           command << "-r #{file}"
         end
 
-        command += targets.flatten.collect { |target| File.expand_path(target) }
+        command += targets.flatten.collect do |target|
+          target = File.expand_path(target)
+          target = server_uri + target if options[:use_server]
+          target
+        end
 
         command.compact.join(' ')
       end
@@ -83,7 +86,13 @@ module Jasmine
           end
         end
 
-        system jasmine_command(run_targets)
+        runner = lambda { system jasmine_command(run_targets) }
+
+        if options[:use_server]
+          wrap_in_server(&runner)
+        else
+          runner.call
+        end
 
         @_status = $?.exitstatus
       ensure
@@ -111,7 +120,54 @@ module Jasmine
         )
       end
 
+      def wrap_in_server
+        require 'rack'
+        require 'webrick'
+        require 'thread'
+        require 'net/http'
+
+        server = Thread.new do
+          responder = lambda do |env|
+            file = Pathname(env['PATH_INFO'])
+
+            if file.file?
+              [ 200, { 'Content-Type' => 'text/html' }, [ file.read ] ]
+            else
+              [ 404, {}, [ 'Not found' ] ]
+            end
+          end
+
+          Rack::Handler::WEBrick.run(responder, :Port => server_port, :Logger => Logger.new(StringIO.new), :AccessLog => [ nil, nil ])
+        end
+
+        while true do
+          begin
+            Net::HTTP.get(URI(server_uri))
+            break
+          rescue Errno::ECONNREFUSED => e
+          end
+
+          sleep 0.1
+        end
+
+        yield
+
+        Thread.kill(server)
+      end
+
       private
+      def server_port
+        @server_port ||= 21000 + rand(1000)
+      end
+
+      def server_interface
+        '127.0.0.1'
+      end
+
+      def server_uri
+        "http://#{server_interface}:#{server_port}"
+      end
+
       def jasmine_config_data
         raise JasmineConfigNotFound.new("Jasmine config not found. I tried #{@options[:jasmine_config]}.") if !File.file?(@options[:jasmine_config])
 

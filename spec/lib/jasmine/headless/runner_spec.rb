@@ -100,6 +100,18 @@ describe Jasmine::Headless::Runner do
       it_should_have_basics
       it { should include("-q") }
     end
+
+    context 'server' do
+      let(:server_uri) { 'server uri' }
+
+      before do
+        options[:use_server] = true
+
+        runner.stubs(:server_uri).returns(server_uri)
+      end
+
+      it { should include(server_uri + File.expand_path(target)) }
+    end
   end
 
   describe '#runner_filename' do
