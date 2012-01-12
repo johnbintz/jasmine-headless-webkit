@@ -3,9 +3,9 @@ require 'spec_helper'
 describe Jasmine::Headless::UniqueAssetList do
   let(:list) { described_class.new }
 
-  let(:first) { stub(:logical_path => 'one') }
-  let(:second) { stub(:logical_path => 'two') }
-  let(:third) { stub(:logical_path => 'two') }
+  let(:first) { stub(:logical_path => 'one', :pathname => 'one') }
+  let(:second) { stub(:logical_path => 'two', :pathname => 'two') }
+  let(:third) { stub(:logical_path => 'two', :pathname => 'two') }
 
   it 'should raise an exception on a non-asset' do
     expect { list << "whatever" }.to raise_error(StandardError)

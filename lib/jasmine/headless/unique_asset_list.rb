@@ -3,7 +3,7 @@ module Jasmine::Headless
     def <<(asset)
       raise InvalidUniqueAsset.new("Not an asset: #{asset.inspect}") if !asset.respond_to?(:logical_path)
 
-      super if !self.any? { |other| asset.logical_path == other.logical_path }
+      super if !self.any? { |other| asset.pathname == other.pathname }
     end
 
     def flatten

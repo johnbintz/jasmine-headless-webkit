@@ -1,0 +1,6 @@
+src_dir: spec/jasmine/two_spec_files_same_basename
+src_files: []
+
+spec_dir: spec/jasmine/two_spec_files_same_basename
+spec_files: [ "**/*.{js,coffee}" ]
+
