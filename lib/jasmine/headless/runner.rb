@@ -141,7 +141,15 @@ module Jasmine
             end
           end
 
-          Rack::Handler::WEBrick.run(responder, :Port => server_port, :Logger => Logger.new(StringIO.new), :AccessLog => [ nil, nil ])
+          Rack::Handler::WEBrick.run(
+            responder,
+            :Port => server_port,
+            :Logger => Logger.new(StringIO.new),
+            :AccessLog => [
+              [ StringIO.new, WEBrick::AccessLog::COMMON_LOG_FORMAT ],
+              [ StringIO.new, WEBrick::AccessLog::REFERER_LOG_FORMAT ]
+            ]
+          )
         end
 
         while true do
