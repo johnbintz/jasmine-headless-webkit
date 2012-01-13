@@ -125,24 +125,14 @@ module Jasmine
       end
 
       def wrap_in_server
-        require 'rack'
         require 'webrick'
         require 'thread'
+        require 'rack'
         require 'net/http'
 
         server = Thread.new do
-          responder = lambda do |env|
-            file = Pathname(env['PATH_INFO'])
-
-            if file.file?
-              [ 200, { 'Content-Type' => 'text/html' }, [ file.read ] ]
-            else
-              [ 404, {}, [ 'Not found' ] ]
-            end
-          end
-
           Rack::Handler::WEBrick.run(
-            responder,
+            Rack::File.new('/'),
             :Port => server_port,
             :Logger => Logger.new(StringIO.new),
             :AccessLog => [
