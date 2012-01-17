@@ -107,7 +107,7 @@ describe Jasmine::Headless::Runner do
       before do
         options[:use_server] = true
 
-        runner.stubs(:server_uri).returns(server_uri)
+        described_class.stubs(:server_uri).returns(server_uri)
       end
 
       it { should include(server_uri + File.expand_path(target)) }
@@ -204,6 +204,26 @@ describe Jasmine::Headless::Runner do
       subject.options[:only].should == only
       subject.options[:seed].should == seed
       subject.options[:reporters].should == reporters
+    end
+  end
+
+  describe '.server_port' do
+    before do
+      described_class.instance_variable_set(:@server_port, nil)
+    end
+
+    context 'port in use' do
+      require 'socket'
+
+      before do
+        described_class.stubs(:select_server_port).returns(5000, 5001)
+      end
+
+      it 'should try another port' do
+        server = TCPServer.new(described_class.server_interface, 5000)
+
+        described_class.server_port.should == 5001
+      end
     end
   end
 end

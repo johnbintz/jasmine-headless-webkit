@@ -25,9 +25,81 @@ module Jasmine
 
       attr_reader :options
 
-      class << self
-        def run(options = {})
-          new(options).run
+      def self.run(options = {})
+        new(options).run
+      end
+
+      def self.server_port
+        return @server_port if @server_port
+
+        count = 100
+        begin
+          port = select_server_port
+
+          socket = TCPSocket.new(server_interface, port)
+          socket.close
+
+          count -= 1
+
+          raise "Could not create server port after 100 attempts!" if count == 0
+        rescue Errno::ECONNREFUSED
+          @server_port = port
+
+          break
+        ensure
+          begin
+            socket.close if socket
+          rescue IOError
+          end
+        end while true
+
+        @server_port
+      end
+
+      def self.select_server_port
+        21000 + rand(10000)
+      end
+
+      def self.server_interface
+        '127.0.0.1'
+      end
+
+      def self.server_uri
+        "http://#{server_interface}:#{server_port}"
+      end
+
+      def self.ensure_server
+        return if @server
+
+        require 'webrick'
+        require 'thread'
+        require 'rack'
+        require 'net/http'
+
+        port = server_port
+
+        @server = Thread.new do
+          Jasmine::Headless.warn "Powering up!"
+
+          Rack::Handler::WEBrick.run(
+            Rack::File.new('/'),
+            :Port => port,
+            :Logger => Logger.new(StringIO.new),
+            :AccessLog => [
+              [ StringIO.new, WEBrick::AccessLog::COMMON_LOG_FORMAT ],
+              [ StringIO.new, WEBrick::AccessLog::REFERER_LOG_FORMAT ]
+            ]
+          )
+        end
+
+        while true do
+          begin
+            Net::HTTP.get(URI(server_uri))
+            break
+          rescue Errno::ECONNREFUSED => e
+          end
+
+          sleep 0.1
         end
       end
 
@@ -65,7 +137,7 @@ module Jasmine
         command += targets.flatten.collect do |target|
           target = File.expand_path(target)
           if options[:use_server]
-            target = server_uri + target
+            target = self.class.server_uri + target
           else
             target = "file://" + target
           end
@@ -125,53 +197,14 @@ module Jasmine
       end
 
       def wrap_in_server
-        require 'webrick'
-        require 'thread'
-        require 'rack'
-        require 'net/http'
+        self.class.ensure_server
 
-        server = Thread.new do
-          Rack::Handler::WEBrick.run(
-            Rack::File.new('/'),
-            :Port => server_port,
-            :Logger => Logger.new(StringIO.new),
-            :AccessLog => [
-              [ StringIO.new, WEBrick::AccessLog::COMMON_LOG_FORMAT ],
-              [ StringIO.new, WEBrick::AccessLog::REFERER_LOG_FORMAT ]
-            ]
-          )
-        end
-
-        while true do
-          begin
-            Net::HTTP.get(URI(server_uri))
-            break
-          rescue Errno::ECONNREFUSED => e
-          end
-
-          sleep 0.1
-        end
-
-        Jasmine::Headless.warn "HTTP powered specs!"
+        Jasmine::Headless.warn "HTTP powered specs! Located at #{self.class.server_uri}"
 
         yield
-
-        Thread.kill(server)
       end
 
       private
-      def server_port
-        @server_port ||= 21000 + rand(1000)
-      end
-
-      def server_interface
-        '127.0.0.1'
-      end
-
-      def server_uri
-        "http://#{server_interface}:#{server_port}"
-      end
-
       def jasmine_config_data
         raise JasmineConfigNotFound.new("Jasmine config not found. I tried #{@options[:jasmine_config]}.") if !File.file?(@options[:jasmine_config])
 

@@ -7,7 +7,9 @@
 #include <QTextStream>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <QQueue>
+#include <QApplication>
 
 #include "Page.h"
 
