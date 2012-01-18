@@ -9,6 +9,24 @@ require 'sprockets'
 
 module Jasmine
   module Headless
+    class IndexHandler
+      class << self
+        attr_accessor :index
+      end
+
+      def initialize(app)
+        @app = app
+      end
+
+      def call(env)
+        if env['PATH_INFO'] == '/'
+          return [ 302, { 'Location' => self.class.index }, [ 'Redirecting...' ] ]
+        end
+
+        @app.call(env)
+      end
+    end
+
     class Runner
       JASMINE_DEFAULTS = {
         'spec_files' => [ '**/*[sS]pec.js' ],
@@ -31,6 +49,8 @@ module Jasmine
 
       def self.server_port
         return @server_port if @server_port
+
+        require 'socket'
 
         count = 100
         begin
@@ -56,6 +76,10 @@ module Jasmine
         @server_port
       end
 
+      def self.server_port=(port)
+        @server_port = port
+      end
+
       def self.select_server_port
         21000 + rand(10000)
       end
@@ -68,7 +92,11 @@ module Jasmine
         "http://#{server_interface}:#{server_port}"
       end
 
-      def self.ensure_server
+      def self.server_spec_path
+        self.server_uri + '/__JHW__/'
+      end
+
+      def self.ensure_server(options)
         return if @server
 
         require 'webrick'
@@ -81,8 +109,20 @@ module Jasmine
         @server = Thread.new do
           Jasmine::Headless.warn "Powering up!"
 
+          app = Rack::Builder.new do
+            use IndexHandler
+
+            map '/__JHW__' do
+              run Rack::File.new(Dir.pwd)
+            end
+
+            map '/' do
+              run Rack::File.new('/')
+            end
+          end
+
           Rack::Handler::WEBrick.run(
-            Rack::File.new('/'),
+            app,
             :Port => port,
             :Logger => Logger.new(StringIO.new),
             :AccessLog => [
@@ -134,16 +174,7 @@ module Jasmine
           command << "-r #{file}"
         end
 
-        command += targets.flatten.collect do |target|
-          target = File.expand_path(target)
-          if options[:use_server]
-            target = self.class.server_uri + target
-          else
-            target = "file://" + target
-          end
-          target
-        end
-
+        command += targets
         command.compact.join(' ')
       end
 
@@ -152,9 +183,11 @@ module Jasmine
         Jasmine::Headless.show_warnings = !@options[:quiet]
         FilesList.reset!
 
+        self.class.server_port = options[:server_port]
+
         @_targets = template_writer.write
 
-        run_targets = @_targets.dup
+        run_targets = absolute_run_targets(@_targets.dup)
 
         if run_targets.length == 2
           if (!@options[:full_run] && files_list.filtered?) || files_list.has_spec_outside_scope?
@@ -165,7 +198,7 @@ module Jasmine
         runner = lambda { system jasmine_command(run_targets) }
 
         if options[:use_server]
-          wrap_in_server(&runner)
+          wrap_in_server(run_targets, &runner)
         else
           runner.call
         end
@@ -174,6 +207,17 @@ module Jasmine
       ensure
         if @_targets && !runner_filename && (@options[:remove_html_file] || (@_status == 0))
           @_targets.each { |target| FileUtils.rm_f target }
+        end
+      end
+
+      def absolute_run_targets(targets)
+        targets.flatten.collect do |target|
+          if options[:use_server]
+            target = self.class.server_spec_path + target
+          else
+            target = "file://" + File.expand_path(target)
+          end
+          target
         end
       end
 
@@ -196,10 +240,11 @@ module Jasmine
         )
       end
 
-      def wrap_in_server
-        self.class.ensure_server
+      def wrap_in_server(run_targets)
+        self.class.ensure_server(options)
+        IndexHandler.index = run_targets.last
 
-        Jasmine::Headless.warn "HTTP powered specs! Located at #{self.class.server_uri}"
+        Jasmine::Headless.warn "HTTP powered specs! Located at #{run_targets.join(' ')}"
 
         yield
       end

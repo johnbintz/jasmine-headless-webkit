@@ -34,6 +34,35 @@
               break;
             }
           }
+
+          var getLastModified = function(callback) {
+            var http = new XMLHttpRequest();
+            var header;
+
+            http.open('HEAD', window.location.href, false);
+
+            http.onreadystatechange = function() {
+              callback(http.getResponseHeader('Last-Modified'));
+            };
+            http.send();
+          }
+
+          getLastModified(function(currentLastModified) {
+            var checker;
+            checker = function() {
+              setTimeout(function() {
+                getLastModified(function(newLastModified) {
+                  if (currentLastModified != newLastModified) {
+                    setTimeout(function() { window.location.reload(); }, 1000);
+                  } else {
+                    checker();
+                  }
+                });
+              }, 3000);
+            };
+
+            checker();
+          });
         }
 
         jasmine.getEnv().execute();

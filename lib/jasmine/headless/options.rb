@@ -19,7 +19,8 @@ module Jasmine
         :files => [],
         :reporters => [ [ 'Console' ] ],
         :quiet => false,
-        :use_server => false
+        :use_server => false,
+        :server_port => nil
       }
 
       DEFAULTS_FILE = File.join(Dir.pwd, '.jasmine-headless-webkit')
@@ -78,6 +79,8 @@ module Jasmine
           add_reporter(arg)
         when '--use-server'
           @options[:use_server] = true
+        when '--server-port'
+          @options[:server_port] = arg.to_i
         when '--out'
           add_reporter_file(arg)
         when '-h', '--help'
@@ -111,6 +114,7 @@ module Jasmine
           [ '--format', '-f', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--out', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--use-server', GetoptLong::NO_ARGUMENT ],
+          [ '--server-port', GetoptLong::REQUIRED_ARGUMENT ],
           [ '-h', '--help', GetoptLong::NO_ARGUMENT ],
           [ '-q', '--quiet', GetoptLong::NO_ARGUMENT ]
         )

@@ -70,7 +70,7 @@ describe Jasmine::Headless::Runner do
     end
 
     def self.it_should_have_basics
-      it { should include('file://' + File.expand_path(target)) }
+      it { should include(target) }
     end
 
     context 'colors' do
@@ -99,18 +99,6 @@ describe Jasmine::Headless::Runner do
 
       it_should_have_basics
       it { should include("-q") }
-    end
-
-    context 'server' do
-      let(:server_uri) { 'server uri' }
-
-      before do
-        options[:use_server] = true
-
-        described_class.stubs(:server_uri).returns(server_uri)
-      end
-
-      it { should include(server_uri + File.expand_path(target)) }
     end
   end
 
@@ -224,6 +212,36 @@ describe Jasmine::Headless::Runner do
 
         described_class.server_port.should == 5001
       end
+    end
+  end
+
+  describe '#absolute_run_targets' do
+    let(:opts) { {} }
+
+    subject { runner.absolute_run_targets(targets) }
+
+    let(:targets) { [ target ] }
+    let(:target) { 'target' }
+
+    before do
+      runner.stubs(:options).returns(:use_server => use_server)
+    end
+
+    context 'server' do
+      let(:use_server) { true }
+      let(:server_spec_path) { 'server spec path' }
+
+      before do
+        described_class.stubs(:server_spec_path).returns(server_spec_path)
+      end
+
+      it { should == [ server_spec_path + target ] }
+    end
+
+    context 'no server' do
+      let(:use_server) { false }
+
+      it { should == [ 'file://' + File.expand_path(target) ] }
     end
   end
 end

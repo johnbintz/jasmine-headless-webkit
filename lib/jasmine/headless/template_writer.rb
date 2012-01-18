@@ -24,7 +24,9 @@ module Jasmine::Headless
       output.unshift([filtered_tests_filename, files_list.filtered_files_to_html ]) if files_list.filtered?
 
       output.each do |name, files|
-        File.open(name, 'w') { |fh| fh.print template_for(files) }
+        template = template_for(files)
+
+        File.open(name, 'wb') { |fh| fh.print template }
       end
 
       output.collect(&:first)
