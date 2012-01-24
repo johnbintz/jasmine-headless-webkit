@@ -1,0 +1,7 @@
+src_dir: spec/jasmine/two_files_from_src_files/app
+
+asset_paths:
+- "spec/jasmine/two_files_from_src_files/vendor"
+
+src_files: [ 'vendor.js', 'app.js' ]
+

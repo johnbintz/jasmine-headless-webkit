@@ -227,13 +227,13 @@ module Jasmine::Headless
     end
 
     def add_files(patterns, type, dirs)
-      dirs.product(patterns).each do |search|
-        files = expanded_dir(File.join(*search))
+      patterns.each do |pattern|
+        dirs.collect { |dir| expanded_dir(File.join(dir, pattern)) }.each do |files|
+          files.sort! { |a, b| Kernel.rand(3) - 1 } if type == 'spec_files'
 
-        files.sort! { |a, b| Kernel.rand(3) - 1 } if type == 'spec_files'
-
-        files.each do |path|
-          add_path(path, type)
+          files.each do |path|
+            add_path(path, type)
+          end
         end
       end
 
@@ -271,7 +271,7 @@ module Jasmine::Headless
     end
 
     def src_dir
-      @src_dir ||= config_dir_or_pwd('src_dir')
+      @src_dir ||= config_dir_or_pwd('src_dir') + asset_paths
     end
 
     def spec_dir
@@ -279,7 +279,7 @@ module Jasmine::Headless
     end
 
     def asset_paths
-      @asset_paths ||= config_dir_or_pwd('asset_paths')
+      @asset_paths ||= config_dir('asset_paths')
     end
 
     def spec_file_searches
@@ -287,9 +287,15 @@ module Jasmine::Headless
     end
 
     def config_dir_or_pwd(dir)
-      found_dir = (@options[:config] && @options[:config][dir]) || Dir.pwd
+      if (found = config_dir(dir)).empty?
+        found = [ Dir.pwd ]
+      end
 
-      [ found_dir ].flatten.collect { |dir| File.expand_path(dir) }
+      found
+    end
+
+    def config_dir(dir)
+      [ @options[:config] && @options[:config][dir] ].flatten.compact.collect { |dir| File.expand_path(dir) }
     end
 
     def filter_for_requested_specs(files)
