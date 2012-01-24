@@ -137,6 +137,7 @@ module Jasmine::Headless
       @search_paths += asset_paths.collect { |dir| File.expand_path(dir) }
       @search_paths += spec_dir.collect { |dir| File.expand_path(dir) }
 
+      @search_paths.uniq!
       @search_paths
     end
 
