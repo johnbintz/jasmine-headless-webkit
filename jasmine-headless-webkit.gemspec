@@ -24,5 +24,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'coffee-script'
   s.add_runtime_dependency 'rainbow'
   s.add_runtime_dependency 'multi_json'
-  s.add_runtime_dependency 'sprockets', '~> 2'
+  s.add_runtime_dependency 'sprockets', '>= 2'
 end

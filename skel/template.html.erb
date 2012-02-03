@@ -35,13 +35,17 @@
             }
           }
 
+          var location = window.location.href;
+
           var getLastModified = function(callback) {
             var http = new XMLHttpRequest();
             var header;
 
-            http.open('HEAD', window.location.href, false);
+            http.open('HEAD', location, true);
 
             http.onreadystatechange = function() {
+              console.log(http);
+              console.log(http.getResponseHeader('Last-Modified'));
               callback(http.getResponseHeader('Last-Modified'));
             };
             http.send();
