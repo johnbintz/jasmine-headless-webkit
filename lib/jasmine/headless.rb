@@ -24,6 +24,7 @@ module Jasmine
 
     autoload :CoffeeTemplate, 'jasmine/headless/coffee_template'
     autoload :JSTemplate, 'jasmine/headless/js_template'
+    autoload :JSTTemplateCache, 'jasmine/headless/jst_template_cache'
     autoload :JSTTemplate, 'jasmine/headless/jst_template'
     autoload :CSSTemplate, 'jasmine/headless/css_template'
     autoload :NilTemplate, 'jasmine/headless/nil_template'
@@ -34,24 +35,6 @@ module Jasmine
     class << self
       def root
         @root ||= Pathname(File.expand_path('../../..', __FILE__))
-      end
-
-      def warn(message)
-        output.puts message if show_warnings?
-      end
-
-      def show_warnings=(show)
-        @show_warnings = show
-      end
-
-      def show_warnings?
-        @show_warnings = true if @show_warnings.nil?
-
-        @show_warnings
-      end
-
-      def output
-        $stdout
       end
     end
   end
