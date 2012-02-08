@@ -4,6 +4,7 @@ require 'multi_json'
 require 'set'
 require 'sprockets'
 require 'sprockets/engines'
+require 'sprockets-vendor_gems'
 
 module Jasmine::Headless
   class FilesList
@@ -11,29 +12,7 @@ module Jasmine::Headless
 
     class << self
       def asset_paths
-        return @asset_paths if @asset_paths
-
-        require 'rubygems'
-
-        raise StandardError.new("A newer version of Rubygems is required to use vendored assets. Please upgrade.") if !Gem::Specification.respond_to?(:each)
-
-        @asset_paths = []
-
-        Gem::Specification.each { |gemspec| @asset_paths += get_paths_from_gemspec(gemspec) }
-
-        @asset_paths
-      end
-
-      def get_paths_from_gemspec(gemspec)
-        %w{vendor lib app}.collect do |dir|
-          path = File.join(gemspec.gem_dir, dir, "assets/javascripts")
-
-          if File.directory?(path) && !@asset_paths.include?(path)
-            path
-          else
-            nil
-          end
-        end.compact
+        @asset_paths ||= Sprockets.find_gem_vendor_paths(:for => 'javascripts')
       end
 
       def reset!
