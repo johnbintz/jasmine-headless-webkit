@@ -4,6 +4,7 @@ require 'multi_json'
 require 'set'
 require 'sprockets'
 require 'sprockets/engines'
+require 'rubygems'
 
 module Jasmine::Headless
   class FilesList
@@ -12,10 +13,6 @@ module Jasmine::Headless
     class << self
       def asset_paths
         return @asset_paths if @asset_paths
-
-        require 'rubygems'
-
-        raise StandardError.new("A newer version of Rubygems is required to use vendored assets. Please upgrade.") if !Gem::Specification.respond_to?(:each)
 
         @asset_paths = []
 
