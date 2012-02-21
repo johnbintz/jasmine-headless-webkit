@@ -54,7 +54,11 @@ module Jasmine::Headless
     end
 
     def cache_file
-      @cache_file ||= File.expand_path(File.join(self.class.cache_dir, self.class.cache_type, file)) + '.js'
+      @cache_file ||= File.expand_path(relative_cache_file) + '.js'
+    end
+
+    def relative_cache_file
+      File.join(self.class.cache_dir, self.class.cache_type, file.gsub(Dir.pwd + '/', ''))
     end
 
     def fresh?
