@@ -45,8 +45,6 @@
 
             http.onreadystatechange = function() {
               if(http.readyState === http.DONE) {
-                console.log(http);
-                console.log(http.getResponseHeader('Last-Modified'));
                 callback(http.getResponseHeader('Last-Modified'));
               }
             };
