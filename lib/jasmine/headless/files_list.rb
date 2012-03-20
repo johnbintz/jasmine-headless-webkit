@@ -17,6 +17,7 @@ module Jasmine::Headless
 
       def reset!
         @asset_paths = nil
+        @registered_engines = {}
 
         # register haml-sprockets and handlebars_assets if it's available...
         %w{haml-sprockets handlebars_assets}.each do |library|
@@ -46,6 +47,21 @@ module Jasmine::Headless
           register_engine '.css', Jasmine::Headless::CSSTemplate
           register_engine '.jst', Jasmine::Headless::JSTTemplate
         end
+
+      end
+
+      def registered_engines
+        @registered_engines ||= {}
+      end
+
+      def register_engine(file_extension, template_class)
+        registered_engines[file_extension] = template_class
+      end
+
+      def register_engines!
+        registered_engines.each do |file_extension, template_class|
+          Sprockets.register_engine file_extension, template_class
+        end
       end
 
       def default_files
@@ -74,9 +90,19 @@ module Jasmine::Headless
       @required_files = UniqueAssetList.new
       @potential_files_to_filter = []
 
+      register_engines!
+
       load_initial_assets
 
       use_config if config?
+    end
+
+    def register_engines!
+      begin
+        require spec_helper
+      rescue LoadError
+      end
+      self.class.register_engines!
     end
 
     def load_initial_assets
@@ -287,5 +313,17 @@ module Jasmine::Headless
         end
       end
     end
+
+    def spec_helper
+      File.join(spec_dir, "helpers", "spec_helper")
+    end
+  end
+end
+
+module Jasmine::Headless
+  extend self
+
+  def register_engine(file_extension, template_class)
+    Jasmine::Headless::FilesList.register_engine(file_extension, template_class)
   end
 end

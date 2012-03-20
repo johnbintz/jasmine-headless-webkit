@@ -174,6 +174,21 @@ describe Jasmine::Headless::FilesList do
         files_list.files.any? { |file| file['.erb'] }.should be_false
       end
     end
+
+    describe "#register_engine!" do
+
+      before(:each) do
+        Jasmine::Headless::FilesList.reset!
+      end
+
+      it "should register code added via configure blocks" do
+        template_class = mock()
+        described_class.register_engine ".foo", template_class
+        Sprockets.expects(:register_engine).with(".foo", template_class)
+        described_class.new
+      end
+
+    end
   end
 end
 
