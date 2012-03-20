@@ -45,6 +45,7 @@ module Jasmine::Headless
           register_engine '.js', Jasmine::Headless::JSTemplate
           register_engine '.css', Jasmine::Headless::CSSTemplate
           register_engine '.jst', Jasmine::Headless::JSTTemplate
+          register_engine '.erb', Jasmine::Headless::CoffeeErbTemplate
         end
       end
 
