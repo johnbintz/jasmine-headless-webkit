@@ -8,6 +8,7 @@ module Jasmine
     autoload :CommandLine, 'jasmine/headless/command_line'
 
     autoload :CoffeeScriptCache, 'jasmine/headless/coffee_script_cache'
+    autoload :DustCache, 'jasmine/headless/dust_cache'
     autoload :SpecFileAnalyzer, 'jasmine/headless/spec_file_analyzer'
     autoload :CacheableAction, 'jasmine/headless/cacheable_action'
     autoload :VERSION, 'jasmine/headless/version'
@@ -23,6 +24,7 @@ module Jasmine
     autoload :FileChecker, 'jasmine/headless/file_checker'
 
     autoload :CoffeeTemplate, 'jasmine/headless/coffee_template'
+    autoload :DustTemplate, 'jasmine/headless/dust_template'
     autoload :JSTemplate, 'jasmine/headless/js_template'
     autoload :JSTTemplate, 'jasmine/headless/jst_template'
     autoload :CSSTemplate, 'jasmine/headless/css_template'

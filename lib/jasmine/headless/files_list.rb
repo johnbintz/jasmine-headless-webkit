@@ -46,6 +46,7 @@ module Jasmine::Headless
           register_engine '.js', Jasmine::Headless::JSTemplate
           register_engine '.css', Jasmine::Headless::CSSTemplate
           register_engine '.jst', Jasmine::Headless::JSTTemplate
+          register_engine '.dust', Jasmine::Headless::DustTemplate
         end
 
       end
@@ -230,6 +231,9 @@ module Jasmine::Headless
           add_files(@searches[type] = data.flatten, type, send(SEARCH_ROOTS[type]))
         end
       end
+
+      # config dust template
+      Jasmine::Headless::DustTemplate.template_root = @config['template_dir']
     end
 
     def add_files(patterns, type, dirs)
