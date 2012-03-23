@@ -36,18 +36,7 @@ module Jasmine::Headless
           end
         end
 
-        # ...and unregister ones we don't want/need
-        Sprockets.instance_eval do
-          EXCLUDED_FORMATS.each do |extension|
-            register_engine ".#{extension}", Jasmine::Headless::NilTemplate
-          end
-
-          register_engine '.coffee', Jasmine::Headless::CoffeeTemplate
-          register_engine '.js', Jasmine::Headless::JSTemplate
-          register_engine '.css', Jasmine::Headless::CSSTemplate
-          register_engine '.jst', Jasmine::Headless::JSTTemplate
-        end
-
+        @sprockets_environment = nil
       end
 
       def registered_engines
@@ -153,6 +142,19 @@ module Jasmine::Headless
       search_paths.each { |path| @sprockets_environment.append_path(path) }
 
       @sprockets_environment.unregister_postprocessor('application/javascript', Sprockets::SafetyColons)
+
+      # ...and unregister ones we don't want/need
+      @sprockets_environment.instance_eval do
+        EXCLUDED_FORMATS.each do |extension|
+          register_engine ".#{extension}", Jasmine::Headless::NilTemplate
+        end
+
+        register_engine '.coffee', Jasmine::Headless::CoffeeTemplate
+        register_engine '.js', Jasmine::Headless::JSTemplate
+        register_engine '.css', Jasmine::Headless::CSSTemplate
+        register_engine '.jst', Jasmine::Headless::JSTTemplate
+      end
+
       @sprockets_environment
     end
 
