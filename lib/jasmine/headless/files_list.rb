@@ -255,7 +255,8 @@ module Jasmine::Headless
     end
 
     def expanded_dir(path)
-      Dir[path].find_all { |file|
+      file_list = Dir.glob(path).sort
+      file_list.find_all { |file|
         file[extension_filter] && !alert_if_bad_format?(file)
       }.collect {
         |file| File.expand_path(file)
