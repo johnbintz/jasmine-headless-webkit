@@ -254,7 +254,7 @@ with the `--runner-out` option to write HTML runner files to a place where the b
 a Sprockets-managed project.
 
 JavaScript Templates are supported too, including [haml-sprockets](https://github.com/dharanasoft/haml-sprockets). Use them as you would any other
-JavaScript file, and ensure the load order is right, and the necessary code in the JST namespace will be created.
+JavaScript file, and ensure the load order is right, and the necessary code in the JST namespace will be created. To use an alternative template, like [handlebars](http://handlebarsjs.com/) or [dust](http://akdubya.github.com/dustjs/), you can [register a custom template engine](#register-custom-template).
 
 Since any gem with `vendor/assets/javascripts` is usable, that means Jasmine-specific gems are possible now. [jasmine-spec-extras](https://github.com/johnbintz/jasmine-spec-extras)
 is the first such gem, which provides `jasmine-jquery`, `sinon`, and any other useful Jasmine helpers, vendored into the gem so you can easily include
@@ -628,6 +628,31 @@ To resolve this problem, install and use the `therubyracer` gem, which is the em
 Additionally, you can set the `EXECJS_RUNTIME` environment variable to a [valid ExecJS runtime name](https://github.com/sstephenson/execjs/blob/master/lib/execjs/runtimes.rb#L55).
 
     export EXECJS_RUNTIME=Node
+
+<div id="register-custom-template"></div>
+## Register Custom Javascript Template Engine
+
+You may have a preference for a javascript template engine not currently supported by `jasmine-headless-webkit` out of the box. As an alternative, you can register a custom [tilt](https://github.com/rtomayko/tilt) template engine in your spec helper file to adapt your preferred template to the `jasmine-headless-webkit` runner. The one shown below was written to enable handlebars templates provided by the [handlebars_assets](https://github.com/leshill/handlebars_assets) gem.
+
+    # spec/javascripts/helpers/spec_helper.rb
+
+    require 'sprockets'
+    require 'handlebars_assets'
+
+    module MyExtension
+      class HandlebarsTemplate < HandlebarsAssets::TiltHandlebars
+        include Jasmine::Headless::FileChecker
+        def evaluate(*args)
+          if bad_format?(file)
+            alert_bad_format(file)
+            return ''
+          end
+          %{<script type="text/javascript">#{super}</script>}
+        end
+      end
+    end
+    
+    Jasmine::Headless.register_engine '.hbs', MyExtension::HandlebarsTemplate
 
 ## I have a problem or helpful suggestion, good sir.
 
