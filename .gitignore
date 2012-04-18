@@ -16,3 +16,5 @@ _site/
 jhw.*.html
 coverage/
 tmp/
+.rvmrc
+.idea/*
