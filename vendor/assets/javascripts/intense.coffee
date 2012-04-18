@@ -11,12 +11,12 @@ window.Intense = {
   methods:
     foreground: (color) ->
       if Intense.useColors
-        "\033[3#{Intense.colors[color]}m#{this}\033[0m"
+        "\x33[3#{Intense.colors[color]}m#{this}\x33[0m"
       else
         this
     bright: ->
       if Intense.useColors
-        "\033[1m#{this}\033[0m"
+        "\x33[1m#{this}\x33[0m"
       else
         this
   useColors: true
