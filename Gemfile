@@ -14,9 +14,9 @@ gem 'guard-cucumber'
 
 require 'rbconfig'
 case RbConfig::CONFIG['host_os']
-when /darwin/
-when /linux/
-  gem 'libnotify'
+  when /darwin/
+  when /linux/
+    gem 'libnotify'
 end
 
 gem 'mocha'
@@ -27,4 +27,3 @@ gem 'jquery-rails', '~> 1.0.0'
 gem 'ejs'
 
 gem 'guard-jasmine-headless-webkit', :git => 'git://github.com/johnbintz/guard-jasmine-headless-webkit.git'
-
