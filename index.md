@@ -331,6 +331,8 @@ jasmine-headless-webkit [ -c / --colors ]
                         [ -l / --list ]
                         [ --report <report file> ]
                         [ --runner-out <html file> ]
+                        [ --use-server ]
+                        [ --server-port <port number> ]
                         [ -j / --jasmine-config <path to jasmine.yml> ]
                         [ --seed <random seed> ]
                         <spec files to run>
@@ -405,6 +407,12 @@ will be run. You can limit the run to only certain files by passing those to `ja
 {% highlight bash %}
 jasmine-headless-webkit spec/javascripts/models/node_viewer.coffee
 {% endhighlight %}
+
+### Serving files from an HTTP server
+
+The `--use-server` flag will start up a simple WEBrick server for serving files to the WebKit runner, as opposed to serving
+them from the filesystem. This also lets you test things like HTML5 history stuff and other things that require an `http://`
+URL when loading files. Normally, the port this server runs on is random, but you can specify it with `--server-port`.
 
 #### Filtered runs and full runs
 
