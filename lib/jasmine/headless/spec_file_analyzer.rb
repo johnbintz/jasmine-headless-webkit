@@ -33,11 +33,11 @@ module Jasmine::Headless
     end
 
     def serialize(data)
-      MultiJson.encode(data)
+      MultiJson.dump(data)
     end
 
     def unserialize(data)
-      MultiJson.decode(data)
+      MultiJson.load(data)
     end
   end
 end

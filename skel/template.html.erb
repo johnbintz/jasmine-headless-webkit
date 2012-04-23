@@ -6,7 +6,7 @@
     <script type="text/javascript" src="<%= Jasmine::Headless.root.join('vendor/assets/javascripts/prolog.js') %>"></script>
     <%= files.join("\n") %>
     <script type="text/javascript">
-      if (window.JHW) { HeadlessReporterResult.specLineNumbers = <%= MultiJson.encode(spec_lines) %>; }
+      if (window.JHW) { HeadlessReporterResult.specLineNumbers = <%= MultiJson.dump(spec_lines) %>; }
     </script>
   </head>
   <body>
