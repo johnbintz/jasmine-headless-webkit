@@ -16,3 +16,4 @@ _site/
 jhw.*.html
 coverage/
 tmp/
+cache dir/
