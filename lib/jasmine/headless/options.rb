@@ -41,7 +41,7 @@ module Jasmine
         @options[:seed] = rand(10000)
         read_defaults_files
 
-        opts.each { |k, v| @options[k] = v if v }
+        opts.each { |k, v| @options[k] = v }
       end
 
       def process_option(*args)
