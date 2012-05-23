@@ -195,7 +195,9 @@ module Jasmine
           end
         end
 
-        runner = lambda { system jasmine_command(run_targets) }
+        runner = lambda { 
+          raise "Error #{$?} while attempting to run '#{jasmine_command(run_targets)}', probably because jasmine-webkit-specrunner hasn't been compiled." if system(jasmine_command(run_targets)) == 127
+        }
 
         if options[:use_server]
           wrap_in_server(run_targets, &runner)
@@ -205,9 +207,19 @@ module Jasmine
 
         @_status = $?.exitstatus
       ensure
-        if @_targets && !runner_filename && (@options[:remove_html_file] || (@_status == 0))
-          @_targets.each { |target| FileUtils.rm_f target }
-        end
+        # if @_targets && !runner_filename && (@options[:remove_html_file] || (@_status == 0))
+        #   @_targets.each { |target| FileUtils.rm_f target }
+        # end
+      end
+
+      def launch_command(cmd)
+        Open3.popen3(cmd) {|stdin, stdout, stderr, wait_thr|
+          pid = wait_thr.pid # pid of the started process.
+          
+
+
+          exit_status = wait_thr.value # Process::Status object returned.
+        }        
       end
 
       def absolute_run_targets(targets)
