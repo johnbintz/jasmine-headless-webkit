@@ -207,19 +207,9 @@ module Jasmine
 
         @_status = $?.exitstatus
       ensure
-        # if @_targets && !runner_filename && (@options[:remove_html_file] || (@_status == 0))
-        #   @_targets.each { |target| FileUtils.rm_f target }
-        # end
-      end
-
-      def launch_command(cmd)
-        Open3.popen3(cmd) {|stdin, stdout, stderr, wait_thr|
-          pid = wait_thr.pid # pid of the started process.
-          
-
-
-          exit_status = wait_thr.value # Process::Status object returned.
-        }        
+        if @_targets && !runner_filename && (@options[:remove_html_file] || (@_status == 0))
+          @_targets.each { |target| FileUtils.rm_f target }
+        end
       end
 
       def absolute_run_targets(targets)
