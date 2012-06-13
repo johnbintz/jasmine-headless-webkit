@@ -153,10 +153,10 @@ module Jasmine::Headless
           register_engine ".#{extension}", Jasmine::Headless::NilTemplate
         end
 
-        register_engine '.coffee', Jasmine::Headless::CoffeeTemplate
-        register_engine '.js', Jasmine::Headless::JSTemplate
-        register_engine '.css', Jasmine::Headless::CSSTemplate
-        register_engine '.jst', Jasmine::Headless::JSTTemplate
+        # register_engine '.coffee', Jasmine::Headless::CoffeeTemplate
+        # register_engine '.js', Jasmine::Headless::JSTemplate
+        # register_engine '.css', Jasmine::Headless::CSSTemplate
+        # register_engine '.jst', Jasmine::Headless::JSTTemplate
       end
 
       @sprockets_environment
@@ -211,7 +211,28 @@ module Jasmine::Headless
           alert_time = nil
         end
 
-        sprockets_environment.find_asset(file, :bundle => false).body
+        asset = sprockets_environment.find_asset(file, :bundle => false)
+        cache_file = File.join('.jhw-cache', 'code', asset.logical_path)
+        # Process & cache the asset only if needed 
+        unless File.exist?(cache_file) && (File.mtime(file) > File.mtime(cache_file))
+          FileUtils.mkdir_p File.dirname(cache_file)
+          asset.write_to(cache_file)
+        end
+
+        html = ''
+        case asset.content_type
+        when 'application/javascript'
+          html = %{<script type="text/javascript" src="#{File.expand_path(cache_file)}"></script>}
+          # NOTE: In future sprockets versions below could be simplified w/ asset.extensions.include?('.coffee')
+          if asset.pathname.basename.to_s.scan(/\.[^.]+/).include?('.coffee') 
+            html += %{\n<script type="text/javascript">window.CSTF['#{File.basename(cache_file)}'] = '#{file}';</script>}
+          end
+        when 'text/css'
+          html = %{<link rel="stylesheet" href="#{File.expand_path(cache_file)}" type="text/css" />}
+        else
+          html = asset.body
+        end
+        html
       end.compact.reject(&:empty?)
     end
 
