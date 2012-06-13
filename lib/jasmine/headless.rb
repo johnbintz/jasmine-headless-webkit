@@ -21,11 +21,6 @@ module Jasmine
     autoload :TemplateWriter, 'jasmine/headless/template_writer'
     
     autoload :FileChecker, 'jasmine/headless/file_checker'
-
-    autoload :CoffeeTemplate, 'jasmine/headless/coffee_template'
-    autoload :JSTemplate, 'jasmine/headless/js_template'
-    autoload :JSTTemplate, 'jasmine/headless/jst_template'
-    autoload :CSSTemplate, 'jasmine/headless/css_template'
     autoload :NilTemplate, 'jasmine/headless/nil_template'
 
     autoload :Report, 'jasmine/headless/report'
