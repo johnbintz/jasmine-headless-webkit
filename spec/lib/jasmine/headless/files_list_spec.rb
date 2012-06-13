@@ -189,6 +189,20 @@ describe Jasmine::Headless::FilesList do
       end
 
     end
+
+    describe "#sprockets_environment" do
+
+      before(:each) do
+        Jasmine::Headless::FilesList.reset!
+      end
+
+      it "should return shared class-level sprockets environment that will be used when tests are run" do
+        processor = Object.new
+        described_class.sprockets_environment.register_postprocessor "application/javascript", processor
+        described_class.new.sprockets_environment.postprocessors["application/javascript"].should include(processor)
+      end
+
+    end
   end
 end
 
