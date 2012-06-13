@@ -214,7 +214,7 @@ module Jasmine::Headless
         asset = sprockets_environment.find_asset(file, :bundle => false)
         cache_file = File.join('.jhw-cache', 'code', asset.logical_path)
         # Process & cache the asset only if needed 
-        unless File.exist?(cache_file) && (File.mtime(file) > File.mtime(cache_file))
+        unless File.exist?(cache_file) && (File.mtime(file) < File.mtime(cache_file))
           FileUtils.mkdir_p File.dirname(cache_file)
           asset.write_to(cache_file)
         end
