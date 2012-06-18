@@ -154,6 +154,9 @@ module Jasmine::Headless
         end
 
       end
+       
+      @sprockets_environment.logger = Logger.new(STDOUT)
+      @sprockets_environment.logger.level = Logger::WARN
 
       @sprockets_environment
     end
@@ -291,7 +294,12 @@ module Jasmine::Headless
     end
 
     def add_path(path, type = nil)
-      asset = sprockets_environment.find_asset(path)
+      begin
+        asset = sprockets_environment.find_asset(path)
+      rescue => e
+        sprockets_environment.logger.error "#{e.message} (#{e.class})"
+        raise e
+      end
 
       @required_files << asset
 
