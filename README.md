@@ -1,3 +1,5 @@
+_I am looking for a new maintainer for this project. Please contact me via GitHub if you're interested._
+
 # Jasmine Headless WebKit runner
 
 Run your specs at sonic boom speed! No pesky reload button or page rendering slowdowns!
