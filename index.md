@@ -39,7 +39,7 @@ That depends on what you need:
 
 * If you're new to JavaScript testing, drop in [Pivotal's Jasmine gem](https://github.com/pivotal/jasmine-gem) and point your browser at http://localhost:8888/.
 * If you're used to how the Jasmine gem works and want to move to a faster solution geared toward continuous testing, you're in the right place!
-* If you want an even simpler config and access to all of your Rails routes and resources for a quasi-intergration testing setup, use [Evergreen](https://github.com/jnicklas/evergreen).
+* If you want an even simpler config and access to all of your Rails routes and resources for a quasi-integration testing setup, use [Evergreen](https://github.com/jnicklas/evergreen).
   You even get your choice of browser drivers for free (as opposed to just Selenium or WebKit) as well as headless testing!
 * If you want true integration testing, where you test the whole application stack, use Cucumber and/or Capybara.
 * If you're not using Rails and still want to unit test, the Jasmine gem or `jasmine-headless-webkit` is what you want.
