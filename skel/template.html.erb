@@ -68,7 +68,7 @@
             checker();
           });
         }
-
+        jasmine.getEnv().addReporter(new jasmine.JUnitXmlReporter());
         jasmine.getEnv().execute();
       }
     </script>
