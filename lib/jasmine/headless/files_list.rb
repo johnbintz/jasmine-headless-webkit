@@ -57,7 +57,7 @@ module Jasmine::Headless
         %w{jasmine.js jasmine-html jasmine.css jasmine-extensions
            intense headless_reporter_result jasmine.HeadlessReporter
            jasmine.HeadlessReporter.ConsoleBase
-           jsDump beautify-html jasmine.junit_reporter}
+           jsDump beautify-html jasmine.JUnitReporter}
       end
 
       def extension_filter
