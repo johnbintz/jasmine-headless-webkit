@@ -18,7 +18,9 @@ module Jasmine
         :enable_cache => true,
         :files => [],
         :reporters => [ [ 'Console' ] ],
-        :quiet => false
+        :quiet => false,
+        :use_server => false,
+        :server_port => nil
       }
 
       DEFAULTS_FILE = File.join(Dir.pwd, '.jasmine-headless-webkit')
@@ -75,6 +77,10 @@ module Jasmine
           @options[:seed] = arg.to_i
         when '--format', '-f'
           add_reporter(arg)
+        when '--use-server'
+          @options[:use_server] = true
+        when '--server-port'
+          @options[:server_port] = arg.to_i
         when '--out'
           add_reporter_file(arg)
         when '-h', '--help'
@@ -107,6 +113,8 @@ module Jasmine
           [ '--seed', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--format', '-f', GetoptLong::REQUIRED_ARGUMENT ],
           [ '--out', GetoptLong::REQUIRED_ARGUMENT ],
+          [ '--use-server', GetoptLong::NO_ARGUMENT ],
+          [ '--server-port', GetoptLong::REQUIRED_ARGUMENT ],
           [ '-h', '--help', GetoptLong::NO_ARGUMENT ],
           [ '-q', '--quiet', GetoptLong::NO_ARGUMENT ]
         )
@@ -165,8 +173,9 @@ module Jasmine
           [ '--runner-out <filename>', 'Write runner to specified filename' ],
           [ '-j, --jasmine-config <config file>', 'Jasmine Yaml config to use' ],
           [ '--no-full-run', 'Do not perform a full spec run after a successful targeted spec run' ],
+          [ '--use-server', 'Load tests from an HTTP server instead of from filesystem' ],
           [ '-l, --list', 'List files in the order they will be required' ],
-          [ '--seed', 'Random order seed for spec file ordering' ],
+          [ '--seed <seed>', 'Random order seed for spec file ordering' ],
           [ '-f, --format <reporter<:filename>>', 'Specify an output reporter and possibly output filename' ],
           [ '--out <filename>', 'Specify output filename for last defined reporter' ],
           [ '-q, --quiet', "Silence most non-test related warnings" ],

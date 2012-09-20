@@ -15,7 +15,6 @@ gem 'guard-cucumber'
 require 'rbconfig'
 case RbConfig::CONFIG['host_os']
 when /darwin/
-  gem 'rb-fsevent'
 when /linux/
   gem 'libnotify'
 end

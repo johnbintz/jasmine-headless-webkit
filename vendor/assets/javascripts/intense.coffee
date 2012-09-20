@@ -11,16 +11,16 @@ window.Intense = {
   methods:
     foreground: (color) ->
       if Intense.useColors
-        "\033[3#{Intense.colors[color]}m#{this}\033[0m"
+        '\x1b' + "[3#{Intense.colors[color]}m#{this}" + '\x1b' + "[0m"
       else
         this
     bright: ->
       if Intense.useColors
-        "\033[1m#{this}\033[0m"
+        '\x1b' + "[1m#{this}" + '\x1b' + "[0m"
       else
         this
   useColors: true
-  moveBack: (count = 1) -> "\033[#{count}D"
+  moveBack: (count = 1) -> '\x1b' + "[#{count}D"
 }
 
 for method, code of Intense.methods

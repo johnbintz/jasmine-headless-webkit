@@ -5,50 +5,6 @@ require 'coffee-script'
 describe Jasmine::Headless::FilesList do
   let(:files_list) { described_class.new }
 
-  describe '.get_paths_from_gemspec' do
-    include FakeFS::SpecHelpers
-
-    let(:gem_dir) { "dir" }
-    let(:gemspec) { stub(:gem_dir => gem_dir) }
-
-    let(:paths) do
-      %w{vendor lib app}.collect do |dir|
-        File.join(gem_dir, dir, 'assets/javascripts')
-      end
-    end
-
-    before do
-      paths.each { |path| FileUtils.mkdir_p path }
-
-      described_class.instance_variable_set(:@asset_paths, [])
-    end
-
-    subject { described_class.get_paths_from_gemspec(gemspec) }
-
-    it { should =~ paths }
-  end
-
-  describe '.asset_paths' do
-    include FakeFS::SpecHelpers
-
-    let(:dir_one) { 'dir_one' }
-    let(:dir_two) { 'dir_two' }
-
-    let(:gem_one) { stub(:gem_dir => dir_one) }
-    let(:gem_two) { stub(:gem_dir => dir_two) }
-
-    before do
-      described_class.instance_variable_set(:@asset_paths, nil)
-      FileUtils.mkdir_p File.join(dir_two, 'vendor/assets/javascripts')
-
-      Gem::Specification.stubs(:_all).returns([gem_one, gem_two])
-    end
-
-    it 'should return all matching gems with vendor/assets/javascripts directories' do
-      described_class.asset_paths.should == [ File.join(dir_two, 'vendor/assets/javascripts') ]
-    end
-  end
-
   describe '#initialize' do
     before do
       described_class.any_instance.stubs(:load_initial_assets)
@@ -217,6 +173,21 @@ describe Jasmine::Headless::FilesList do
       it 'should not load an excluded format' do
         files_list.files.any? { |file| file['.erb'] }.should be_false
       end
+    end
+
+    describe "#register_engine!" do
+
+      before(:each) do
+        Jasmine::Headless::FilesList.reset!
+      end
+
+      it "should register code added via configure blocks" do
+        template_class = mock()
+        described_class.register_engine ".foo", template_class
+        Sprockets.expects(:register_engine).with(".foo", template_class)
+        described_class.new
+      end
+
     end
   end
 end

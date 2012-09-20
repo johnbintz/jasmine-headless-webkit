@@ -1,6 +1,8 @@
 #= require jasmine.HeadlessReporter.ConsoleBase
 #
 class jasmine.HeadlessReporter.Verbose extends jasmine.HeadlessReporter.ConsoleBase
+  @prereport = false
+
   displaySuccess: (spec) =>
     this.displaySpec(spec, 'green')
 
@@ -46,12 +48,17 @@ class jasmine.HeadlessReporter.Verbose extends jasmine.HeadlessReporter.ConsoleB
   colorLine: (line, color) =>
     line.foreground(color)
 
+  reportSpecStarting: (spec) =>
+    if jasmine.HeadlessReporter.Verbose.prereport
+      this.puts(spec.getSpecSplitName().join(' '))
+
   reportException: (e) =>
     e = JHW.createCoffeeScriptFileException(e)
-    
-    output = e.message
+
     if e.sourceURL && e.lineNumber
-      output = "#{e.sourceURL}:~#{e.lineNumber} #{output}"
+      output = "#{e.sourceURL}:#{e.lineNumber} #{e.message}"
+    else
+      output = e.message ? e
 
     this.puts(output.foreground('yellow'))
 

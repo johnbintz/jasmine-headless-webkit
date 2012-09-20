@@ -194,4 +194,54 @@ describe Jasmine::Headless::Runner do
       subject.options[:reporters].should == reporters
     end
   end
+
+  describe '.server_port' do
+    before do
+      described_class.instance_variable_set(:@server_port, nil)
+    end
+
+    context 'port in use' do
+      require 'socket'
+
+      before do
+        described_class.stubs(:select_server_port).returns(5000, 5001)
+      end
+
+      it 'should try another port' do
+        server = TCPServer.new(described_class.server_interface, 5000)
+
+        described_class.server_port.should == 5001
+      end
+    end
+  end
+
+  describe '#absolute_run_targets' do
+    let(:opts) { {} }
+
+    subject { runner.absolute_run_targets(targets) }
+
+    let(:targets) { [ target ] }
+    let(:target) { 'target' }
+
+    before do
+      runner.stubs(:options).returns(:use_server => use_server)
+    end
+
+    context 'server' do
+      let(:use_server) { true }
+      let(:server_spec_path) { 'server spec path' }
+
+      before do
+        described_class.stubs(:server_spec_path).returns(server_spec_path)
+      end
+
+      it { should == [ server_spec_path + target ] }
+    end
+
+    context 'no server' do
+      let(:use_server) { false }
+
+      it { should == [ 'file://' + File.expand_path(target) ] }
+    end
+  end
 end

@@ -95,5 +95,28 @@ describe Jasmine::Headless::CacheableAction do
       end
     end
   end
+
+  describe '#relative_cache_file' do
+    context 'file is an absolute windows file' do
+      let(:current_path) { 'C:/path' }
+      let(:filename) { "file.coffee" }
+      let(:windows_path) { File.join(current_path, filename) }
+      let(:cache_dir) { 'cache dir' }
+      let(:cache_type) { 'cache type' }
+
+      before do
+        cache_object.stubs(:file).returns(windows_path)
+
+        described_class.stubs(:cache_dir).returns(cache_dir)
+        described_class.stubs(:cache_type).returns(cache_type)
+
+        Dir.stubs(:pwd).returns(current_path)
+      end
+
+      subject { cache_object.relative_cache_file }
+
+      it { should == File.join(cache_dir, cache_type, filename) }
+    end
+  end
 end
 

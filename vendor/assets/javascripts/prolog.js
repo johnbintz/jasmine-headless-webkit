@@ -84,15 +84,17 @@
     };
     JHW.createCoffeeScriptFileException = function(e) {
       var filename, realFilename;
-      if (e && e.sourceURL && window.CoffeeScriptToFilename) {
+      if (e && e.sourceURL) {
         filename = e.sourceURL.split('/').pop();
-        if (realFilename = window.CoffeeScriptToFilename[filename]) {
-          e = {
-            name: e.name,
-            message: e.message,
-            lineNumber: "~" + String(e.line),
-            sourceURL: realFilename
-          };
+        e = {
+          name: e.name,
+          message: e.message,
+          sourceURL: e.sourceURL,
+          lineNumber: e.line
+        };
+        if (window.CoffeeScriptToFilename && (realFilename = window.CoffeeScriptToFilename[filename])) {
+          e.sourceURL = realFilename;
+          e.lineNumber = "~" + String(e.line);
         }
       }
       return e;

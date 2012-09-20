@@ -4,6 +4,7 @@ require 'multi_json'
 require 'set'
 require 'sprockets'
 require 'sprockets/engines'
+require 'sprockets-vendor_gems'
 
 module Jasmine::Headless
   class FilesList
@@ -11,33 +12,12 @@ module Jasmine::Headless
 
     class << self
       def asset_paths
-        return @asset_paths if @asset_paths
-
-        require 'rubygems'
-
-        raise StandardError.new("A newer version of Rubygems is required to use vendored assets. Please upgrade.") if !Gem::Specification.respond_to?(:each)
-
-        @asset_paths = []
-
-        Gem::Specification.each { |gemspec| @asset_paths += get_paths_from_gemspec(gemspec) }
-
-        @asset_paths
-      end
-
-      def get_paths_from_gemspec(gemspec)
-        %w{vendor lib app}.collect do |dir|
-          path = File.join(gemspec.gem_dir, dir, "assets/javascripts")
-
-          if File.directory?(path) && !@asset_paths.include?(path)
-            path
-          else
-            nil
-          end
-        end.compact
+        @asset_paths ||= Sprockets.find_gem_vendor_paths(:for => 'javascripts')
       end
 
       def reset!
         @asset_paths = nil
+        @registered_engines = {}
 
         # register haml-sprockets and handlebars_assets if it's available...
         %w{haml-sprockets handlebars_assets}.each do |library|
@@ -56,16 +36,20 @@ module Jasmine::Headless
           end
         end
 
-        # ...and unregister ones we don't want/need
-        Sprockets.instance_eval do
-          EXCLUDED_FORMATS.each do |extension|
-            register_engine ".#{extension}", Jasmine::Headless::NilTemplate
-          end
+        @sprockets_environment = nil
+      end
 
-          register_engine '.coffee', Jasmine::Headless::CoffeeTemplate
-          register_engine '.js', Jasmine::Headless::JSTemplate
-          register_engine '.css', Jasmine::Headless::CSSTemplate
-          register_engine '.jst', Jasmine::Headless::JSTTemplate
+      def registered_engines
+        @registered_engines ||= {}
+      end
+
+      def register_engine(file_extension, template_class)
+        registered_engines[file_extension] = template_class
+      end
+
+      def register_engines!
+        registered_engines.each do |file_extension, template_class|
+          Sprockets.register_engine file_extension, template_class
         end
       end
 
@@ -95,9 +79,19 @@ module Jasmine::Headless
       @required_files = UniqueAssetList.new
       @potential_files_to_filter = []
 
+      register_engines!
+
       load_initial_assets
 
       use_config if config?
+    end
+
+    def register_engines!
+      begin
+        require spec_helper
+      rescue LoadError
+      end
+      self.class.register_engines!
     end
 
     def load_initial_assets
@@ -137,6 +131,7 @@ module Jasmine::Headless
       @search_paths += asset_paths.collect { |dir| File.expand_path(dir) }
       @search_paths += spec_dir.collect { |dir| File.expand_path(dir) }
 
+      @search_paths.uniq!
       @search_paths
     end
 
@@ -147,6 +142,19 @@ module Jasmine::Headless
       search_paths.each { |path| @sprockets_environment.append_path(path) }
 
       @sprockets_environment.unregister_postprocessor('application/javascript', Sprockets::SafetyColons)
+
+      # ...and unregister ones we don't want/need
+      @sprockets_environment.instance_eval do
+        EXCLUDED_FORMATS.each do |extension|
+          register_engine ".#{extension}", Jasmine::Headless::NilTemplate
+        end
+
+        register_engine '.coffee', Jasmine::Headless::CoffeeTemplate
+        register_engine '.js', Jasmine::Headless::JSTemplate
+        register_engine '.css', Jasmine::Headless::CSSTemplate
+        register_engine '.jst', Jasmine::Headless::JSTTemplate
+      end
+
       @sprockets_environment
     end
 
@@ -227,13 +235,13 @@ module Jasmine::Headless
     end
 
     def add_files(patterns, type, dirs)
-      dirs.product(patterns).each do |search|
-        files = expanded_dir(File.join(*search))
+      patterns.each do |pattern|
+        dirs.collect { |dir| expanded_dir(File.join(dir, pattern)) }.each do |files|
+          files.sort! { |a, b| Kernel.rand(3) - 1 } if type == 'spec_files'
 
-        files.sort! { |a, b| Kernel.rand(3) - 1 } if type == 'spec_files'
-
-        files.each do |path|
-          add_path(path, type)
+          files.each do |path|
+            add_path(path, type)
+          end
         end
       end
 
@@ -247,7 +255,8 @@ module Jasmine::Headless
     end
 
     def expanded_dir(path)
-      Dir[path].find_all { |file|
+      file_list = Dir.glob(path).sort
+      file_list.find_all { |file|
         file[extension_filter] && !alert_if_bad_format?(file)
       }.collect {
         |file| File.expand_path(file)
@@ -271,7 +280,7 @@ module Jasmine::Headless
     end
 
     def src_dir
-      @src_dir ||= config_dir_or_pwd('src_dir')
+      @src_dir ||= config_dir_or_pwd('src_dir') + asset_paths
     end
 
     def spec_dir
@@ -279,7 +288,7 @@ module Jasmine::Headless
     end
 
     def asset_paths
-      @asset_paths ||= config_dir_or_pwd('asset_paths')
+      @asset_paths ||= config_dir('asset_paths')
     end
 
     def spec_file_searches
@@ -287,9 +296,15 @@ module Jasmine::Headless
     end
 
     def config_dir_or_pwd(dir)
-      found_dir = (@options[:config] && @options[:config][dir]) || Dir.pwd
+      if (found = config_dir(dir)).empty?
+        found = [ Dir.pwd ]
+      end
 
-      [ found_dir ].flatten.collect { |dir| File.expand_path(dir) }
+      found
+    end
+
+    def config_dir(dir)
+      [ @options[:config] && @options[:config][dir] ].flatten.compact.collect { |dir| File.expand_path(dir) }
     end
 
     def filter_for_requested_specs(files)
@@ -301,5 +316,17 @@ module Jasmine::Headless
         end
       end
     end
+
+    def spec_helper
+      File.join(spec_dir, "helpers", "spec_helper")
+    end
+  end
+end
+
+module Jasmine::Headless
+  extend self
+
+  def register_engine(file_extension, template_class)
+    Jasmine::Headless::FilesList.register_engine(file_extension, template_class)
   end
 end

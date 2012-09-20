@@ -6,7 +6,7 @@
     <script type="text/javascript" src="<%= Jasmine::Headless.root.join('vendor/assets/javascripts/prolog.js') %>"></script>
     <%= files.join("\n") %>
     <script type="text/javascript">
-      if (window.JHW) { HeadlessReporterResult.specLineNumbers = <%= MultiJson.encode(spec_lines) %>; }
+      if (window.JHW) { HeadlessReporterResult.specLineNumbers = <%= MultiJson.dump(spec_lines) %>; }
     </script>
   </head>
   <body>
@@ -34,6 +34,39 @@
               break;
             }
           }
+
+          var location = window.location.href;
+
+          var getLastModified = function(callback) {
+            var http = new XMLHttpRequest();
+            var header;
+
+            http.open('HEAD', location, true);
+
+            http.onreadystatechange = function() {
+              if(http.readyState === http.DONE) {
+                callback(http.getResponseHeader('Last-Modified'));
+              }
+            };
+            http.send();
+          }
+
+          getLastModified(function(currentLastModified) {
+            var checker;
+            checker = function() {
+              setTimeout(function() {
+                getLastModified(function(newLastModified) {
+                  if (currentLastModified != newLastModified) {
+                    setTimeout(function() { window.location.reload(); }, 1000);
+                  } else {
+                    checker();
+                  }
+                });
+              }, 3000);
+            };
+
+            checker();
+          });
         }
 
         jasmine.getEnv().execute();
