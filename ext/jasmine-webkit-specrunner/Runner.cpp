@@ -67,6 +67,7 @@ void Runner::loadSpec()
 
   while (iterator.hasNext()) {
     QString fileName = iterator.next();
+    std::cout << qPrintable(fileName);
     QFile *outputFile = new QFile(fileName);    
     outputFile->open(QIODevice::WriteOnly);
     outputFiles.enqueue(outputFile);
