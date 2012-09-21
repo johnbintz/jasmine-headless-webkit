@@ -66,7 +66,8 @@ void Runner::loadSpec()
   QVectorIterator<QString> iterator(reportFiles);
 
   while (iterator.hasNext()) {
-    QFile *outputFile = new QFile(iterator.next());
+    QString fileName = iterator.next();
+    QFile *outputFile = new QFile(fileName);    
     outputFile->open(QIODevice::WriteOnly);
     outputFiles.enqueue(outputFile);
   }
