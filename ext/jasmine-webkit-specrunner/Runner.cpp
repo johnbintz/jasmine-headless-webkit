@@ -140,7 +140,6 @@ bool Runner::isQuiet() {
 }
 
 void Runner::print(const QString &fh, const QString &content) {
-  std::cout << qPrintable("Runner::report");
   if (fh == "stdout") {
     std::cout << qPrintable(content);
     std::cout.flush();
@@ -150,6 +149,7 @@ void Runner::print(const QString &fh, const QString &content) {
     std::cerr << qPrintable(content);
     std::cerr.flush();
   }
+  std::cout << qPrintable("Runner::report" + fh);
 
   if (fh.contains("report")) {
     int index = (int)fh.split(":").last().toUInt();
