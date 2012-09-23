@@ -154,6 +154,8 @@ void Runner::print(const QString &fh, const QString &content) {
     int index = (int)fh.split(":").last().toUInt();
 
     QTextStream ts(outputFiles.at(index));
+    while (!outputFiles.isEmpty())
+      std::cout << qPrintable(outputFiles.dequeue()) << endl;
     ts << qPrintable(content);
     ts.flush();
   }
