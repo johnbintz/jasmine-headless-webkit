@@ -164,6 +164,14 @@ void Runner::print(const QString &fh, const QString &content) {
   }
 }
 
+void Runner::printFile(const QString &fileName, const QString &content) {
+  QFile *outputFile = new QFile(fileName);
+   outputFile->open(QIODevice::WriteOnly);
+   QTextStream ts(outputFile);
+   ts << qPrintable(content);
+   ts.flush();
+}
+
 void Runner::finishSuite() {
   isFinished = true;
   runs = 0;
