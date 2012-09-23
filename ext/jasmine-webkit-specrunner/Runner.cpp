@@ -149,7 +149,7 @@ void Runner::print(const QString &fh, const QString &content) {
     std::cerr << qPrintable(content);
     std::cerr.flush();
   }
-  std::cout << qPrintable("Runner::report" + fh);
+  std::cout << qPrintable("Runner::report " + fh);
 
   if (fh.contains("report")) {
     int index = (int)fh.split(":").last().toUInt();
