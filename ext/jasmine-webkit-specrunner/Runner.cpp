@@ -152,7 +152,7 @@ void Runner::print(const QString &fh, const QString &content) {
 
   if (fh.contains("report")) {
     int index = (int)fh.split(":").last().toUInt();
-
+    std::cout << qPrintable("report");
     QTextStream ts(outputFiles.at(index));
     while (!outputFiles.isEmpty()){
       QFile *outputFile = outputFiles.dequeue();
