@@ -67,7 +67,6 @@ void Runner::loadSpec()
 
   while (iterator.hasNext()) {
     QString fileName = iterator.next();
-    std::cout << qPrintable(fileName);
     QFile *outputFile = new QFile(fileName);    
     outputFile->open(QIODevice::WriteOnly);
     outputFiles.enqueue(outputFile);
@@ -149,16 +148,11 @@ void Runner::print(const QString &fh, const QString &content) {
     std::cerr << qPrintable(content);
     std::cerr.flush();
   }
-  std::cout << qPrintable("Runner::report " + fh);
 
   if (fh.contains("report")) {
     int index = (int)fh.split(":").last().toUInt();
 
     QTextStream ts(outputFiles.at(index));
-    while (!outputFiles.isEmpty()){
-      QFile *outputFile = outputFiles.dequeue();
-      std::cout << qPrintable(outputFile->fileName()) << std::endl;
-    }
     ts << qPrintable(content);
     ts.flush();
   }
