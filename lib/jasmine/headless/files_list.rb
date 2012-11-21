@@ -40,7 +40,7 @@ module Jasmine::Headless
         @asset_paths = nil
 
         # register haml-sprockets if it's available...
-        %w{haml-sprockets}.each do |library|
+        %w{haml-sprockets handlebars_assets}.each do |library|
           begin
             require library
           rescue LoadError
