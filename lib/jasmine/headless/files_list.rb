@@ -1,6 +1,7 @@
 require 'jasmine-core'
 require 'time'
 require 'multi_json'
+require 'rubygems'
 require 'set'
 require 'sprockets'
 require 'sprockets/engines'
@@ -130,8 +131,14 @@ module Jasmine::Headless
       @search_paths += src_dir.collect { |dir| File.expand_path(dir) }
       @search_paths += asset_paths.collect { |dir| File.expand_path(dir) }
       @search_paths += spec_dir.collect { |dir| File.expand_path(dir) }
+      @search_paths += gem_assets.collect do |name, dirs|
+        dirs.collect do |dir|
+          File.expand_path(File.join(gem_dir(name), dir))
+        end
+      end.flatten
 
       @search_paths.uniq!
+
       @search_paths
     end
 
@@ -291,6 +298,10 @@ module Jasmine::Headless
       @asset_paths ||= config_dir('asset_paths')
     end
 
+    def gem_assets
+      @gem_assets ||= @options[:config]['gem_assets']
+    end
+
     def spec_file_searches
       @searches['spec_files']
     end
@@ -319,6 +330,12 @@ module Jasmine::Headless
 
     def spec_helper
       File.join(spec_dir, "helpers", "spec_helper")
+    end
+
+    def gem_dir gem
+      return unless gemspec = Gem.loaded_specs[gem]
+
+      gemspec.gem_dir
     end
   end
 end
