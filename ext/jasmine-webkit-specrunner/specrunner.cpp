@@ -23,6 +23,10 @@
 
 #include "Runner.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(4, 8, 0)
+#include <getopt.h>
+#endif
+
 #if QT_VERSION < QT_VERSION_CHECK(4, 7, 0)
 #error Use Qt 4.7 or later version
 #endif
