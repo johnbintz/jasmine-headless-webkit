@@ -1,11 +1,3 @@
-#include <QtGui>
-#include <QtWebKit>
-#include <QFile>
-#include <QTextStream>
-#include <iostream>
-#include <sstream>
-#include <QQueue>
-
 #include "Runner.h"
 #include "Page.h"
 
