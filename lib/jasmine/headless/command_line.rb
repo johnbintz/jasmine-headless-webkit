@@ -3,6 +3,7 @@ module Jasmine::Headless
     class << self
       def run!
         require 'coffee-script'
+        require 'ember_script'
         require 'rainbow'
 
         begin
@@ -18,6 +19,8 @@ module Jasmine::Headless
             exit runner.run
           end
         rescue CoffeeScript::CompilationError
+          exit 1
+        rescue ExecJS::ProgramError
           exit 1
         rescue StandardError => e
           $stderr.puts "[%s] %s (%s)" % [ "jasmine-headless-webkit".color(:red), e.message.color(:white), e.class.name.color(:yellow) ]
