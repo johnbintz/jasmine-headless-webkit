@@ -3,14 +3,14 @@ $:.push File.expand_path("../lib", __FILE__)
 require "jasmine/headless/version"
 
 Gem::Specification.new do |s|
-  s.name        = "jasmine-headless-webkit"
+  s.name        = "jasmine-headless-webkit-firstbanco"
   s.version     = Jasmine::Headless::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["John Bintz", "Sencha Inc.", "Pivotal Labs"]
   s.email       = ["john@coswellproductions.com"]
   s.homepage    = ""
   s.summary     = %q{Run Jasmine specs headlessly in a WebKit browser}
-  s.description = %q{Run Jasmine specs headlessly}
+  s.description = %q{Run Jasmine specs headlessly. This is a fork gem that makes firstbanco deploys easier. We don't normally do this, but the original gem is defunct.}
 
   s.rubyforge_project = "jasmine-headless-webkit"
 

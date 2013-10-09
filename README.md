@@ -1,4 +1,4 @@
-_I am looking for a new maintainer for this project. Please contact me via GitHub if you're interested._
+_This is a fork of the original project, from which we have cut our own gem to use with jasmine-coverage_
 
 # Jasmine Headless WebKit runner
 
