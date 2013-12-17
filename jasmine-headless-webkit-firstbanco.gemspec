@@ -4,7 +4,7 @@ require "jasmine/headless/version"
 
 Gem::Specification.new do |s|
   s.name        = "jasmine-headless-webkit-firstbanco"
-  s.version     = Jasmine::Headless::VERSION
+  s.version     = '0.9.0.rc.4'
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["John Bintz", "Sencha Inc.", "Pivotal Labs"]
   s.email       = ["john@coswellproductions.com"]
@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_runtime_dependency 'jasmine-core'
+  s.add_runtime_dependency 'jasmine-core', '1.3.1' # Locking to 1.3.1. 2.0.0 is a breaking change we will have to migrate to.
   s.add_runtime_dependency 'coffee-script'
   s.add_runtime_dependency 'rainbow'
   s.add_runtime_dependency 'multi_json', '>= 1.2.0'
