@@ -4,7 +4,7 @@ require "jasmine/headless/version"
 
 Gem::Specification.new do |s|
   s.name        = "jasmine-headless-webkit-firstbanco"
-  s.version     = '0.9.0.rc.4'
+  s.version     = '0.9.0.rc.5'
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["John Bintz", "Sencha Inc.", "Pivotal Labs"]
   s.email       = ["john@coswellproductions.com"]
