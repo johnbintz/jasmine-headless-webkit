@@ -1,3 +1,7 @@
+## 0.9.0.rc.5
+
+* Adding native extensions build check
+
 ## 0.7.2
 
 * Improved finding of CoffeeScript spec line locations

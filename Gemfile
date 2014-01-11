@@ -1,6 +1,6 @@
 source :rubygems
 
-# Specify your gem's dependencies in jasmine-headless-webkit.gemspec
+# Specify your gem's dependencies in jasmine-headless-webkit-firstbanco.gemspec
 gemspec
 
 gem 'rspec'
