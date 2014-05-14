@@ -1,4 +1,4 @@
-_I am looking for a new maintainer for this project. Please contact me via GitHub if you're interested._
+_This project is dead. You should use [Karma](http://karma-runner.github.io/) instead. I do._
 
 # Jasmine Headless WebKit runner
 
