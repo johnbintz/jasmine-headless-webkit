@@ -1,2 +1,3 @@
-if
+if (->)
+  noOp = "complete"
 
