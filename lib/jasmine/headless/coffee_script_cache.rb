@@ -14,6 +14,11 @@ module Jasmine
       def action
         CoffeeScript.compile(File.read(file))
       end
+
+      def relative_cache_file
+        super.gsub(/.coffee$/, '')
+      end
+
     end
   end
 end
