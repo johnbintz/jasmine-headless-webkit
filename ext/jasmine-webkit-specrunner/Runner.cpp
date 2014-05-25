@@ -66,7 +66,8 @@ void Runner::loadSpec()
   QVectorIterator<QString> iterator(reportFiles);
 
   while (iterator.hasNext()) {
-    QFile *outputFile = new QFile(iterator.next());
+    QString fileName = iterator.next();
+    QFile *outputFile = new QFile(fileName);    
     outputFile->open(QIODevice::WriteOnly);
     outputFiles.enqueue(outputFile);
   }
@@ -155,6 +156,14 @@ void Runner::print(const QString &fh, const QString &content) {
     ts << qPrintable(content);
     ts.flush();
   }
+}
+
+void Runner::printFile(const QString &fileName, const QString &content) {
+  QFile *outputFile = new QFile(fileName);
+   outputFile->open(QIODevice::WriteOnly);
+   QTextStream ts(outputFile);
+   ts << qPrintable(content);
+   ts.flush();
 }
 
 void Runner::finishSuite() {

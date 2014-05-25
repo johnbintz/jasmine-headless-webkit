@@ -24,6 +24,7 @@ module Jasmine
 
     autoload :CoffeeTemplate, 'jasmine/headless/coffee_template'
     autoload :JSTemplate, 'jasmine/headless/js_template'
+    autoload :JSTTemplateCache, 'jasmine/headless/jst_template_cache'
     autoload :JSTTemplate, 'jasmine/headless/jst_template'
     autoload :CSSTemplate, 'jasmine/headless/css_template'
     autoload :NilTemplate, 'jasmine/headless/nil_template'
@@ -58,4 +59,3 @@ module Jasmine
 end
 
 require 'jasmine/headless/errors'
-

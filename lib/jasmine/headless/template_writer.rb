@@ -49,7 +49,8 @@ module Jasmine::Headless
     end
 
     def jhw_reporters
-      reporters.collect do |reporter, output|
+      reporters.collect do |reporter, report, output|
+        output = output || "spec/reports"
         %{jasmine.getEnv().addReporter(new jasmine.HeadlessReporter.#{reporter}("#{output}"));}
       end.join("\n")
     end
