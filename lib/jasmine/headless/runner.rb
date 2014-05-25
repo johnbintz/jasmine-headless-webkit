@@ -1,6 +1,7 @@
 require 'fileutils'
 
 require 'coffee-script'
+require 'ember_script'
 require 'rainbow'
 
 require 'yaml'

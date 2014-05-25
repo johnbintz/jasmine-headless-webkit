@@ -1,7 +1,7 @@
 module JasmineMixin
   JASMINE_PROGRAM = File.expand_path('../../../bin/jasmine-headless-webkit', __FILE__)
 
-  JAVASCRIPT_EXTENSIONS = %w{js coffee}
+  JAVASCRIPT_EXTENSIONS = %w{js coffee em}
 
   def self.included(klass)
     klass::ALL_HOOKS << [ :run_jasmine, :ran_jasmine ]
@@ -92,7 +92,7 @@ module JasmineMixin
   end
 
   def setup_jasmine_project_mappings
-    add_mapping(%r{spec/javascripts/.*_spec\.(js|coffee)}) { |filename, _|
+    add_mapping(%r{spec/javascripts/.*_spec\.(js|coffee|em)}) { |filename, _|
       filename
     }
 
@@ -101,6 +101,10 @@ module JasmineMixin
     }
 
     add_mapping(%r{app/coffeescripts/(.*)\.coffee}) { |_, m|
+      files_matching(%r{spec/javascripts/#{m[1]}_spec\..*$})
+    }
+
+    add_mapping(%r{app/emberscripts/(.*)\.em}) { |_, m|
       files_matching(%r{spec/javascripts/#{m[1]}_spec\..*$})
     }
   end

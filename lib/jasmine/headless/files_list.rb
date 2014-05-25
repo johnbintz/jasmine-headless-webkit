@@ -150,6 +150,7 @@ module Jasmine::Headless
         end
 
         register_engine '.coffee', Jasmine::Headless::CoffeeTemplate
+        register_engine '.em', Jasmine::Headless::EmberScriptTemplate
         register_engine '.js', Jasmine::Headless::JSTemplate
         register_engine '.css', Jasmine::Headless::CSSTemplate
         register_engine '.jst', Jasmine::Headless::JSTTemplate

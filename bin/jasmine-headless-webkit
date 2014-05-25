@@ -6,6 +6,7 @@ $: << File.expand_path('../../lib', __FILE__)
 
 require 'jasmine-headless-webkit'
 require 'coffee-script'
+require 'ember_script'
 
 Jasmine::Headless::CommandLine.run!
 
