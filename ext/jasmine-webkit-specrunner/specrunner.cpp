@@ -21,6 +21,7 @@
    THE SOFTWARE.
    */
 
+#include <getopt.h>
 #include "Runner.h"
 
 #if QT_VERSION >= QT_VERSION_CHECK(4, 8, 0)
