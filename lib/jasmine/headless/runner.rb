@@ -195,7 +195,9 @@ module Jasmine
           end
         end
 
-        runner = lambda { system jasmine_command(run_targets) }
+        runner = lambda { 
+          raise "Error #{$?} while attempting to run '#{jasmine_command(run_targets)}', probably because jasmine-webkit-specrunner hasn't been compiled." if system(jasmine_command(run_targets)) == 127
+        }
 
         if options[:use_server]
           wrap_in_server(run_targets, &runner)
