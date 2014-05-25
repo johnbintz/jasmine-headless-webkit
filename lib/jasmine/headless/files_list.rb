@@ -39,6 +39,10 @@ module Jasmine::Headless
         @sprockets_environment = nil
       end
 
+      def sprockets_environment
+        @sprockets_environment ||= Sprockets::Environment.new
+      end
+
       def registered_engines
         @registered_engines ||= {}
       end
@@ -138,7 +142,7 @@ module Jasmine::Headless
     def sprockets_environment
       return @sprockets_environment if @sprockets_environment
 
-      @sprockets_environment = Sprockets::Environment.new
+      @sprockets_environment = self.class.sprockets_environment #|| Sprockets::Environment.new
       search_paths.each { |path| @sprockets_environment.append_path(path) }
 
       @sprockets_environment.unregister_postprocessor('application/javascript', Sprockets::SafetyColons)
@@ -149,11 +153,10 @@ module Jasmine::Headless
           register_engine ".#{extension}", Jasmine::Headless::NilTemplate
         end
 
-        register_engine '.coffee', Jasmine::Headless::CoffeeTemplate
-        register_engine '.js', Jasmine::Headless::JSTemplate
-        register_engine '.css', Jasmine::Headless::CSSTemplate
-        register_engine '.jst', Jasmine::Headless::JSTTemplate
       end
+       
+      @sprockets_environment.logger = Logger.new(STDOUT)
+      @sprockets_environment.logger.level = Logger::WARN
 
       @sprockets_environment
     end
@@ -207,7 +210,28 @@ module Jasmine::Headless
           alert_time = nil
         end
 
-        sprockets_environment.find_asset(file, :bundle => false).body
+        asset = sprockets_environment.find_asset(file, :bundle => false)
+        cache_file = File.join('.jhw-cache', 'code', asset.logical_path)
+        # Process & cache the asset only if needed 
+        unless File.exist?(cache_file) && (File.mtime(file) < File.mtime(cache_file))
+          FileUtils.mkdir_p File.dirname(cache_file)
+          asset.write_to(cache_file)
+        end
+
+        html = ''
+        case asset.content_type
+        when 'application/javascript'
+          html = %{<script type="text/javascript" src="#{File.expand_path(cache_file)}"></script>}
+          # NOTE: In future sprockets versions below could be simplified w/ asset.extensions.include?('.coffee')
+          if asset.pathname.basename.to_s.scan(/\.[^.]+/).include?('.coffee') 
+            html += %{\n<script type="text/javascript">window.CSTF['#{File.basename(cache_file)}'] = '#{file}';</script>}
+          end
+        when 'text/css'
+          html = %{<link rel="stylesheet" href="#{File.expand_path(cache_file)}" type="text/css" />}
+        else
+          html = asset.body
+        end
+        html
       end.compact.reject(&:empty?)
     end
 
@@ -270,7 +294,12 @@ module Jasmine::Headless
     end
 
     def add_path(path, type = nil)
-      asset = sprockets_environment.find_asset(path)
+      begin
+        asset = sprockets_environment.find_asset(path)
+      rescue => e
+        sprockets_environment.logger.error "#{e.message} (#{e.class})"
+        raise e
+      end
 
       @required_files << asset
 
@@ -325,6 +354,10 @@ end
 
 module Jasmine::Headless
   extend self
+
+  def sprockets_environment
+    Jasmine::Headless::FilesList.sprockets_environment
+  end
 
   def register_engine(file_extension, template_class)
     Jasmine::Headless::FilesList.register_engine(file_extension, template_class)

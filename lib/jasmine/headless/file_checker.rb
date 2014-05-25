@@ -1,3 +1,5 @@
+require 'rainbow'
+
 module Jasmine::Headless::FileChecker
   def excluded_formats
     ::Jasmine::Headless::EXCLUDED_FORMATS
