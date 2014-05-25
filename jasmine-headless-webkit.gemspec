@@ -22,9 +22,8 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'jasmine-core'
   s.add_runtime_dependency 'coffee-script'
-  s.add_runtime_dependency 'rainbow'
+  s.add_runtime_dependency 'rainbow', '< 2'
   s.add_runtime_dependency 'multi_json', '>= 1.2.0'
   s.add_runtime_dependency 'sprockets'
   s.add_runtime_dependency 'sprockets-vendor_gems'
 end
-
