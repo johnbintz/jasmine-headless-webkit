@@ -39,6 +39,10 @@ module Jasmine::Headless
         @sprockets_environment = nil
       end
 
+      def sprockets_environment
+        @sprockets_environment ||= Sprockets::Environment.new
+      end
+
       def registered_engines
         @registered_engines ||= {}
       end
@@ -138,7 +142,7 @@ module Jasmine::Headless
     def sprockets_environment
       return @sprockets_environment if @sprockets_environment
 
-      @sprockets_environment = Sprockets::Environment.new
+      @sprockets_environment = self.class.sprockets_environment #|| Sprockets::Environment.new
       search_paths.each { |path| @sprockets_environment.append_path(path) }
 
       @sprockets_environment.unregister_postprocessor('application/javascript', Sprockets::SafetyColons)
@@ -325,6 +329,10 @@ end
 
 module Jasmine::Headless
   extend self
+
+  def sprockets_environment
+    Jasmine::Headless::FilesList.sprockets_environment
+  end
 
   def register_engine(file_extension, template_class)
     Jasmine::Headless::FilesList.register_engine(file_extension, template_class)

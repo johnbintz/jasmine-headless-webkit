@@ -23,7 +23,7 @@ gem 'mocha'
 
 gem 'cucumber'
 
-gem 'jquery-rails', '~> 1.0.0'
+gem 'jquery-rails', '> 1.0'
 gem 'ejs'
 
 gem 'guard-jasmine-headless-webkit', :git => 'git://github.com/johnbintz/guard-jasmine-headless-webkit.git'
