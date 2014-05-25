@@ -1,7 +1,4 @@
-#include <QtGui>
-#include <QtWebKit>
 #include <iostream>
-
 #include "Page.h"
 
 Page::Page() : QWebPage() {}

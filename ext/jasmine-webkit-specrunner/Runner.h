@@ -1,8 +1,6 @@
 #ifndef JHW_RUNNER
 #define JHW_RUNNER
 
-#include <QtGui>
-#include <QtWebKit>
 #include <QFile>
 #include <QTextStream>
 #include <iostream>
